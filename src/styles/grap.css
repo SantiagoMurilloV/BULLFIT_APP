@@ -1,20 +1,50 @@
 .graph-container {
+    position: relative;
+    bottom: 10px;
+    margin-left: 30px;
+    width: 1050px;
+    height: 795px;
+    background-color: black;
+    border-radius: 4%;
+    /* overflow: hidden; */
+}
+
+.grap-text {
+    position: absolute;
+    top: 80px;
+    left: 80px;
+    color: rgb(255, 255, 255);
+    font-size: 70px;
+    text-align: center;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.text {
+    position: absolute;
+    top: 150px;
+    left: 80px;
+    margin-top: 20px;
+    color: #9C9DA2ff;
+    font-size: 12px;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+
+
+.graph-container {
+
     position: absolute;
     top: 50%;
-    left: 50%;
-    transform: translate(-130%, -50%);
-    width: 1020px;
-    height: 800px;
-    background-color: black;
+    left: -130%;
+    transform: translate(-50%, -50%);
     display: flex;
     justify-content: center;
     align-items: center;
     border-radius: 4%;
-
+    /* overflow: hidden; */
 }
 
-.grap_container::before {
-    content: "Sale";
+.graph-container::before {
     position: absolute;
     top: -40px;
     left: 50%;
@@ -23,23 +53,22 @@
     color: white;
 }
 
-.sale {
-    position: absolute;
-    top: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    font-size: 40px;
-    color: rgb(251, 251, 251);
-}
 
 
-.graph-container canvas {
-    margin-left: -190px;
-    margin-bottom: -350px;
-    width: 70% !important;
-    height: 40% !important;
+.grap {
+    position:relative;
+    margin-top: 300px;
+    margin-left: -150px;
+
+    transform: scale(0.6);
+
 }
 
 .bar-chart {
     background-color: rgb(141, 138, 138);
+}
+
+.bar-chart:hover .sale {
+    font-size: 50px;
+    color: rgb(60, 255, 0);
 }

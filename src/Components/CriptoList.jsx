@@ -3,7 +3,7 @@ import CryptoCard from './CriptoCards';
 import GraphTest from './grapTest';
 import cryptoData from '../JSON/coin.json';
 import '../styles/CriptoList.css';
-import '../styles/grap.css'
+import '../styles/grap.css';
 
 const CryptoList = () => {
     const [cryptoList, setCryptoList] = useState(cryptoData);
@@ -35,7 +35,6 @@ const CryptoList = () => {
                 />
             </div>
             <h2 className="sub">Crypto currencies</h2>
-            <p className="line">___________________________________________________</p>
             <div className="crypto-list">
                 {filtered.map((crypto) => (
                     <div className="crypto-card" key={crypto.id}>
@@ -49,8 +48,13 @@ const CryptoList = () => {
                     </div>
                 ))}
             </div>
-            <div className='grap_container'>
-                <GraphTest selectedCoinId={selectedCoinId} />
+            <div className="grap_container_bar">
+            
+                {selectedCoinId !== null ? (
+                    <GraphTest selectedCoinId={selectedCoinId} />
+                ) : (
+                    <GraphTest selectedCoinId={cryptoList[0].id} />
+                )}
             </div>
         </div>
     );
