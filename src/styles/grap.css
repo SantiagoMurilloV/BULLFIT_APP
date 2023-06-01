@@ -1,0 +1,45 @@
+.graph-container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-130%, -50%);
+    width: 1020px;
+    height: 800px;
+    background-color: black;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 4%;
+
+}
+
+.grap_container::before {
+    content: "Sale";
+    position: absolute;
+    top: -40px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 40px;
+    color: white;
+}
+
+.sale {
+    position: absolute;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 40px;
+    color: rgb(251, 251, 251);
+}
+
+
+.graph-container canvas {
+    margin-left: -190px;
+    margin-bottom: -350px;
+    width: 70% !important;
+    height: 40% !important;
+}
+
+.bar-chart {
+    background-color: rgb(141, 138, 138);
+}
