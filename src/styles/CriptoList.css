@@ -1,12 +1,13 @@
-/* --french-gray: #CBCBD8ff;
---cadet-gray: #9C9DA2ff;
---french-gray-2: #BCBFCBff;
---ghost-white: #F0F1F6ff;
---pear: #CAED4Dff; */
+/* Definir variables de colores */
+:root {
+    --french-gray: #CBCBD8ff;
+    --cadet-gray: #9C9DA2ff;
+    --french-gray-2: #BCBFCBff;
+    --ghost-white: #F0F1F6ff;
+    --pear: #CAED4Dff;
+}
 
-
-
-
+/* Contenedor principal */
 .criptoContainer {
     position: fixed;
     bottom: 10px;
@@ -20,25 +21,25 @@
     white-space: nowrap;
     scroll-behavior: smooth;
     text-align: left;
-    font-family:Arial, Helvetica, sans-serif;
-  
-    
+    font-family: Arial, Helvetica, sans-serif;
 }
 
+/* Contenedor del título */
 .h2-container {
     display: flex;
     justify-content: flex-start;
     font-variant: inherit;
-    font-style:normal;
-    font-weight:lighter;
+    font-style: normal;
+    font-weight: lighter;
 }
 
+/* Lista de criptomonedas */
 .crypto-list::-webkit-scrollbar {
     display: none;
 }
 
 .crypto-list {
-    font-weight:lighter;
+    font-weight: lighter;
     margin-top: 30px;
     border-top-style: solid;
     border-color: rgba(191, 193, 199, 0.403);
@@ -48,8 +49,10 @@
     overflow-y: unset;
     overflow-x: hidden;
     height: 70%;
+    width: 415px;
     font-weight: lighter;
 }
+
 
 .crypto-card {
     width: 415px;
@@ -60,14 +63,17 @@
     border-radius: 5px;
     white-space: normal;
 }
-.sub{
-    margin-bottom: 0px;
-}
-.line {
-    color:  #BCBFCBff;
+
+.sub {
     margin-bottom: 0px;
 }
 
+.line {
+    color: var(--french-gray-2);
+    margin-bottom: 0px;
+}
+
+/* Contenedor de búsqueda */
 .search-container {
     position: relative;
     display: inline-block;
@@ -75,18 +81,18 @@
 }
 
 .search-input {
-    color: #9C9DA2ff;
+    color: var(--cadet-gray);
     padding: 10px;
     border: none;
     border-radius: 20px;
     font-size: 16px;
-    width: 90%;
-    background-color:rgba(188, 191, 203, 0.391);
+    width: 200px; /* Tamaño fijo en píxeles */
+    background-color: rgba(188, 191, 203, 0.391);
     padding-left: 30px;
 }
 
 .search-input:focus {
-    outline:none;
+    outline: none;
 }
 
 .search-icon {
