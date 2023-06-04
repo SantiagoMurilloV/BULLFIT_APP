@@ -1,4 +1,4 @@
-/* Definir variables de colores */
+
 :root {
     --french-gray: #CBCBD8ff;
     --cadet-gray: #9C9DA2ff;
@@ -7,7 +7,7 @@
     --pear: #CAED4Dff;
 }
 
-/* Contenedor principal */
+
 .criptoContainer {
     position: fixed;
     bottom: 10px;
@@ -24,7 +24,7 @@
     font-family: Arial, Helvetica, sans-serif;
 }
 
-/* Contenedor del título */
+
 .h2-container {
     display: flex;
     justify-content: flex-start;
@@ -33,7 +33,6 @@
     font-weight: lighter;
 }
 
-/* Lista de criptomonedas */
 .crypto-list::-webkit-scrollbar {
     display: none;
 }
@@ -62,6 +61,11 @@
     border: 1px solid #ffffff;
     border-radius: 5px;
     white-space: normal;
+    transition: background-color 0.2s;
+}
+.crypto-card:hover {
+    background-color: var(--ghost-white);
+    cursor:pointer;
 }
 
 .sub {
@@ -73,7 +77,7 @@
     margin-bottom: 0px;
 }
 
-/* Contenedor de búsqueda */
+
 .search-container {
     position: relative;
     display: inline-block;
@@ -81,14 +85,18 @@
 }
 
 .search-input {
-    color: var(--cadet-gray);
+    color: black;
     padding: 10px;
     border: none;
     border-radius: 20px;
     font-size: 16px;
-    width: 200px; /* Tamaño fijo en píxeles */
+    width: 380px; 
     background-color: rgba(188, 191, 203, 0.391);
     padding-left: 30px;
+    background-image: url('../image/search.png');
+    background-position: 375px center;
+    background-repeat: no-repeat;
+    background-size: 20px;
 }
 
 .search-input:focus {

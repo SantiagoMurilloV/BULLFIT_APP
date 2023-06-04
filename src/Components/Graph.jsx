@@ -2,48 +2,25 @@ import React, { useState, useEffect } from 'react';
 import { Bar } from 'react-chartjs-2';
 import 'chart.js/auto';
 import '../styles/grap.css';
+import fetchData from '../helpers/fetchDataGraph';
+import calculateAverage from '../helpers/CalculateAverage.js';
 
-const GraphTest = ({ selectedCoinId }) => {
+const Graph = ({ selectedCoinId }) => {
     const [chartData, setChartData] = useState(null);
     const [selectedBarIndex, setSelectedBarIndex] = useState(null);
 
     const fetchHistory = async () => {
-        try {
-            const response = await fetch(
-                `https://api.coingecko.com/api/v3/coins/${selectedCoinId}/market_chart?vs_currency=usd&days=30&interval=daily`
-            );
-            const data = await response.json();
-            setChartData(data.prices);
-        } catch (error) {
-            console.error('Error:', error);
-            throw error;
-        }
+        const data = await fetchData(selectedCoinId);
+        setChartData(data);
     };
 
-    // useEffect(() => {
-        if (selectedCoinId) {
+    useEffect(() => {
+        if (selectedCoinId ) {
             fetchHistory();
         }
-    // }, [selectedCoinId]);
+     }, [selectedCoinId]);
 
-
-    const calculateAverage = () => {
-        if (!chartData || chartData.length === 0) {
-            return 0;
-        }
-
-        let sum = 0;
-        for (let i = 0; i < chartData.length; i++) {
-            sum += chartData[i][1];
-        }
-
-        return sum / chartData.length;
-    };
-
-
-
-    const averageValue = calculateAverage();
-
+    const averageValue = calculateAverage(chartData);
 
     if (!chartData) {
         return <div>Loading...</div>;
@@ -66,11 +43,9 @@ const GraphTest = ({ selectedCoinId }) => {
                     borderWidth: 5,
                     borderColor: '#C9EC4Cff',
                 },
-
                 offset: true,
                 offsetOffset: 10,
                 categorySpacing: 0.5,
-
             },
             y: {
                 display: false,
@@ -90,8 +65,9 @@ const GraphTest = ({ selectedCoinId }) => {
                         }
                         return label;
                     },
-                    labelFontSize: 700,
                 },
+                titleFontSize: 300, // Ajusta el tamaño de fuente del título de la etiqueta
+                bodyFontSize: 300, // Ajusta el tamaño de fuente del cuerpo de la etiqueta
             },
         },
         onHover: (_, activeElements) => {
@@ -102,7 +78,6 @@ const GraphTest = ({ selectedCoinId }) => {
             setSelectedBarIndex(null);
         },
     };
-
     const chartConfig = {
         type: 'bar',
         data: {
@@ -137,18 +112,17 @@ const GraphTest = ({ selectedCoinId }) => {
     return (
         <div className="graph-container">
             <div className="grap-text">Sales Activity</div>
-            <div className='text'>
+            <div className="text">
                 <p>
-                    Here you can visualize the different cryptocurrencies
-                    
-                    to observe their behavior of their value with respect to time.<br />
+                    Here you can visualize the different cryptocurrencies to observe their behavior of their value with
+                    respect to time.
+                    <br />
                     The data is taken from coingecko....
                 </p>
             </div>
-            <Bar className='grap' data={chartConfig.data} options={chartOptions} />
+            <Bar className="grap" data={chartConfig.data} options={chartOptions} />
         </div>
-
     );
 };
 
-export default GraphTest;
+export default Graph;

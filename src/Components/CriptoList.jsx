@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import CryptoCard from './CriptoCards';
-import GraphTest from './grapTest';
+import Graph from './Graph';
 import cryptoData from '../JSON/coin.json';
+import { fetchCryptoList } from '../helpers/CriptoFetch';
 import '../styles/CriptoList.css';
 import '../styles/grap.css';
 
@@ -11,22 +12,18 @@ const CryptoList = () => {
     const [searchInput, setSearchInput] = useState('');
     const [selectedCoinId, setSelectedCoinId] = useState(null);
 
-//     const fetchCryptoList = async () => {
-//         try {
-//             const response = await fetch(
-//                 'https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=100&page=1&sparkline=true&price_change_percentage=30d&locale=en&precision=3'
-//             );
-//             const data = await response.json();
-//             setCryptoList(data);
-//         } catch (error) {
-//             console.error(error);
-//         }
-//     };
+    const handleFetchCryptoList = async () => {
+        try {
+            const data = await fetchCryptoList();
+            setCryptoList(data);
+        } catch (error) {
+            console.error(error);
+        }
+    };
 
-//    if (cryptoList.length === 0) {
-        
-//          fetchCryptoList();
-//     }
+    if (cryptoList.length === 0) {
+        handleFetchCryptoList();
+    }
 
     const filtered = searchInput
         ? cryptoList.filter(
@@ -68,9 +65,9 @@ const CryptoList = () => {
             </div>
             <div className="grap_container_bar">
                 {selectedCoinId !== null ? (
-                    <GraphTest selectedCoinId={selectedCoinId} />
+                    <Graph selectedCoinId={selectedCoinId} />
                 ) : (
-                    <GraphTest selectedCoinId={cryptoList.length > 0 ? cryptoList[0].id : null} />
+                    <Graph selectedCoinId={cryptoList.length > 0 ? cryptoList[0].id : null} />
                 )}
             </div>
         </div>

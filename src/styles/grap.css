@@ -1,8 +1,10 @@
 .graph-container {
+    display: flex;
     position: relative;
     bottom: 10px;
     margin-left: 30px;
-    width: 1050px;
+    margin-top: -10px;
+    width: 1030px;
     height: 795px;
     background-color: black;
     border-radius: 4%;
@@ -10,6 +12,7 @@
 }
 
 .grap-text {
+    display: flex;
     position: absolute;
     top: 80px;
     left: 80px;
@@ -20,6 +23,7 @@
 }
 
 .text {
+    display: flex;
     position: absolute;
     top: 150px;
     left: 80px;
@@ -32,7 +36,7 @@
 
 
 .graph-container {
-
+    display: flex;
     position: absolute;
     top: 50%;
     left: -130%;
@@ -45,6 +49,7 @@
 }
 
 .graph-container::before {
+    display:flex;
     position: absolute;
     top: -40px;
     left: 50%;
@@ -56,8 +61,9 @@
 
 
 .grap {
+    display:flex;
     position:relative;
-    margin-top: 300px;
+    margin-top: 290px;
     margin-left: -150px;
 
     transform: scale(0.6);
@@ -65,10 +71,29 @@
 }
 
 .bar-chart {
+    display:flex;
     background-color: rgb(141, 138, 138);
+    
 }
 
 .bar-chart:hover .sale {
-    font-size: 50px;
+    display:flex;
+    font-size: 800px;
     color: rgb(60, 255, 0);
+}
+
+
+@media (max-width: 768px) {
+    .graph-container {
+        width: 100%;
+        height: auto;
+    }
+
+    .grap-text {
+        font-size: 5vw;
+    }
+
+    .text {
+        font-size: 2vw;
+    }
 }

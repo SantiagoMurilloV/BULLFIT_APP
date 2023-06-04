@@ -1,6 +1,6 @@
 import React from 'react';
 import CryptoList from './CriptoList';
-// import '../styles/App.css'
+import '../styles/App.css'
 
 export const App = () => {
     return (
