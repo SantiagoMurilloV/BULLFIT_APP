@@ -17,3 +17,4 @@ const CryptoCard = ({ image, name, symbol, price, onClick }) => {
 };
 
 export default CryptoCard;
+

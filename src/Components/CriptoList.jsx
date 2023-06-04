@@ -6,9 +6,27 @@ import '../styles/CriptoList.css';
 import '../styles/grap.css';
 
 const CryptoList = () => {
+    // const [cryptoList, setCryptoList] = useState([]);
     const [cryptoList, setCryptoList] = useState(cryptoData);
     const [searchInput, setSearchInput] = useState('');
     const [selectedCoinId, setSelectedCoinId] = useState(null);
+
+//     const fetchCryptoList = async () => {
+//         try {
+//             const response = await fetch(
+//                 'https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=100&page=1&sparkline=true&price_change_percentage=30d&locale=en&precision=3'
+//             );
+//             const data = await response.json();
+//             setCryptoList(data);
+//         } catch (error) {
+//             console.error(error);
+//         }
+//     };
+
+//    if (cryptoList.length === 0) {
+        
+//          fetchCryptoList();
+//     }
 
     const filtered = searchInput
         ? cryptoList.filter(
@@ -49,11 +67,10 @@ const CryptoList = () => {
                 ))}
             </div>
             <div className="grap_container_bar">
-            
                 {selectedCoinId !== null ? (
                     <GraphTest selectedCoinId={selectedCoinId} />
                 ) : (
-                    <GraphTest selectedCoinId={cryptoList[0].id} />
+                    <GraphTest selectedCoinId={cryptoList.length > 0 ? cryptoList[0].id : null} />
                 )}
             </div>
         </div>

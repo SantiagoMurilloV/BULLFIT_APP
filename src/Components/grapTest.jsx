@@ -20,11 +20,11 @@ const GraphTest = ({ selectedCoinId }) => {
         }
     };
 
-    useEffect(() => {
+    // useEffect(() => {
         if (selectedCoinId) {
             fetchHistory();
         }
-    }, [selectedCoinId]);
+    // }, [selectedCoinId]);
 
 
     const calculateAverage = () => {
