@@ -7,8 +7,8 @@ import '../styles/CriptoList.css';
 import '../styles/grap.css';
 
 const CryptoList = () => {
-    // const [cryptoList, setCryptoList] = useState([]);
-    const [cryptoList, setCryptoList] = useState(cryptoData);
+    const [cryptoList, setCryptoList] = useState([]);
+    // const [cryptoList, setCryptoList] = useState(cryptoData);
     const [searchInput, setSearchInput] = useState('');
     const [selectedCoinId, setSelectedCoinId] = useState(null);
 
