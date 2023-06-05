@@ -42,11 +42,9 @@
 .crypto-heading h3.crypto-price {
     margin-top: -55px;
     margin-left: auto;
-  
-    
 }
 
-/* Estilos responsivos */
+
 @media (max-width: 768px) {
     .crypto-card {
         flex-direction: column;

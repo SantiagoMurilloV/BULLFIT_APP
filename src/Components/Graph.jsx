@@ -55,6 +55,7 @@ const Graph = ({ selectedCoinId }) => {
         plugins: {
             legend: {
                 display: false,
+
             },
             tooltips: {
                 callbacks: {
@@ -66,8 +67,6 @@ const Graph = ({ selectedCoinId }) => {
                         return label;
                     },
                 },
-                titleFontSize: 300, // Ajusta el tamaño de fuente del título de la etiqueta
-                bodyFontSize: 300, // Ajusta el tamaño de fuente del cuerpo de la etiqueta
             },
         },
         onHover: (_, activeElements) => {
@@ -121,7 +120,15 @@ const Graph = ({ selectedCoinId }) => {
                 </p>
             </div>
             <Bar className="grap" data={chartConfig.data} options={chartOptions} />
+            <h3 className="uni">Average in USD</h3>
+            <div  className="current_price">
+                <h1>$ {averageValue.toFixed(1)} </h1>
+            </div>
+            
+            
+            
         </div>
+            
     );
 };
 

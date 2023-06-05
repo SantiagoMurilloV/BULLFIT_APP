@@ -65,7 +65,7 @@ const CryptoList = () => {
             </div>
             <div className="grap_container_bar">
                 {selectedCoinId !== null ? (
-                    <Graph selectedCoinId={selectedCoinId} />
+                    <Graph selectedCoinId={selectedCoinId}/>
                 ) : (
                     <Graph selectedCoinId={cryptoList.length > 0 ? cryptoList[0].id : null} />
                 )}
