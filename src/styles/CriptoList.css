@@ -20,16 +20,16 @@
     font-family: Arial, Helvetica, sans-serif;
 }
 
-.h2-container {
+h1{
     display: flex;
     justify-content: flex-start;
-    font-variant: inherit;
-    font-style: normal;
     font-weight: lighter;
+    font-size: xx-large;
+    margin-bottom: 10%;
 }
 
 .crypto-list::-webkit-scrollbar {
-    display: none;
+    display:none;
 }
 
 .crypto-list {
@@ -50,26 +50,38 @@
 }
 
 .crypto-card {
-    width: 25vw;
+    margin-left: 0.1vw;
+    width: 24vw;
     height: 9vh;
     padding: 5px;
     background-color: #ffffff;
     border: 1px solid #ffffff;
-    border-radius: 10px;
-    transition: background-color 0.2s;
+    border-radius: 15px;
+    transition: background-color 0.1s ,  opacity 0.1s,  transform 0.1s;
 }
 
 .crypto-card:hover {
-    background-color:rgb(230, 247, 162);
+    background-color: rgba(201, 212, 227, 0.282);
+    opacity: 0.9;
     cursor: pointer;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.471);
+    
 }
+.crypto-card:active {
+    background-color: rgb(235, 244, 235);
+    opacity: 0.9;
+    cursor: pointer;
+    transform: scale(0.94);
+    transition: background-color 0.1s, opacity 0.1s, transform 0.3s, box-shadow 0.1s;
+  }
+  
 
 .sub {
     margin-bottom: 0px;
+    font-weight:bold;
 }
-
 .line {
-    color: #BCBFCBff;
+    color: rgb(194, 197, 210);
     margin-bottom: 0px;
 }
 
@@ -80,7 +92,7 @@
 }
 
 .search-input {
-    color: black;
+    color: rgb(0, 0, 0);
     padding: 10px;
     border: none;
     border-radius: 25px;
@@ -88,13 +100,22 @@
     width: 23vw;
     height: 3.5vh;
     max-width: 100%;
-    background-color: rgba(205, 207, 214, 0.259);
+    background-color: rgba(157, 183, 221, 0.259);
     padding-left: 30px;
     background-image: url('../image/search.png');
     background-position: 23vw center;
     background-repeat: no-repeat;
     background-size: 20px;
+    opacity: 0.7;    
 }
+
+
+
+.search-input::placeholder {
+    color:rgb(71, 71, 73);
+    font-weight:350;
+  }
+
 
 .search-input:focus {
     outline: none;

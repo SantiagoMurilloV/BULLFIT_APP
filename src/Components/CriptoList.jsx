@@ -44,7 +44,7 @@ const CryptoList = () => {
                 <input
                     className="search-input"
                     type="text"
-                    placeholder="Enter your search request"
+                    placeholder="Enter your search request" 
                     value={searchInput}
                     onChange={(e) => setSearchInput(e.target.value)}
                 />
@@ -52,8 +52,8 @@ const CryptoList = () => {
             <h2 className="sub">Crypto currencies</h2>
             <div className="crypto-list">
                 {filtered.map((crypto) => (
-                    <div className="crypto-card" key={crypto.id}>
-                        <CryptoCard
+                    <div className="card" key={crypto.id}>
+                        <CryptoCard 
                             name={crypto.name}
                             symbol={crypto.symbol}
                             image={crypto.image}
