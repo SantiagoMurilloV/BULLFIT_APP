@@ -93,7 +93,7 @@ const Graph = ({ selectedCoinId }) => {
                     order: 0,
                 },
                 {
-                    label: '',
+                    label: selectedCoinId,
                     data: chartData.map((item) => item[1]),
                     backgroundColor: chartData.map((_, index) =>
                         index === selectedBarIndex ? '#C9EC4Cff' : ' #545869ff'
@@ -123,6 +123,9 @@ const Graph = ({ selectedCoinId }) => {
             <h3 className="uni">Average in USD</h3>
             <div  className="current_price">
                 <h1>$ {averageValue.toFixed(1)} </h1>
+            </div>
+            <div className='nameCoin'>
+                <p>{selectedCoinId}</p>
             </div>
             
             
