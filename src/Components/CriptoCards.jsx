@@ -1,5 +1,5 @@
 import React from 'react';
-import '../styles/CriptoCards.css'; // Importa el archivo CSS donde agregarás los estilos
+import '../styles/CriptoCards.css'; 
 
 const CryptoCard = ({ image, name, symbol, price, onClick }) => {
     return (

@@ -44,24 +44,23 @@
     overflow-x: hidden;
     height: 70%;
     max-height: 550px;
-    width: 415px;
+    width: 25vw;
     max-width: 100%;
     font-weight: lighter;
 }
 
 .crypto-card {
-    width: 415px;
-    height: 80px;
+    width: 25vw;
+    height: 9vh;
     padding: 5px;
     background-color: #ffffff;
     border: 1px solid #ffffff;
-    border-radius: 5px;
-    white-space: normal;
+    border-radius: 10px;
     transition: background-color 0.2s;
 }
 
 .crypto-card:hover {
-    background-color:rgba(240, 240, 240, 0.969);
+    background-color:rgb(230, 247, 162);
     cursor: pointer;
 }
 
@@ -84,14 +83,15 @@
     color: black;
     padding: 10px;
     border: none;
-    border-radius: 20px;
+    border-radius: 25px;
     font-size: 16px;
-    width: 380px;
+    width: 23vw;
+    height: 3.5vh;
     max-width: 100%;
-    background-color: rgba(188, 191, 203, 0.391);
+    background-color: rgba(205, 207, 214, 0.259);
     padding-left: 30px;
     background-image: url('../image/search.png');
-    background-position: 375px center;
+    background-position: 23vw center;
     background-repeat: no-repeat;
     background-size: 20px;
 }
@@ -100,14 +100,7 @@
     outline: none;
 }
 
-.search-icon {
-    position: absolute;
-    top: 100%;
-    left: 10px;
-    transform: translateY(50%);
-    color: rgb(67, 67, 67);
-    cursor: pointer;
-}
+
 
 /* Estilos responsivos */
 @media (max-width: 768px) {

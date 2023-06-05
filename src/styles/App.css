@@ -13,7 +13,7 @@
 
 @media (max-width: 768px) {
   .App {
-    max-width: 90%;
+    max-width: 50%;
     font-size: 12px; 
   }
 }
