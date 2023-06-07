@@ -15,10 +15,10 @@ const Graph = ({ selectedCoinId }) => {
     };
 
     useEffect(() => {
-        if (selectedCoinId ) {
+        if (selectedCoinId) {
             fetchHistory();
         }
-     }, [selectedCoinId]);
+    }, [selectedCoinId]);
 
     const averageValue = calculateAverage(chartData);
 
@@ -121,17 +121,13 @@ const Graph = ({ selectedCoinId }) => {
             </div>
             <Bar className="grap" data={chartConfig.data} options={chartOptions} />
             <h3 className="uni">Average in USD</h3>
-            <div  className="current_price">
-                <h1>$ {averageValue.toFixed(1)} </h1>
+            <div className="current_price">
+                <h1>${averageValue.toFixed(1).replace(/\B(?=(\d{3})+(?!\d))/g, ",").replace('.', ',')} </h1>
             </div>
             <div className='nameCoin'>
                 <p>{selectedCoinId}</p>
             </div>
-            
-            
-            
         </div>
-            
     );
 };
 

@@ -1,14 +1,12 @@
 import React, { useState } from 'react';
 import CryptoCard from './CriptoCards';
 import Graph from './Graph';
-import cryptoData from '../JSON/coin.json';
 import { fetchCryptoList } from '../helpers/CriptoFetch';
 import '../styles/CriptoList.css';
 import '../styles/grap.css';
 
 const CryptoList = () => {
     const [cryptoList, setCryptoList] = useState([]);
-    // const [cryptoList, setCryptoList] = useState(cryptoData);
     const [searchInput, setSearchInput] = useState('');
     const [selectedCoinId, setSelectedCoinId] = useState(null);
 
@@ -44,7 +42,7 @@ const CryptoList = () => {
                 <input
                     className="search-input"
                     type="text"
-                    placeholder="Enter your search request" 
+                    placeholder="Enter your search request"
                     value={searchInput}
                     onChange={(e) => setSearchInput(e.target.value)}
                 />
@@ -53,11 +51,11 @@ const CryptoList = () => {
             <div className="crypto-list">
                 {filtered.map((crypto) => (
                     <div className="card" key={crypto.id}>
-                        <CryptoCard 
+                        <CryptoCard
                             name={crypto.name}
                             symbol={crypto.symbol}
                             image={crypto.image}
-                            price={crypto.current_price}
+                            price={crypto.current_price.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",").replace('.', ',')}
                             onClick={() => handleCoinClick(crypto.id)}
                         />
                     </div>
@@ -65,7 +63,7 @@ const CryptoList = () => {
             </div>
             <div className="grap_container_bar">
                 {selectedCoinId !== null ? (
-                    <Graph selectedCoinId={selectedCoinId}/>
+                    <Graph selectedCoinId={selectedCoinId} />
                 ) : (
                     <Graph selectedCoinId={cryptoList.length > 0 ? cryptoList[0].id : null} />
                 )}

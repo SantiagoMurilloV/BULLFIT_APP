@@ -4,7 +4,7 @@
     bottom: 10px;
     margin-left: 30px;
     margin-top: -10px;
-    width: 63vw;
+    width: 65vw;
     height: 90vh;
     background-color: black;
     border-radius: 4%;
@@ -79,7 +79,7 @@
     color: white;
     position: absolute;
     margin-top: 55vh;
-    margin-left: 45.9vw;
+    margin-left: 49vw;
     margin-right: 0;
     transform: scale(1.5);
 }
@@ -90,7 +90,7 @@
     font-weight: lighter;
     position: absolute;
     margin-top: 69vh;
-    margin-left: 48vw;
+    margin-left: 49vw;
     margin-right: 0;
     transform: scale(1.3);
 }
