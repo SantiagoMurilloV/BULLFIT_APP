@@ -5,7 +5,7 @@ import '../styles/grap.css';
 import fetchData from '../helpers/fetchDataGraph';
 import calculateAverage from '../helpers/CalculateAverage.js';
 
-const Graph = ({ selectedCoinId }) => {
+export const Graph = ({ selectedCoinId }) => {
     const [chartData, setChartData] = useState(null);
     const [selectedBarIndex, setSelectedBarIndex] = useState(null);
 
@@ -131,4 +131,3 @@ const Graph = ({ selectedCoinId }) => {
     );
 };
 
-export default Graph;

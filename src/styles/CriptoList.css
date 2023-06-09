@@ -75,6 +75,9 @@ h1{
     transition: background-color 0.1s, opacity 0.1s, transform 0.3s, box-shadow 0.1s;
 }
 
+.alert{
+    font-weight: bolder;
+}
 
 .sub {
     margin-bottom: 0px;

@@ -1,5 +1,5 @@
 import React from 'react';
-import '../styles/CriptoCards.css'; 
+import '../styles/CriptoCards.css';
 
 const CryptoCard = ({ image, name, symbol, price, onClick }) => {
     return (
@@ -8,7 +8,7 @@ const CryptoCard = ({ image, name, symbol, price, onClick }) => {
             <div className="crypto-info">
                 <div className="crypto-heading">
                     <h2>{name}</h2>
-                    <p className='symbol'>{symbol}</p> 
+                    <p className='symbol'>{symbol}</p>
                     <h3 className="crypto-price">${price} USD</h3>
                 </div>
             </div>
