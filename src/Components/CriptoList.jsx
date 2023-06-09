@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import CryptoCard from './CriptoCards';
 import { Graph } from './Graph';
 import { fetchCryptoList } from '../helpers/CriptoFetch';
 import { fetchSearch } from '../helpers/fetchSearch';
