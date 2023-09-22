@@ -1,0 +1,112 @@
+/* Agrega estos estilos a un archivo CSS o directamente en tu componente si estás utilizando estilos en línea */
+
+/* Estilo para el contenedor principal del perfil */
+.profile {
+  border: 1px solid #000000;
+  padding: 20px;
+  width: 300px;
+  margin: 32px auto;
+  text-align: center;
+  background-color: #000000;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.userName{
+  font-size: 24px;
+  font-weight: bolder;
+  color: white;
+}
+.more-info{
+}
+.more-info img{
+  margin-left: 85vw;
+  margin-top: 5px;
+  width: 39px;
+}
+.logos{
+  width: 10px;
+}
+.profile-picture input{
+  background: black;
+  color: white;
+  width: 200px;
+  height: auto;
+  border: 1px solid #000000;
+}
+
+.info-box {
+  background-color: #d5d5d55c;
+  padding: 20px;
+  border: 1px solid #ffffffd4;
+  border-radius: 5px;
+  width: auto;
+  height: auto;
+  margin-top: 44px;
+}
+
+
+.profile-picture img {
+  max-width: 50%;
+  height: auto;
+  border-radius: 50%;
+  margin-bottom: 39px;
+}
+
+
+.profile-actions img {
+  width: 31px;
+  position: absolute;
+  margin-top: -206px;
+  margin-left: 70px;
+  cursor:pointer
+}
+
+.profile-actions button:hover {
+  opacity: 0.8;
+}
+
+
+.profile-footer {
+  margin-top: 20px;
+}
+
+
+.profile-footer button:nth-child(1) {
+  background-color: #000000;
+  margin-top: 20px;
+  width: 200px;
+  cursor: pointer;
+  border-radius: 100px;
+  border: 1px solid #ff0000;
+  height: auto;
+  font-size: 15px;
+  cursor: pointer;
+
+}
+
+
+.profile-footer button:nth-child(2) {
+  background-color: #000000;
+  margin-top: 20px;
+  width: 200px;
+  cursor: pointer;
+  border-radius: 100px;
+  border: 1px solid #ff0000;
+  height: auto;
+  font-size: 15px;
+  cursor: pointer;
+}
+.profile-footer button:nth-child(2):hover{
+  opacity: 0.8;
+}
+.profile-footer button:nth-child(2):hover {
+  background-color: #000000;
+  margin-top: 20px;
+  width: 200px;
+  cursor: pointer;
+  border-radius: 100px;
+  border: 1px solid #ff0000;
+  height: auto;
+  font-size: 150px;
+  cursor: pointer;
+}

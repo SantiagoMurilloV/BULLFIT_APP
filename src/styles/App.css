@@ -1,19 +1,57 @@
-.App {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  max-width: 800px; 
-  margin: 0 auto;
-  padding: 20px; 
 
 
-  font-size: 14px;
+body {
+  background-color: black;
+  margin: 0; 
+  padding: 0; 
+  font-family: 'Open Sans', sans-serif;
+}
+button {
+  padding: 10px 20px;
+  background-color: #000000;
+  color: #fff;
+  border: 1px solid #ff0000;
+  border-radius: 100px;
+  font-weight: bolder;
+  cursor: pointer;
+  width: 40%;
+  margin-top: 25%;
+  height: 49px;
+  font-size: 25px;
+}
+.custom-confirm-button-class {
+  background-color: #ff0000; 
+  color: #ffffff; 
+
 }
 
-@media (max-width: 768px) {
-  .App {
-    max-width: 50%;
-    font-size: 12px; 
+.swal2-popup {
+  border: 0;
+  border-radius: 0.25em;
+  background: initial;
+  background-color: #ebebeb;
+  color: #020202;
+  font-size: 1em;
   }
+  /* Estilo personalizado para el botón "OK" de SweetAlert */
+.swal2-popup .swal2-confirm {
+  background-color: #7a2222;
+  color: #fff;
+  border: 1px solid #7a2222;
+  border-radius: 0.25em;
+  padding: 0.5em 1em;
+  font-size: 1em;
+  margin-right: 0.5em;
+  width: auto;
+}
+
+/* Estilo para el botón "OK" cuando se coloca el mouse sobre él */
+.swal2-popup .swal2-confirm:hover {
+  background-color: #5a1515;
+  border: 1px solid #5a1515;
+}
+
+
+button:hover {
+  background-color: #0056b3;
 }
