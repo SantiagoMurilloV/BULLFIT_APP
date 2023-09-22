@@ -18,8 +18,7 @@ export const Profile = ({ user, onEditProfile, onRequestCancellation }) => {
   };
 
   const handleSaveProfile = () => {
-    // Lógica para guardar la imagen y actualizar `user.profilePicture`
-    // ...
+
     setIsEditing(false);
   };
 

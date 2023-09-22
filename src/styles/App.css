@@ -33,7 +33,7 @@ button {
   color: #020202;
   font-size: 1em;
   }
-  /* Estilo personalizado para el botón "OK" de SweetAlert */
+
 .swal2-popup .swal2-confirm {
   background-color: #7a2222;
   color: #fff;
@@ -45,7 +45,7 @@ button {
   width: auto;
 }
 
-/* Estilo para el botón "OK" cuando se coloca el mouse sobre él */
+
 .swal2-popup .swal2-confirm:hover {
   background-color: #5a1515;
   border: 1px solid #5a1515;
