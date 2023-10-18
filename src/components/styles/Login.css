@@ -1,0 +1,106 @@
+/* Login.css */
+
+body {
+  background-color: black;
+  margin: 0; 
+  padding: 0; 
+  font-family: 'Open Sans', sans-serif;
+}
+.Login {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  height: 100vh;
+  background-color: black;
+  color: white;
+  overflow: hidden;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.center-content {
+  text-align: center;
+  max-width: 400px;
+}
+
+.logo {
+  margin-top: 20%;
+  width: 80%;
+  margin-bottom: 100px;
+}
+
+input {
+  padding: 10px;
+  margin: 5px;
+  width: 59%;
+  font-weight: bolder;
+  font-size: 17px;
+  background-color: #C1C1C1;
+  border: 1px solid #ccc;
+  border-radius: 100px;
+  height: 4vh;
+}
+
+.button-container img {
+  position: absolute;
+  width: 69px;
+  margin-top: 94px;
+  margin-left: -31px;
+}
+
+.button-container button {
+  padding: 10px 20px;
+  background-color: #000000;
+  color: #fff;
+  border: 1px solid #ff0000;
+  border-radius: 100px;
+  font-weight: bolder;
+  cursor: pointer;
+  width: 40%;
+  margin-top: 25%;
+  height: 49px;
+  font-size: 25px;
+}
+
+.button-container button:hover {
+  background-color: #5d44447c;
+  border: 1px solid #ffffff;
+}
+
+.instagram-logo-container {
+  text-align: center;
+  font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+}
+
+.instagram-logo {
+  width: 30px;
+  margin-top: 20px;
+  cursor: pointer;
+  margin-left: -3em;
+}
+
+.instagram-logo:hover {
+  opacity: 0.8;
+}
+
+.whatsapp-logo {
+  position: absolute;
+  width: 52px;
+  margin-top: 9px;
+  cursor: pointer;
+}
+
+.whatsapp-logo:hover {
+  opacity: 0.8;
+}
+
+h1 {
+  display: block;
+  font-size: 2em;
+  margin-block-start: 0.67em;
+  margin-block-end: 0.67em;
+  margin-inline-start: 0px;
+  margin-inline-end: 0px;
+  font-weight: bold;
+}

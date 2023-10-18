@@ -1,0 +1,153 @@
+
+body {
+  margin: 0; 
+  background-color: black; 
+}
+.StartScreen-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: black; 
+  padding: 20px;
+  box-sizing: border-box;
+  height: 100vh;
+}
+
+
+.button-logout img {
+  width: 40px;
+  display: flex;
+  margin-bottom: 65px;
+  margin-left: 319px;
+  margin-top: -137px;
+  cursor: pointer;
+}
+
+.button-logout:hover{
+  opacity: 0.8;
+}
+
+.profile-content {
+  display: flex;
+  align-items: center;
+  margin-left: -181px;
+  margin-bottom: 75px;
+  cursor: pointer;
+}
+.profile-content :hover{
+  opacity: 0.8;
+}
+
+.profile-image {
+  width: 72px;
+
+}
+
+.profile-text {
+  color: white;
+  margin-left: 10px; 
+}
+
+
+
+
+.info-box {
+    background-color: #d5d5d55c;
+    padding: 20px;
+    border: 1px solid #fff;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    width: 452px;
+    height: 17%;
+}
+
+.button-icon {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 180px;
+  height: auto;
+  font-size: 20px;
+  background-color: #f5f5f5; 
+  border: 1px solid #ccc;
+  margin: 5px;
+  padding: 10px; 
+  border-radius: 10px;
+  color: #333; 
+  text-align: center;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  text-decoration: none; 
+  color: white; 
+  background-color: #333; 
+}
+
+.button-icon:hover {
+  background-color: #686464; 
+}
+.button-link {
+  text-decoration: none;
+  color: inherit;
+  height: 146px;
+  width: 155px;
+}
+
+.button-icon-image {
+  width: 80px; 
+  margin-bottom: 10px; 
+}
+
+.bottom-buttons {
+  display: flex;
+  justify-content: center;
+}
+
+
+
+.bottom-buttons button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 240px;
+  margin-bottom: 71px;
+  height: auto;
+  font-size: 20px;
+}
+
+
+.button-row {
+  margin-bottom: 10px; 
+}
+
+.logo-bull {
+  width: 217px;
+  margin-top: 99px;
+}
+
+.instagram-logo-container {
+  text-align: center;
+  font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+  
+}
+
+
+.instagram-logo img{
+  width: 30px;
+  margin-top: 20px;
+  cursor: pointer;
+  margin-left: -3em;
+}
+
+.instagram-logo:hover {
+  opacity: 0.8;
+}
+
+.whatsapp-logo img{
+  position: absolute;
+  width: 52px;
+  margin-top: 9px;
+  cursor: pointer;
+}
+.whatsapp-logo:hover {
+  opacity: 0.8;
+}
