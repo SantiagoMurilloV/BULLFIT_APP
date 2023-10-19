@@ -2,6 +2,11 @@ body {
   background-color: white;
 }
 
+h2{
+color: rgb(255, 255, 255);
+font-weight: bolder;
+font-size: 35px;
+}
 .reservations-container {
   text-align: center;
   margin: 20px;
@@ -18,7 +23,7 @@ table {
   border-collapse: collapse;
   width: 80%;
   margin: 20px auto;
-  background-color: #f5f5f5;
+  background-color: #f5f5f5aa;
 }
 
 table th {
@@ -59,12 +64,13 @@ table td {
 button {
   margin: 5px;
   padding: 5px 10px;
-  background-color: #008CBA;
+  background-color: #3f3f3f;
+  border-color: white;
   color: white;
   border: none;
   cursor: pointer;
 }
 
 button:hover {
-  background-color: #005F80;
+  background-color: #414f77;
 }

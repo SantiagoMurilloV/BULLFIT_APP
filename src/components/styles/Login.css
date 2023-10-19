@@ -74,7 +74,7 @@ input {
 }
 
 .instagram-logo {
-  width: 30px;
+  width: 39px;
   margin-top: 20px;
   cursor: pointer;
   margin-left: -3em;
@@ -87,7 +87,7 @@ input {
 .whatsapp-logo {
   position: absolute;
   width: 52px;
-  margin-top: 9px;
+  margin-top: -19px;
   cursor: pointer;
 }
 
