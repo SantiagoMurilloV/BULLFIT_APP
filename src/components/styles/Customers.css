@@ -9,11 +9,10 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  /* Reemplaza 'ruta-de-tu-imagen.jpg' con la ruta correcta de tu imagen */
-  background-size: 100% 100vh; /* La imagen cubrirá el 100% de la anchura y el 100vh de la altura */
+  background-size: 100% 100vh; 
   background-size:auto;
-  background-repeat: no-repeat; /* Evita la repetición de la imagen de fondo */
-  background-attachment: fixed; /* Opcional: fija la imagen de fondo */
+  background-repeat: no-repeat; 
+  background-attachment: fixed; 
   padding: 20px;
   display: flex;
   flex-direction: column;
@@ -69,7 +68,7 @@ body {
 
 
 
-/* Estilos para la caja de información */
+
 .info-box {
   background-color: #d5d5d51f;
   padding: 20px;
@@ -79,19 +78,19 @@ body {
   width: 452px;
 }
 
-/* Estilos para las divisiones de información */
+
 .info-box-d1, .info-box-d2 {
   display: flex;
   align-items: center;
   margin-bottom: -33px;
 }
 
-/* Estilos para los títulos (h3) */
+
 .info-box-d1 h3, .info-box-d2 h3 {
   margin-right: 10px;
 }
 
-/* Estilos para los párrafos (p) */
+
 .info-box-d1 p, .info-box-d2 p {
   margin: 0;
 }
