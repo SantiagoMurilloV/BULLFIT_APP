@@ -1,11 +1,32 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Swal from 'sweetalert2';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import '../components/styles/Customers.css';
 
-const Customers = ({ user }) => {
-  const navigate = useNavigate();
 
+const Customers = ({ currentUser }) => {
+  const navigate = useNavigate();
+  const [user, setUser] = useState(currentUser);
+  const { id } = useParams();
+  console.log('id',id)
+  useEffect(() => {
+    fetch(`http://localhost:8084/api/users/${id}`)
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error('Error en la solicitud');
+        }
+        return response.json();
+      })
+      .then((data) => {
+        setUser(data);
+        console.log('Datos del usuario:', data); 
+      })
+      .catch((error) => {
+        console.error(error); 
+        Swal.fire('Error al obtener los datos del usuario', 'Ha ocurrido un error al cargar los datos del usuario.', 'error');
+      });
+  }, [id]);
+  
   const handleLogout = () => {
     Swal.fire({
       title: '¿Estás seguro?',
@@ -19,10 +40,28 @@ const Customers = ({ user }) => {
     }).then((result) => {
       if (result.isConfirmed) {
         Swal.fire('Cerrando sesión', '', 'success');
+        setUser(null);
         navigate('/');
       }
     });
   };
+
+  const handleReserveClasses = () => {
+    if (user && user.Active === 'SI') {
+      navigate(`/reservations/${user._id}`);
+    } else if (user) {
+      Swal.fire({
+        title: 'Usuario no activo',
+        text: 'Debes hacer efectivo el pago para poder reservar clases.',
+        icon: 'warning',
+        confirmButtonColor: '#3085d6',
+        confirmButtonText: 'OK',
+      });
+    } else {
+      Swal.fire('Cargando usuario', 'Por favor, espera mientras se cargan los datos del usuario.', 'info');
+    }
+  };
+  
 
   return (
     <div className="StartScreen-container">
@@ -33,18 +72,18 @@ const Customers = ({ user }) => {
       <div className="info-box">
         <h1>Información:</h1>
         <div className="info-box-d1">
-        <h3>Plan: </h3>
-        <p>{user.Plan}</p>
+          <h3>Plan: </h3>
+          <p>{user ? user.Plan : 'N/A'}</p>
         </div>
         <div className="info-box-d2">
-        <h3>Activo: </h3>
-        <p>{user.Active}</p>
+          <h3>Activo: </h3>
+          <p>{user ? user.Active : 'N/A'}</p>
         </div>
       </div>
       <div className="bottom-buttons">
         <div className="button-column">
-          <button className="button-icon">
-            <Link to="/reservations" className="button-link">
+          <button className="button-icon" onClick={handleReserveClasses}>
+            <Link to={`/reservations/${id}`}  className="button-link">
               <img
                 src={`${process.env.PUBLIC_URL}/image/logos/calendario.png`}
                 alt="Icono de Reservar"
@@ -56,7 +95,7 @@ const Customers = ({ user }) => {
         </div>
         <div className="button-column">
           <button className="button-icon">
-          <Link to="" className="button-link">
+          <Link to={`/EditReservation/${id}`} className="button-link">
             <img
               src={`${process.env.PUBLIC_URL}/image/logos/edit.png`}
               alt="Icono de Modificar"
@@ -66,17 +105,21 @@ const Customers = ({ user }) => {
             </Link>
           </button>
         </div>
+
         <div className="button-column">
           <button className="button-icon">
+          <Link to={`/profile/${id}`}  className="button-link">  
           <img
           src={`${process.env.PUBLIC_URL}/Image/Logos/profile.png`}
           alt="Imagen de perfil"
           className="profile-image"
           id="profile-image"
         />
-        <span className="profile-text">{user.FullName}</span>
+        </Link>
+        <span className="profile-text">{user ? user.FullName : 'N/A'}</span>
           </button>
         </div>
+
         <div className="button-column">
           <button className="button-icon"  onClick={handleLogout} >
           <img 

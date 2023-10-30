@@ -63,6 +63,7 @@ body {
 .profile-text {
   color: white;
   margin-left: 10px; 
+  font-weight: bolder;
 }
 
 
@@ -148,8 +149,9 @@ width: 200px;
 .button-link {
   text-decoration: none;
   color: inherit;
-  height: 146px;
+  height: 98px;
   width: 155px;
+  font-weight: bolder;
 }
 
 .button-icon-image {
