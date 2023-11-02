@@ -28,6 +28,7 @@ const Reservations = () => {
       })
       .then((data) => {
         setReservationsData(data);
+        console.log('reservation',data)
       })
       .catch((error) => {
         console.error(error);

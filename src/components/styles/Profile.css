@@ -52,17 +52,16 @@
 }
 
 .profile-button {
-  background-color: #007BFF; /* Color del botón */
+  background-color: #ff00006b; /* Color del botón */
   color: white;
   border: none;
-  border-radius: 8px;
+  border-radius: 100px;
   padding: 10px 20px;
   cursor: pointer;
   font-size: 16px;
 }
 
 .profile-button-image {
-  width: 20px;
-  height: 20px;
-  margin-right: 10px;
+  width: 48px;
+  height: 30px;
 }

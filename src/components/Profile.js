@@ -59,7 +59,6 @@ const Profile = () => {
               alt="Botón de Regresar"
               className="profile-button-image"
             />
-            Regresar a Perfil
           </button>
         </Link>
       </div>
