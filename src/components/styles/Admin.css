@@ -15,6 +15,7 @@ body {
   background-attachment: fixed; 
   padding: 20px;
   display: flex;
+  justify-content: center;
   flex-direction: column;
   align-items: center;
   box-sizing: border-box;
@@ -32,6 +33,62 @@ body {
   cursor: pointer;
 }
 
+@media (max-width: 768px) {
+  .StartScreen-container {
+    padding: 10px;
+  }
+
+  .button-logout img {
+    width: 30px;
+    margin-bottom: 10px;
+    margin-left: 10px;
+  }
+
+  .profile-content {
+    margin-left: 10px;
+    margin-bottom: 10px;
+  }
+
+  .user-image {
+    width: 50px;
+  }
+
+
+}
+
+@media (max-width: 480px) {
+  .StartScreen-container {
+    padding: 10px;
+  }
+
+  .button-logout img {
+    width: 30px;
+    margin-bottom: 30px;
+    margin-left: 10px;
+    margin-top: -50px;
+  }
+
+  .profile-content {
+    margin-left: 10px;
+  }
+
+  .user-image {
+    width: 50px;
+    margin-bottom: 10px;
+    margin-top: 0;
+  }
+  .button-column {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 50%;
+    padding: 10px;
+  }
+
+
+}
+
 .button-logout:hover{
   opacity: 0.8;
 }
@@ -39,8 +96,8 @@ body {
 .profile-content {
   display: flex;
   align-items: center;
-  margin-left: -181px;
-  margin-bottom: 75px;
+  margin-left: -10%; 
+  margin-bottom: 15%;
   cursor: pointer;
 }
 .profile-content :hover{
@@ -113,10 +170,7 @@ body {
   font-size: 28px;
 }
 .button-icon {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 180px;
+  width: 100%;
   height: auto;
   font-size: 20px;
   background-color: #f5f5f5;
@@ -144,7 +198,7 @@ width: 200px;
 }
 
 .button-icon:hover {
-  background-color: #686464; 
+  background-color: #686464;
 }
 .button-link {
   text-decoration: none;
@@ -154,14 +208,23 @@ width: 200px;
   font-weight: bolder;
 }
 
-.button-icon-image {
+.button-icon-image-admin {
   width: 105px; 
   margin-bottom: 10px; 
 }
 
 .bottom-buttons {
   display: flex;
+  flex-wrap: wrap;
   justify-content: center;
+}
+.button-column {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  padding: 10px;
 }
 
 

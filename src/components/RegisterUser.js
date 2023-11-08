@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Swal from 'sweetalert2';
-import { Link, useParams, useNavigate } from 'react-router-dom'; // Importa useNavigate
+import { Link, useParams, useNavigate } from 'react-router-dom'; 
 import '../components/styles/RegisterUser.css';
 
 const RegisterUsers = () => {
@@ -11,7 +11,6 @@ const RegisterUsers = () => {
     IdentificationNumber: '',
     Active: 'Sí',
     Plan: 'Semanal',
-    Eps: '',
   });
   const { id } = useParams();
   const navigate = useNavigate(); 
@@ -58,7 +57,6 @@ const RegisterUsers = () => {
                   IdentificationNumber: '',
                   Active: 'Sí',
                   Plan: 'Semanal',
-                  Eps: '',
                 });
               } else {
                 navigate(`/admin/${id}`);
@@ -148,15 +146,6 @@ const RegisterUsers = () => {
           </div>
         </div>
         <div className="form-row">
-          <div className="form-group">
-            <label>Eps:</label>
-            <input
-              type="text"
-              name="Eps"
-              value={userData.Eps}
-              onChange={handleInputChange}
-            />
-          </div>
         </div>
         <button type="button" onClick={handleSubmit}>
           Registrar

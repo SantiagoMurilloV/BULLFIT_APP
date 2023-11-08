@@ -32,6 +32,40 @@ body {
   cursor: pointer;
 }
 
+
+@media (max-width: 480px) {
+  .StartScreen-container {
+    padding: 10px;
+  }
+
+  .button-logout img {
+    width: 30px;
+    margin-bottom: 30px;
+    margin-left: 10px;
+    margin-top: -50px;
+  }
+
+  .profile-content {
+    margin-left: 10px;
+  }
+
+  .user-image {
+    width: 50px;
+    margin-bottom: 10px;
+    margin-top: 0;
+  }
+  .button-column {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 50%;
+    padding: 10px;
+  }
+
+
+}
+
 .button-logout:hover{
   opacity: 0.8;
 }
@@ -155,7 +189,7 @@ width: 200px;
 }
 
 .button-icon-image {
-  width: 80px; 
+  width: 88px; 
   margin-bottom: 10px; 
 }
 
@@ -210,4 +244,17 @@ width: 200px;
 }
 .whatsapp-logo-customers:hover {
   opacity: 0.8;
+}
+
+.fade-in {
+  animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
 }

@@ -27,14 +27,15 @@
 
 
 .RegisterUsers-form button {
-  width: 100%;
-  background: #007BFF;
+  width: 93%;
+  background: #000000;
   color: #fff;
   padding: 10px;
   border: none;
   border-radius: 5px;
   cursor: pointer;
   transition: background 0.3s;
+  margin-top: 30px;
 }
 
 

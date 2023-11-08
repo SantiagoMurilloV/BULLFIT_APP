@@ -1,0 +1,114 @@
+body{
+
+}
+
+.filter-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  background-color: #f2f2f26e;
+  border-bottom: 1px solid #d2171733;
+  width: 386px;
+  font-weight: bolder;
+
+  button {
+    background-color: #007bff; 
+    color: #fff; 
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+
+
+  button:nth-child(3) {
+    background-color: #007bff; 
+    color: #fff; 
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bolder;
+  }
+
+
+  .react-select-container {
+    width: 150px; 
+  }
+}
+
+.butom-day {
+  border-radius: 5px;
+  padding: 5px 10px;
+  background-color: #000000;
+  border-color: white;
+  color: white;
+  border: none;
+  cursor: pointer;
+  height: 50px;
+}
+.button-trash {
+  width: 47px;
+  margin-right: 10px;
+  cursor: pointer;
+}
+
+.button-trash:hover{
+  background: #f7f7f740;
+}
+
+
+.table-diary table {
+  width: 80%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  font-weight: bolder;
+}
+
+
+th {
+  background-color: #3498db;
+  color: white;
+  font-weight: bold;
+  padding: 8px;
+  text-align: left;
+  font-weight: bolder;
+}
+
+
+td {
+  text-align: left;
+  border-bottom: 1px solid #dddddd97;
+  font-weight: bolder;
+}
+
+
+tr:nth-child(odd) {
+  background-color: #f2f2f250;
+
+}
+
+
+tr:nth-child(even) {
+  background-color: #e6e6e676;
+}
+
+
+select {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-shadow: 1px 1px 3px #ddd;
+  background-color: #fff;
+  font-size: 16px;
+  color: #333;
+  font-weight: bolder;
+}
+
+
+select:focus {
+  border-color: #3498dbaf;
+  outline: none; 
+}

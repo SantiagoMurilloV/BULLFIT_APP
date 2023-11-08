@@ -7,6 +7,7 @@ import Profile from './components/Profile'
 import EditReservation from './components/EditReservations'
 import Admin from './components/Admin';
 import RegisterUsers from './components/RegisterUser';
+import Diary from './components/Diary';
 function App() {
   const [currentUser, setCurrentUser] = useState(null);
 
@@ -20,6 +21,7 @@ function App() {
         <Route path="/editReservation/:id" element={<EditReservation />} />
         <Route path="/admin/:id" element = {<Admin currentUser={currentUser} />}/>
         <Route path="/registerUsers/:id" element = {<RegisterUsers />}/>
+        <Route path="/diary/:id" element = {<Diary />}/>
       </Routes>
     </Router>
   );
