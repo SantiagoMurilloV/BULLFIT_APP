@@ -97,54 +97,54 @@ body {
 .profile-text {
   color: white;
   margin-left: 10px; 
-  font-weight: bolder;
+  font-weight: lighter;
 }
-
 
 
 
 
 .info-box {
   background-color: #d5d5d51f;
-  padding: 20px;
+  padding: 15px;
   border: 1px solid #ccc0;
   border-radius: 5px;
-  margin-bottom: 152px;
+  margin-bottom: 90px;
   width: 452px;
 }
 
 
-.info-box-d1, .info-box-d2 {
+.info-box-d1, .info-box-d2 , .info-box-d3{
   display: flex;
   align-items: center;
   margin-bottom: -33px;
 }
 
 
-.info-box-d1 h3, .info-box-d2 h3 {
+.info-box-d1 h3, .info-box-d2 h3, .info-box-d3 h3 {
   margin-right: 10px;
 }
 
 
-.info-box-d1 p, .info-box-d2 p {
+.info-box-d1 p, .info-box-d2 p,.info-box-d3 p {
   margin: 0;
 }
 
 .info-box p{
   color: #f5f5f5;
   font-weight: bolder;
-  font-size: 21px;
+  font-size: 16px;
 }
-.info-box h1{
-  color:  white;
+.info-box h1 {
+  color: white;
   font-weight: bolder;
   font-size: 33px;
-  margin-bottom: -7px;
+  margin-bottom: -8px;
+  margin-top: 1px;
 }
 .info-box h3{
   color:  wheat;
   font-weight: bolder;
-  font-size: 28px;
+  font-size: 20px;
 }
 .button-icon {
   display: flex;

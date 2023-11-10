@@ -96,32 +96,73 @@ const Customers = ({ currentUser }) => {
         </div>
         <div className="info-box-d2">
           <h3>Entrenamiento: </h3>
-          <p>{currentDayReservation ? currentDayReservation.TrainingType : 'No tienes Entrenamiento asignado'}</p>
+          <p>
+            {currentDayReservation && currentDayReservation.Status !== 'cancelled' ? (
+              currentDayReservation.TrainingType !== ' ' ? (
+                currentDayReservation.TrainingType
+              ) : (
+                'No Asignado'
+              )
+            ) : (
+              'Clase Cancelada'
+            )}
+          </p>
         </div>
+
+        {/* {user && user.Active === 'No'  && user.Active !== null  ? (
+          <div className="info-box-d3">
+            <h3>Estado: </h3>
+            <p>Pago pendiente</p>
+          </div>
+        ) : (
+          <p></p>
+        )} */}
       </div>
       <div className={`bottom-buttons ${loading ? 'fade-in' : ''}`}>
         <div className="button-column">
           <button className="button-icon" onClick={handleReserveClasses}>
-            <Link to={`/reservations/${id}`} className="button-link">
-              <img
-                src={`${process.env.PUBLIC_URL}/image/logos/calendario.png`}
-                alt="Icono de Reservar"
-                className="button-icon-image"
-              />
-              Reservar Clases
-            </Link>
+            {user && user.Active === 'No' && user.Active !== null ? (
+              <div className="button-link">
+                <img
+                  src={`${process.env.PUBLIC_URL}/image/logos/calendario.png`}
+                  alt="Icono de Reservar"
+                  className="button-icon-image"
+                />
+                <span className="profile-text">Reservar Clase </span>
+              </div>
+            ) : (
+              <Link to={`/reservations/${id}`} className="button-link">
+                <img
+                  src={`${process.env.PUBLIC_URL}/image/logos/calendario.png`}
+                  alt="Icono de Reservar"
+                  className="button-icon-image"
+                />
+                <span className="profile-text">Reservar Clase </span>
+              </Link>
+            )}
           </button>
         </div>
         <div className="button-column">
-          <button className="button-icon">
-            <Link to={`/EditReservation/${id}`} className="button-link">
-              <img
-                src={`${process.env.PUBLIC_URL}/image/logos/edit.png`}
-                alt="Icono de Modificar"
-                className="button-icon-image"
-              />
-              Modificar Reserva
-            </Link>
+          <button className="button-icon" >
+            {user && user.Active === 'No' && user.Active !== null ? (
+              <div className="button-link">
+                <img
+                  src={`${process.env.PUBLIC_URL}/image/logos/edit.png`}
+                  alt="Icono de Reservar"
+                  className="button-icon-image"
+                />
+                <span className="profile-text">Modificar Reserva </span>
+              </div>
+            ) : (
+              <Link to={`/EditReservation/${id}`} className="button-link">
+                <img
+                  src={`${process.env.PUBLIC_URL}/image/logos/edit.png`}
+                  alt="Icono de Reservar"
+                  className="button-icon-image"
+                />
+              <span className="profile-text">Modificar Reserva </span>
+              </Link>
+            )}
           </button>
         </div>
 

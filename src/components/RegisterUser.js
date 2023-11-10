@@ -28,8 +28,7 @@ const RegisterUsers = () => {
       userData.Phone &&
       userData.IdentificationNumber &&
       userData.Active &&
-      userData.Plan &&
-      userData.Eps
+      userData.Plan
     ) {
       fetch('http://localhost:8084/api/users', {
         method: 'POST',
@@ -55,8 +54,8 @@ const RegisterUsers = () => {
                   LastName: '',
                   Phone: '',
                   IdentificationNumber: '',
-                  Active: 'Sí',
-                  Plan: 'Semanal',
+                  Active: '',
+                  Plan: '',
                 });
               } else {
                 navigate(`/admin/${id}`);
@@ -129,6 +128,7 @@ const RegisterUsers = () => {
               value={userData.Active}
               onChange={handleInputChange}
             >
+              <option value=" "> </option>
               <option value="Sí">Sí</option>
               <option value="No">No</option>
             </select>
@@ -140,6 +140,7 @@ const RegisterUsers = () => {
               value={userData.Plan}
               onChange={handleInputChange}
             >
+               <option value=" "> </option>
               <option value="Semanal">Semanal</option>
               <option value="Mensual">Mensual</option>
             </select>

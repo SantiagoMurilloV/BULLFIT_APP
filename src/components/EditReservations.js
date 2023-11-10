@@ -1,37 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import moment from 'moment';
 import { Link, useParams } from 'react-router-dom';
 import Swal from 'sweetalert2';
-import 'moment/locale/es';
-import '../components/styles/Reservations.css';
+import moment from 'moment';
 
 const EditReservations = () => {
   const { id } = useParams();
   const [user, setUser] = useState(null);
-  const [selectedDate, setSelectedDate] = useState(moment().startOf('week'));
-  const [reservedHours, setReservedHours] = useState({});
-  const [reservationsData, setReservationsData] = useState({});
-  const morningHours = [...Array(16).keys()].map((hour) => hour + 6); // 6 am to 9 pm
-  const daysOfWeek = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
-
+  const [userReservations, setUserReservations] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    fetch(`http://localhost:8084/api/reservations/${id}`)
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error('Error en la solicitud');
-        }
-        return response.json();
-      })
-      .then((data) => {
-        setReservationsData(data);
-      })
-      .catch((error) => {
-        console.error(error);
-        Swal.fire('Error al obtener las reservas', 'Ha ocurrido un error al cargar las reservas del usuario.', 'error');
-      });
-
-
+    // Cargar datos del usuario
     fetch(`http://localhost:8084/api/users/${id}`)
       .then((response) => {
         if (!response.ok) {
@@ -46,125 +25,130 @@ const EditReservations = () => {
         console.error(error);
         Swal.fire('Error al obtener los datos del usuario', 'Ha ocurrido un error al cargar los datos del usuario.', 'error');
       });
+
+    // Cargar reservas del usuario
+    fetch(`http://localhost:8084/api/reservations/${id}`)
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error('Error en la solicitud');
+        }
+        return response.json();
+      })
+      .then((data) => {
+        setUserReservations(data);
+        setIsLoading(false);
+      })
+      .catch((error) => {
+        console.error(error);
+        Swal.fire('Error al obtener las reservas', 'Ha ocurrido un error al cargar las reservas del usuario.', 'error');
+      });
   }, [id]);
 
-
-  const handleDateChange = (daysToAdd) => {
-    setSelectedDate(moment(selectedDate).add(daysToAdd, 'days'));
-  };
-
-
-  const getReservationsForDay = (dayIndex) => {
-    const dateKey = moment(selectedDate).add(dayIndex, 'days').format('YYYY-MM-DD');
-    return reservationsData[dateKey] || {};
-  };
-
-  const formatHour = (hour) => {
-    return hour >= 12 ? `${hour - 12} PM` : `${hour} AM`;
-  };
-
-
-  const handleReserveClick = (dayIndex, hour) => {
-    const reservationsForDay = getReservationsForDay(dayIndex);
-
-    if (reservationsForDay[`${hour}:00`]) {
-      Swal.fire('Hora ya reservada', 'Esta hora ya ha sido reservada por otro usuario.', 'warning');
-      return;
-    }
-
-    setReservedHours({
-      ...reservedHours,
-      [`${dayIndex}-${hour}`]: true,
-    });
-
-    const dateKey = moment(selectedDate).add(dayIndex, 'days').format('YYYY-MM-DD');
-    const timeKey = `${hour}:00`;
-
-
-    setReservationsData((prevData) => ({
-      ...prevData,
-      [dateKey]: {
-        ...(prevData[dateKey] || {}),
-        [timeKey]: user.IdentificationNumber,
+  const handleUpdateReservationStatus = (reservationId, newStatus) => {
+    // Realizar una solicitud PUT para actualizar el estado de la reserva en la API
+    fetch(`http://localhost:8084/api/reservations/${reservationId}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
       },
-    }));
-  };
-
-
-  const handleEditOrDeleteReserve = (dayIndex, hour) => {
-
-  };
-
-  const isHourValid = (dayIndex, hour) => {
-    if (dayIndex === 5) {
-      return hour >= 7 && hour <= 10;
-    } else {
-      return (hour >= 6 && hour <= 10) || (hour >= 16 && hour <= 20);
-    }
-  };
-
-  const isHourReserved = (dayIndex, hour) => {
-    const reservationsForDay = getReservationsForDay(dayIndex);
-
-    if (reservationsForDay && reservationsForDay[`${hour}:00`] && user) {
-      return reservationsForDay[`${hour}:00`] === user.IdentificationNumber;
-    }
-
-    return false;
-  };
-
-  const renderTableRows = () => {
-    const tableRows = morningHours.map((hour) => (
-      <tr key={hour}>
-        <td>{formatHour(hour)}</td>
-        {daysOfWeek.map((_, i) => (
-          <td key={i}>
-            {isHourValid(i, hour) && (
-              <div className="reservation-cell">
-                {isHourReserved(i, hour) ? (
-                  <button className="reserved-button" onClick={() => handleEditOrDeleteReserve(i, hour)}>
-                    Reservado
-                  </button>
-                ) : (
-                  <button
-                    className={`available-button${isHourReserved(i, hour) ? ' reserved' : ''}`}
-                    onClick={() => handleReserveClick(i, hour)}
-                    disabled={isHourReserved(i, hour)}
-                  >
-                    Reservar
-                  </button>
-                )}
-              </div>
-            )}
-          </td>
-        ))}
-      </tr>
-    ));
-    return tableRows;
+      body: JSON.stringify({ status: newStatus }),
+    })
+      .then((response) => {
+        if (response.ok) {
+          // Actualizar el estado de la reserva en la interfaz
+          setUserReservations((prevReservations) =>
+            prevReservations.map((reservation) => {
+              if (reservation._id === reservationId) {
+                return { ...reservation, status: newStatus };
+              }
+              return reservation;
+            })
+          );
+          Swal.fire('Estado de Reserva Actualizado', 'Se ha actualizado el estado de la reserva con éxito.', 'success');
+        } else {
+          Swal.fire('Error al Actualizar Estado', 'Ha ocurrido un error al actualizar el estado de la reserva.', 'error');
+        }
+      })
+      .catch((error) => {
+        console.error(error);
+        Swal.fire('Error al Actualizar Estado', 'Ha ocurrido un error al actualizar el estado de la reserva.', 'error');
+      });
   };
 
   const renderTableHeaders = () => {
-    const tableHeaders = daysOfWeek.map((day, i) => (
-      <th key={i}>
-        {day}
-        <br />
-        {moment(selectedDate).add(i, 'days').format('MMMM D')}
-      </th>
+    const daysOfWeek = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
+
+    return daysOfWeek.map((day, index) => {
+      const dateForDay = moment().day(index + 1).format('YYYY-MM-DD');
+      return (
+        <th key={index}>
+          {day}
+          <br />
+          {dateForDay}
+        </th>
+      );
+    });
+  };
+
+  const renderTableRows = () => {
+    // Define el rango de horas
+    const morningHours = [...Array(5).keys()].map((hour) => hour + 6); // 6 AM to 10 AM
+    const eveningHours = [...Array(4).keys()].map((hour) => hour + 16); // 4 PM to 7 PM
+    const hours = [...morningHours, ...eveningHours];
+
+    const daysOfWeek = [1, 2, 3, 4, 5, 6, 7]; // Días de la semana en formato numérico
+
+    const reservationsByDayAndHour = {};
+
+    // Organizar las reservas en un objeto para facilitar su búsqueda
+    userReservations.forEach((reservation) => {
+      if (!reservationsByDayAndHour[reservation.day]) {
+        reservationsByDayAndHour[reservation.day] = {};
+      }
+      reservationsByDayAndHour[reservation.day][reservation.hour] = reservation;
+    });
+
+    return hours.map((hour) => (
+      <tr key={hour}>
+        {daysOfWeek.map((day) => {
+          const dayName = moment().day(day).format('dddd'); // Obtener el nombre del día
+          const reservation = reservationsByDayAndHour[dayName] ? reservationsByDayAndHour[dayName][hour] : null;
+          return (
+            <td key={day}>
+              {reservation ? (
+                <div>
+                  {reservation.status === 'reserved' ? (
+                    <div className="reservation-dropdown">
+                      <div className="dropdown-content">
+                        <button onClick={() => handleUpdateReservationStatus(reservation._id, 'canceled')}>
+                          Cancelar
+                        </button>
+                      </div>
+                      Reservado
+                    </div>
+                  ) : (
+                    'Cancelado'
+                  )}
+                </div>
+              ) : (
+                '-'
+              )}
+            </td>
+          );
+        })}
+      </tr>
     ));
-    return tableHeaders;
   };
 
   return (
-    <div className="reservations-container">
+    <div>
       <h2>Editar Reservas</h2>
-      <div className="table-container">
-        <div>
-          <Link to={`/customers/${id}`}>
-            <button>Regresar a Perfil</button>
-          </Link>
-          <button onClick={() => handleDateChange(-7)}>Semana Anterior</button>
-          <button onClick={() => handleDateChange(7)}>Semana Siguiente</button>
-        </div>
+      <Link to={`/customers/${id}`}>
+        <button>Regresar a Perfil</button>
+      </Link>
+      {isLoading ? (
+        <p>Cargando reservas...</p>
+      ) : (
         <table>
           <thead>
             <tr>
@@ -174,7 +158,7 @@ const EditReservations = () => {
           </thead>
           <tbody>{renderTableRows()}</tbody>
         </table>
-      </div>
+      )}
     </div>
   );
 };

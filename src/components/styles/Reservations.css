@@ -23,7 +23,7 @@ table {
   border-collapse: collapse;
   width: 80%;
   margin: 20px auto;
-  background-color: #f5f5f540;
+  background-color: #f5f5f514;
 }
 .save button{
   border: white;
@@ -37,12 +37,12 @@ table {
   background-color: #414f77;
 }
 table th {
-  background-color: #333;
+  background-color: #141313;
   color: white;
 
 }
 table td {
-  background-color: #d5d5d51f;
+  background-color: #d5d5d5ab;
   color: rgb(18, 17, 17);
 
 }

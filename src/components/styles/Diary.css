@@ -1,5 +1,7 @@
-body{
-
+body {
+  font-family: 'Arial', sans-serif; 
+  margin: 0;
+  padding: 0;
 }
 
 .filter-controls {
@@ -7,35 +9,14 @@ body{
   justify-content: space-between;
   align-items: center;
   padding: 10px;
-  background-color: #f2f2f26e;
-  border-bottom: 1px solid #d2171733;
-  width: 386px;
+  background-color: #f2f2f217;
+  width: 350px;
   font-weight: bolder;
+  height: 40px;
+}
 
-  button {
-    background-color: #007bff; 
-    color: #fff; 
-    border: none;
-    padding: 5px 10px;
-    border-radius: 5px;
-    cursor: pointer;
-  }
-
-
-  button:nth-child(3) {
-    background-color: #007bff; 
-    color: #fff; 
-    border: none;
-    padding: 5px 10px;
-    border-radius: 5px;
-    cursor: pointer;
-    font-weight: bolder;
-  }
-
-
-  .react-select-container {
-    width: 150px; 
-  }
+.filter {
+  width: 150px;
 }
 
 .butom-day {
@@ -48,16 +29,38 @@ body{
   cursor: pointer;
   height: 50px;
 }
+
+.button-l {
+  width: 41px;
+  height: 40px;
+  margin-left: 10px;
+  cursor: pointer;
+}
+
+.button-l:hover {
+  background-color: #33333342;
+}
+
+.button-li {
+  width: 52px;
+  height: 30px;
+  margin-left: 10px;
+  cursor: pointer;
+}
+
+.button-li:hover {
+  background-color: #33333342;
+}
+
 .button-trash {
-  width: 47px;
+  width: 23px;
   margin-right: 10px;
   cursor: pointer;
 }
 
-.button-trash:hover{
+.button-trash:hover {
   background: #f7f7f740;
 }
-
 
 .table-diary table {
   width: 80%;
@@ -66,49 +69,204 @@ body{
   font-weight: bolder;
 }
 
+h2 {
+  text-align: center;
+}
 
-th {
-  background-color: #3498db;
+.table-diary th {
+  background-color: #0c0c0c;
   color: white;
   font-weight: bold;
   padding: 8px;
-  text-align: left;
-  font-weight: bolder;
+  text-align: center;
 }
 
-
-td {
+.table-diary td {
   text-align: left;
   border-bottom: 1px solid #dddddd97;
   font-weight: bolder;
+  font-size: 10px;
+  text-align: center;
+}
+.table-diary th {
+  background-color: #0c0c0c;
+  color: white;
+  font-weight: bold;
+  padding: 8px;
+  text-align: center;
+}
+.table-diary .first-column {
+  font-size: 16px; 
+}
+.header-cell {
+  text-align: center; 
 }
 
+.current-day {
+  background-color: blue;
+  color: black; 
+}
 
-tr:nth-child(odd) {
+.reservation-cell {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  
+}
+.user-name .trash-icon {
+  margin-right: 5px; 
+}
+
+.reservation-cell .user-name {
+  margin-right: 2px;
+}
+
+.reservation-cell .trainingType {
+  display: flex;
+  align-items: center;
+  background-color: yellow;
+  color: black;
+  font-weight: 700;
+  width: 65px;
+}
+.reservation-cell .Attendance {
+  display: flex;
+  align-items: center;
+  background-color: rgb(158 181 208);
+  color: black;
+  font-weight: 700;
+  width: 35px;
+}
+
+.reservation-cell .react-dropdown-select {
+  width: auto;
+  
+}
+.reservation-cell  .react-dropdown-select-dropdown {
+  top: 50% !important; 
+}
+.reservation-cell .trainingType .react-dropdown-select-item {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+.reservation-cell .Attendance .react-dropdown-select:focus {
+  border-color: #a2a9aeaf;
+  outline: none;
+}
+.reservation-cell .trainingType .react-dropdown-select:focus {
+  border-color: #3498dbaf;
+  outline: none;
+}
+
+.table-diary td:not(:last-child) {
+  margin-right: 2px;
+}
+
+.table-diary tr:nth-child(odd) {
   background-color: #f2f2f250;
-
 }
 
-
-tr:nth-child(even) {
+.table-diary tr:nth-child(even) {
   background-color: #e6e6e676;
 }
 
+.profile-buttons {
+  text-align: center;
+  margin-top: 20px;
+}
 
-select {
+.profile-button-image {
+  width: 48px;
+  height: 29px;
+}
+
+.button-link {
+  text-decoration: none;
+  color: #333;
+}
+.line-separator {
+  border-top: 1px solid #ccc;
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
+.reservation-form {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #fcfcfc;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  max-width: 400px;
   width: 100%;
-  padding: 8px;
+  box-sizing: border-box;
+}
+
+.overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgb(0 0 0 / 78%);   
+  z-index: 900;
+  display: flex;
+  align-items: left;
+  justify-content: center;
+}
+
+.reservation-form input,
+.reservation-form select,
+.reservation-form buttom-modal {
+  margin-bottom: 15px;
+  width: 100%;
+  padding: 12px;
   border: 1px solid #ccc;
   border-radius: 4px;
-  box-shadow: 1px 1px 3px #ddd;
-  background-color: #fff;
-  font-size: 16px;
-  color: #333;
+  box-sizing: border-box;
+}
+
+.reservation-form buttom-modal {
+  background-color: #000000;
+  color: #fff;
+  cursor: pointer;
+  border: none;
+  border-radius: 4px;
+}
+
+.reservation-form buttom-modal:hover {
+  background-color: #7d2626;
+}
+
+.close-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 18px;
+  cursor: pointer;
+  color: #88888800;
+  border: none;
+  background: none;
+}
+
+.close-button:hover {
+  color: #555;
+}
+.DatePicker{
+  padding: none;
+}
+.DatePicker button{
+  background-color: none;
+}
+
+.cancelled {
+  color: #ac1414f7;
   font-weight: bolder;
 }
 
 
-select:focus {
-  border-color: #3498dbaf;
-  outline: none; 
-}
