@@ -209,6 +209,7 @@ const Diary = () => {
       [name]: value,
     });
   };
+
   const availableHours = [
     { value: '6:00', label: '6:00' },
     { value: '7:00', label: '7:00' },
@@ -243,13 +244,13 @@ const Diary = () => {
 
 
   const renderTableRows = () => {
-    const morningHours = ['6:00', '7:00', '8:00', '9:00', '10:00', '16:00', '17:00', '18:00', '19:00', '20:00'];
+    const morningHours = ['06:00', '07:00', '08:00', '09:00', '10:00', '16:00', '17:00', '18:00', '19:00', '20:00'];
+
     return morningHours.map((hour, hourIndex) => (
       <tr key={hourIndex}>
         <td className="first-column">{hour}</td>
         {moment.weekdays().slice(1).map((day, dayIndex) => {
           const currentDay = moment(currentDate).startOf('isoWeek').add(dayIndex, 'days').format('YYYY-MM-DD');
-
           const reservationsForCell = weeklyReservations.filter(
             (reservation) => reservation.day === currentDay && reservation.hour === hour
           );
@@ -263,7 +264,8 @@ const Diary = () => {
                   return (
                     <div
                       key={reservationIndex}
-                      className={`reservation-cell ${reservation.Status === 'cancelled' ? 'cancelled' : ''}`}
+                      className={`reservation-cell ${reservation.Status === 'cancelled' ? 'cancelled' : ''} ${reservation.TrainingType ? `training-type-${reservation.TrainingType.toLowerCase().replace(' ', '-')}` : ''
+                        }`}
                     >
                       <div className="user-name">
                         {reservation.Status === 'cancelled' ?
@@ -276,14 +278,13 @@ const Diary = () => {
                               className="trash-icon"
                               onClick={() => handleDeleteReservation(reservation._id)}
                             />
-
                           </>
                         )}
                       </div>
                       {reservation.Status !== 'cancelled' && (
                         <>
                           <select
-                            className='trainingType'
+                            className={`trainingType ${reservation.TrainingType ? `training-type-${reservation.TrainingType.toLowerCase().replace(' ', '-')}` : ''}`}
                             value={reservation.TrainingType}
                             onChange={(event) => {
                               const TrainingType = event.target.value;
@@ -301,7 +302,7 @@ const Diary = () => {
                             <option value='Primer dia'>Primer dia</option>
                           </select>
                           <select
-                            className='Attendance'
+                            className={`Attendance ${reservation.TrainingType ? `training-type-${reservation.TrainingType.toLowerCase().replace(' ', '-')}` : ''}`}
                             value={reservation.Attendance}
                             onChange={(event) => {
                               const Attendance = event.target.value
@@ -313,8 +314,8 @@ const Diary = () => {
                             <option value="No">No</option>
                           </select>
                         </>
-
                       )}
+
                     </div>
                   );
                 })
@@ -329,11 +330,12 @@ const Diary = () => {
   };
 
 
+
   return (
     <div className={`Diary-container ${loading ? 'fade-in' : 'fade-out'}`}>
       <h2 className='title'>Agenda Semanal</h2>
       <div className="filter-controls">
-      
+
         <button className='butom-day' onClick={handlePreviousWeek}>Semana Anterior</button>
         <button className='butom-day' onClick={handleNextWeek}>Siguiente Semana</button>
         <button className='butom-day' onClick={handleOpenReservationForm}>Nueva Reserva</button>

@@ -11,7 +11,7 @@
   text-align: left;
   border-bottom: 1px solid #dddddd97;
   font-weight: bolder;
-  font-size: 20px;
+  font-size: 15px;
   text-align: center;
 }
 .user-table th {
@@ -34,9 +34,18 @@
 }
 
 .user-table tr:nth-child(odd) {
-  background-color: #f2f2f250;
+  background-color: #f2f2f21a;
 }
 
 .user-table tr:nth-child(even) {
-  background-color: #e6e6e676;
+  background-color: #e6e6e62b;
+}
+
+.input-search {
+  margin-bottom: 15px;
+  border-radius: 0px;
+  width: 252px;
+  height: 7px;
+  margin-left: 23px;
+  margin-top: 10px;
 }

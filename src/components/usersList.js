@@ -1,13 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import {  Link, useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import Select from 'react-select';
-import '../components/styles/UserList.css'
+import '../components/styles/UserList.css';
+
 const UserList = () => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(null);
   const { id } = useParams();
+  const [searchTerm, setSearchTerm] = useState('');
+  const [searchResults, setSearchResults] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -17,14 +20,23 @@ const UserList = () => {
           throw new Error('Error en la solicitud');
         }
         const data = await response.json();
+
+        // Filtrar resultados según el término de búsqueda
+        const filteredResults = data.filter(
+          (user) =>
+            user.FirstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            user.LastName.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+
         setUsers(data);
+        setSearchResults(filteredResults);
         setLoading(false);
+
         const userResponse = await fetch(`http://localhost:8084/api/users/${id}`);
-        if (!userResponse.ok) {
-          throw new Error('Error en la solicitud de usuario');
+        if (userResponse.ok) {
+          const userData = await userResponse.json();
+          setUser(userData);
         }
-        const userData = await userResponse.json();
-        setUser(userData);
       } catch (error) {
         console.error(error);
         Swal.fire('Error al cargar los datos', 'Ha ocurrido un error al cargar los datos.', 'error');
@@ -32,7 +44,7 @@ const UserList = () => {
     };
 
     fetchData();
-  }, [id]);
+  }, [id, searchTerm]);
 
   const handleStatusChange = async (userId, Active) => {
     try {
@@ -67,16 +79,24 @@ const UserList = () => {
   return (
     <div>
       <h2>Lista de Usuarios</h2>
+
       {loading ? (
         <p>Cargando usuarios...</p>
-      
       ) : (
-          <table className="user-table">
-            
+        <table className="user-table">
           <thead>
-          <div><Link to={`/diary/${id}`} className="button-re">
-        <button className="button-r">Agenda</button>
-      </Link></div>
+            <div>
+              <Link to={`/diary/${id}`} className="button-re">
+                <button className="button-r">Agenda</button>
+              </Link>
+              <input
+              className='input-search'
+                type="text"
+                placeholder="Buscar por nombre o apellido"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
             <tr>
               <th>Nombre</th>
               <th>Celular</th>
@@ -86,7 +106,7 @@ const UserList = () => {
             </tr>
           </thead>
           <tbody>
-            {users.map((user) => (
+            {searchResults.map((user) => (
               <tr key={user._id}>
                 <td>{user.FirstName + ' ' + user.LastName}</td>
                 <td>{user.Phone}</td>
@@ -97,7 +117,7 @@ const UserList = () => {
                     value={{ value: user.Active, label: user.Active }}
                     onChange={(selectedOption) => handleStatusChange(user._id, selectedOption.value)}
                     options={[
-                      {value: ' ', label: ' '},
+                      { value: ' ', label: ' ' },
                       { value: 'Sí', label: 'Sí' },
                       { value: 'No', label: 'No' },
                     ]}

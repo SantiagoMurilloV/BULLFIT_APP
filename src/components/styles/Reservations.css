@@ -7,6 +7,10 @@ color: rgb(255, 255, 255);
 font-weight: bolder;
 font-size: 35px;
 }
+.date-navigation-reservation{
+  background-color: #ffffff66;
+  width: 340px;
+}
 .reservations-container {
   text-align: center;
   margin: 20px;
@@ -89,3 +93,4 @@ button {
 button:hover {
   background-color: #414f77;
 }
+

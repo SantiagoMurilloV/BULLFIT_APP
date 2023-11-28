@@ -1,9 +1,29 @@
+.current-week{
+  color: rgb(0, 0, 0);
+  font-weight: bold
+}
+.date-navigation{
+  background-color: #ffffff66;
+  width: 502px;
+}
+
+h1 {
+    display: block;
+    font-size: 2em;
+    margin-block-start: 0.67em;
+    margin-block-end: 0.67em;
+    margin-inline-start: 0px;
+    margin-inline-end: 0px;
+    font-weight: bold;
+    color:white
+}
+
+
 body {
   font-family: 'Arial', sans-serif; 
   margin: 0;
   padding: 0;
 }
-
 
 .filter-controls {
   display: flex;
@@ -30,82 +50,6 @@ body {
   cursor: pointer;
   height: 50px;
 }
-.reservation-cell.training-type-tren-superior {
-  background-color: #001f3f; 
-  color: #ffffff; 
-}
-
-.reservation-cell.training-type-jalon {
-  background-color: #add8e6; 
-  color: #000000;
-}
-
-.reservation-cell.training-type-empuje {
-  background-color: #87CEEB; 
-  color: #000000; 
-}
-
-.reservation-cell.training-type-brazo {
-  background-color: #008000; 
-  color: #ffffff; 
-}
-
-.reservation-cell.training-type-pierna {
-  background-color: #ffff00;
-  color: #000000; 
-}
-
-.reservation-cell.training-type-gluteo {
-  background-color: #ffc0cb; 
-  color: #000000;
-}
-
-.reservation-cell.training-type-cardio {
-  background-color: #00ff00;
-  color: #000000; 
-}
-
-.reservation-cell.training-type-primer-dia {
-  background-color: #d8bfd8; 
-  color: #000000; 
-}
-
-
-.reservation-cell.cancelled {
-  background-color: #ff0000; 
-  color: #ffffff; 
-}
-
-
-.trash-icon {
-  cursor: pointer;
-  color: #ff0000; 
-}
-
-
-.filter-controls {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 20px;
-}
-
-.butom-day {
-  background-color: #d8bfd8; 
-  color: #000000; 
-}
-
-
-/* .button-l {
-  width: 25px;
-  height: 25px;
-}
-
-.button-li {
-  width: 25px;
-  height: 25px;
-}  */
-
-
 
 .button-l {
   width: 41px;
@@ -118,14 +62,14 @@ body {
   background-color: #33333342;
 }
 
-.button-li {
+.button-lis {
   width: 52px;
   height: 30px;
   margin-left: 10px;
   cursor: pointer;
 }
 
-.button-li:hover {
+.button-lis:hover {
   background-color: #33333342;
 }
 
@@ -139,18 +83,38 @@ body {
   background: #f7f7f740;
 }
 
-.table-diary table {
+.edit-table table {
   width: 90%;
   border-collapse: collapse;
   margin-top: 20px;
   font-weight: bolder;
+  text-align: center;
 }
 
 h2 {
   text-align: center;
 }
 
-.table-diary th {
+.edit-table th {
+  background-color: #0c0c0c;
+  color: white;
+  font-weight: bold;
+  padding: 8px;
+  text-align: center;
+  border-bottom: 1px solid #000000;
+}
+
+.edit-table td {
+  text-align: left;
+  border-bottom: 1px solid #000000;
+  background-color: rgba(255, 255, 255, 0.331);
+  font-weight: bolder;
+  font-size: 15px;
+  text-align: center;
+
+}
+.edit-table th {
+  border-bottom: 1px solid #000000;
   background-color: #0c0c0c;
   color: white;
   font-weight: bold;
@@ -158,22 +122,10 @@ h2 {
   text-align: center;
 }
 
-.table-diary td {
-  text-align: left;
-  border-bottom: 1px solid #dddddd97;
-  background-color: rgba(255, 255, 255, 0.331);
-  font-weight: bolder;
-  font-size: 10px;
-  text-align: center;
+.edit-table table th, table td {
+  border: 1px solid #000;
 }
-.table-diary th {
-  background-color: #0c0c0c;
-  color: white;
-  font-weight: bold;
-  padding: 8px;
-  text-align: center;
-}
-.table-diary .first-column {
+.edit-table .first-column {
   font-size: 16px; 
 }
 .header-cell {
@@ -236,18 +188,16 @@ h2 {
   border-color: #3498dbaf;
   outline: none;
 }
-.table-diary table th, table td {
-  border: 1px solid #fff;
-}
-.table-diary td:not(:last-child) {
+
+.edit-table td:not(:last-child) {
   margin-right: 2px;
 }
 
-.table-diary tr:nth-child(odd) {
+.edit-table tr:nth-child(odd) {
   background-color: #f2f2f250;
 }
 
-.table-diary tr:nth-child(even) {
+.edit-table tr:nth-child(even) {
   background-color: #e6e6e676;
 }
 
@@ -348,5 +298,6 @@ h2 {
   color: #ac1414f7;
   font-weight: bolder;
 }
+
 
 

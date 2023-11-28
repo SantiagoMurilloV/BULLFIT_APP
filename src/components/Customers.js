@@ -97,15 +97,17 @@ const Customers = ({ currentUser }) => {
         <div className="info-box-d2">
           <h3>Entrenamiento: </h3>
           <p>
-            {currentDayReservation && currentDayReservation.Status !== 'cancelled' ? (
-              currentDayReservation.TrainingType !== ' ' ? (
+            {currentDayReservation ? (
+              currentDayReservation.Status !== 'cancelled' && currentDayReservation.TrainingType !== ' ' ? (
                 currentDayReservation.TrainingType
               ) : (
                 'No Asignado'
               )
             ) : (
-              'Clase Cancelada'
+              'No hay reservas'
             )}
+
+
           </p>
         </div>
 
@@ -160,7 +162,7 @@ const Customers = ({ currentUser }) => {
                   alt="Icono de Reservar"
                   className="button-icon-image"
                 />
-              <span className="profile-text">Modificar Reserva </span>
+                <span className="profile-text">Modificar Reserva </span>
               </Link>
             )}
           </button>
