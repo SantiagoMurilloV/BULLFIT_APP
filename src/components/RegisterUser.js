@@ -2,6 +2,9 @@ import React, { useEffect, useState } from 'react';
 import Swal from 'sweetalert2';
 import { Link, useParams, useNavigate } from 'react-router-dom'; 
 import '../components/styles/RegisterUser.css';
+import { initializeApp } from 'firebase/app';
+import { getStorage, ref, getDownloadURL } from 'firebase/storage';
+import firebaseConfig from './FireBase';
 
 const RegisterUsers = () => {
   const [userData, setUserData] = useState({

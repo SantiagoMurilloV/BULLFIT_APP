@@ -3,6 +3,9 @@ import { Link, useParams } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import Select from 'react-select';
 import '../components/styles/UserList.css';
+import { initializeApp } from 'firebase/app';
+import { getStorage, ref, getDownloadURL } from 'firebase/storage';
+import firebaseConfig from './FireBase';
 
 const UserList = () => {
   const [users, setUsers] = useState([]);

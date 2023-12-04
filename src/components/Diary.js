@@ -8,7 +8,9 @@ import 'react-datepicker/dist/react-datepicker.css';
 import '../components/styles/Diary.css';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import DatePicker from 'react-datepicker';
-
+import { initializeApp } from 'firebase/app';
+import { getStorage, ref, getDownloadURL } from 'firebase/storage';
+import firebaseConfig from './FireBase';
 
 
 
