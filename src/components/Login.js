@@ -3,7 +3,8 @@ import Swal from 'sweetalert2';
 import { useNavigate } from 'react-router-dom';
 import { initializeApp } from 'firebase/app';
 import { getStorage, ref, getDownloadURL } from 'firebase/storage';
-import firebaseConfig from './FireBase';
+import { BarLoader } from 'react-spinners';
+import firebaseConfig from '../FireBase';
 import '../components/styles/Login.css';
 
 const app = initializeApp(firebaseConfig);
@@ -13,35 +14,47 @@ const Login = ({ handleLogin }) => {
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
   const [imageUrl, setImageUrl] = useState('');
-  const [imageLoaded, setImageLoaded] = useState(false);
-  const [image2Loaded, setImage2Loaded] = useState(false);
-  const [image3Loaded, setImage3Loaded] = useState(false);
-  const [image4Loaded, setImage4Loaded] = useState(false);
+  const [imageUrl2, setImageUrl2] = useState('');
+  const [imageUrl3, setImageUrl3] = useState('');
+  const [imageUrl4, setImageUrl4] = useState('');
+  const [imagesLoaded, setImagesLoaded] = useState(false);
+  const [formLoaded, setFormLoaded] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchImageUrl = async (imageRef, setLoaded) => {
+    const fetchImageUrl = async () => {
       try {
+        const imageRef = ref(storage, '219.png');
+        const imageRef2 = ref(storage, '213.png');
+        const imageRef3 = ref(storage, 'insta.png');
+        const imageRef4 = ref(storage, 'WHAT.png');
         const url = await getDownloadURL(imageRef);
+        const url2 = await getDownloadURL(imageRef2);
+        const url3 = await getDownloadURL(imageRef3);
+        const url4 = await getDownloadURL(imageRef4);
         setImageUrl(url);
-        setLoaded(true);
+        setImageUrl2(url2);
+        setImageUrl3(url3);
+        setImageUrl4(url4);
+        setImagesLoaded(true);
+        setTimeout(() => {
+          setFormLoaded(true);
+        }, 100);
       } catch (error) {
         console.error('Error al obtener la URL de descarga de la imagen:', error);
       }
     };
 
-    const imageRef = ref(storage, '213.png');
-    fetchImageUrl(imageRef, setImage2Loaded);
+    fetchImageUrl();
+  }, [storage]);
 
-    const imageRef2 = ref(storage, '219.png');
-    fetchImageUrl(imageRef2, setImageLoaded);
-
-    const imageRef3 = ref(storage, 'insta.png');
-    fetchImageUrl(imageRef3, setImage3Loaded);
-
-    const imageRef4 = ref(storage, 'WHAT.png');
-    fetchImageUrl(imageRef4, setImage4Loaded);
-  }, []);
+  if (!imagesLoaded) {
+    return (
+      <div className="loading-screen">
+        <BarLoader color="#00BFFF" loading={!imagesLoaded} height={4} width={200} />
+      </div>
+    );
+  }
 
   const performLogin = () => {
     fetch('https://bullfit-back.onrender.com/api/users')
@@ -86,42 +99,48 @@ const Login = ({ handleLogin }) => {
       });
   };
 
+
+
   return (
     <div className="Login">
       <div className="center-content">
         <img
-          src={image2Loaded || `${process.env.PUBLIC_URL}/Image/logos/213.png`}
+          src={imageUrl2}
           alt="Logo del gimnasio"
           className="logo"
         />
-        <div className="user">
-          <h1>Usuario</h1>
-          <input
-            className="user-input"
-            placeholder="Número de celular"
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-          />
-        </div>
-        <div>
-          <h1>Contraseña</h1>
-          <input
-            type="password"
-            placeholder="Contraseña"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-        </div>
-        <div className="button-container">
-          <button type="button" onClick={performLogin}>
-            Iniciar
-          </button>
-          <img
-            src={imageLoaded || `${process.env.PUBLIC_URL}/Image/logos/219.png`}
-            alt="Imagen encima del botón"
-            className="image-over-button"
-          />
-        </div>
+        {formLoaded && (
+          <>
+            <div className="user">
+              <h1>Usuario</h1>
+              <input
+                className="user-input"
+                placeholder="Número de celular"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+              />
+            </div>
+            <div>
+              <h1>Contraseña</h1>
+              <input
+                type="password"
+                placeholder="Contraseña"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+            </div>
+            <div className="button-container">
+              <button type="button" onClick={performLogin}>
+                Iniciar
+              </button>
+              <img
+                src={imageUrl}
+                alt=""
+                className="image-over-button"
+              />
+            </div>
+          </>
+        )}
         <div className="instagram-logo-container">
           <div>
             <a
@@ -130,8 +149,8 @@ const Login = ({ handleLogin }) => {
               rel="noopener noreferrer"
             >
               <img
-                src={image3Loaded || `${process.env.PUBLIC_URL}/Image/logos/insta.png`}
-                alt="Logo de Instagram"
+                src={imageUrl3}
+                alt=""
                 className="instagram-logo-customers"
               />
             </a>
@@ -142,8 +161,8 @@ const Login = ({ handleLogin }) => {
             rel="noopener noreferrer"
           >
             <img
-              src={image4Loaded || `${process.env.PUBLIC_URL}/Image/logos/WHAT.png`}
-              alt="Logo de Instagram"
+              src={imageUrl4}
+              alt=""
               className="whatsapp-logo-customers"
             />
           </a>
@@ -154,3 +173,4 @@ const Login = ({ handleLogin }) => {
 };
 
 export default Login;
+

@@ -5,7 +5,8 @@ import '../components/styles/Customers.css';
 import { useToasts } from 'react-toast-notifications';
 import { initializeApp } from 'firebase/app';
 import { getStorage, ref, getDownloadURL } from 'firebase/storage';
-import firebaseConfig from './FireBase';
+import firebaseConfig from '../FireBase';
+import { BarLoader } from 'react-spinners';
 
 
 const app = initializeApp(firebaseConfig);
@@ -28,6 +29,8 @@ const Customers = ({ currentUser }) => {
   const [imageUrl5, setImageUrl5] = useState('');
   const [imageUrl6, setImageUrl6] = useState('');
   const [imageUrl7, setImageUrl7] = useState('');
+  const [imagesLoaded, setImagesLoaded] = useState(false);
+  const [formLoaded, setFormLoaded] = useState(false);
 
   useEffect(() => {
     const fetchImageUrl = async () => {
@@ -56,6 +59,10 @@ const Customers = ({ currentUser }) => {
         setImageUrl5(url5);
         setImageUrl6(url6);
         setImageUrl7(url7);
+        setImagesLoaded(true);
+        setTimeout(() => {
+          setFormLoaded(true);
+        }, 1290);
       } catch (error) {
         console.error('Error al obtener la URL de descarga de la imagen:', error);
       }
@@ -131,6 +138,14 @@ const Customers = ({ currentUser }) => {
   
   },[id, addToast]);
 
+  if (!imagesLoaded) {
+    return (
+      <div className="loading-screen">
+        <BarLoader color="#00BFFF" loading={!imagesLoaded} height={4} width={200} />
+      </div>
+    );
+  }
+
   const handleLogout = () => {
     Swal.fire({
       title: '¿Estás seguro?',
@@ -192,15 +207,6 @@ const Customers = ({ currentUser }) => {
 
           </p>
         </div>
-
-        {/* {user && user.Active === 'No'  && user.Active !== null  ? (
-          <div className="info-box-d3">
-            <h3>Estado: </h3>
-            <p>Pago pendiente</p>
-          </div>
-        ) : (
-          <p></p>
-        )} */}
       </div>
       <div className={`bottom-buttons ${loading ? 'fade-in' : ''}`}>
         <div className="button-column">
@@ -208,7 +214,7 @@ const Customers = ({ currentUser }) => {
             {user && user.Active === 'No' && user.Active !== null ? (
               <div className="button-link">
                 <img
-                  src={imageUrl3 || `${process.env.PUBLIC_URL}/image/logos/calendario.png`}
+                  src={imageUrl3}
                   alt="Icono de Reservar"
                   className="button-icon-image"
                 />
@@ -217,7 +223,7 @@ const Customers = ({ currentUser }) => {
             ) : (
               <Link to={`/reservations/${id}`} className="button-link">
                 <img
-                  src={imageUrl3 || `${process.env.PUBLIC_URL}/image/logos/calendario.png`}
+                  src={imageUrl3}
                   alt="Icono de Reservar"
                   className="button-icon-image"
                 />
@@ -231,7 +237,7 @@ const Customers = ({ currentUser }) => {
             {user && user.Active === 'No' && user.Active !== null ? (
               <div className="button-link">
                 <img
-                  src={imageUrl4 || `${process.env.PUBLIC_URL}/image/logos/edit.png`}
+                  src={imageUrl4}
                   alt="Icono de Reservar"
                   className="button-icon-image"
                 />
@@ -240,7 +246,7 @@ const Customers = ({ currentUser }) => {
             ) : (
               <Link to={`/EditReservation/${id}`} className="button-link">
                 <img
-                  src={imageUrl4 || `${process.env.PUBLIC_URL}/image/logos/edit.png`}
+                  src={imageUrl4}
                   alt="Icono de Reservar"
                   className="button-icon-image"
                 />
@@ -254,7 +260,7 @@ const Customers = ({ currentUser }) => {
           <button className="button-icon">
             <Link to={`/profile/${id}`} className="button-link">
               <img
-                src={imageUrl || `${process.env.PUBLIC_URL}/Image/Logos/profile.png`}
+                src={imageUrl}
                 alt="Imagen de perfil"
                 className="profile-image"
                 id="profile-image"
@@ -267,7 +273,7 @@ const Customers = ({ currentUser }) => {
         <div className="button-column">
           <button className="button-icon" onClick={handleLogout} >
             <img
-              src={imageUrl2 || `${process.env.PUBLIC_URL}/Image/Logos/logOut.png`}
+              src={imageUrl2 }
               alt="Imagen de salir"
               className="logout"
               id="logout-image"
@@ -278,7 +284,7 @@ const Customers = ({ currentUser }) => {
       </div>
       <div className="header">
         <img
-          src={imageUrl5 || `${process.env.PUBLIC_URL}/Image/Logos/Recurso203.png`}
+          src={imageUrl5}
           alt="Imagen de perfil"
           className="header"
           id="profile-image"
@@ -292,7 +298,7 @@ const Customers = ({ currentUser }) => {
             rel="noopener noreferrer"
           >
             <img
-              src={imageUrl6 ||`${process.env.PUBLIC_URL}/Image/logos/insta.png`}
+              src={imageUrl6}
               alt="Logo de Instagram"
               className="instagram-logo-customers"
             />
@@ -304,7 +310,7 @@ const Customers = ({ currentUser }) => {
           rel="noopener noreferrer"
         >
           <img
-            src={imageUrl7 || `${process.env.PUBLIC_URL}/Image/logos/WHAT.png`}
+            src={imageUrl7}
             alt="Logo de Instagram"
             className="whatsapp-logo-customers"
           />

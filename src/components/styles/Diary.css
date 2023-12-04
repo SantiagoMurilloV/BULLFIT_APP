@@ -5,13 +5,13 @@ body {
 }
 
 
-.filter-controls {
+.filter-controls-diary {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 10px;
   background-color: #f2f2f217;
-  width: 350px;
+  width: 400px;
   font-weight: bolder;
   height: 40px;
 }
