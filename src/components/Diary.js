@@ -30,7 +30,6 @@ const Diary = () => {
     fetch(`https://bullfit-back.onrender.com/api/reservations?startDate=${startDate.toISOString()}&endDate=${endDate.toISOString()}`)
       .then((response) => response.json())
       .then((data) => {
-        console.log(data)
         const filteredData = data.filter((reservation) => {
           const reservationDate = moment.tz(reservation.day, 'America/Bogota').startOf('isoWeek').toDate();
           return reservationDate.getTime() === startDate.getTime();

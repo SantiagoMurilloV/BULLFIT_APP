@@ -43,7 +43,6 @@ const Customers = ({ currentUser }) => {
       })
       .then((data) => {
         setUser(data);
-        console.log('Datos del usuario:', data);
       })
       .catch((error) => {
         console.error(error);
@@ -78,7 +77,6 @@ const Customers = ({ currentUser }) => {
           autoDismissTimeout: 10000, 
           placement: 'top-right', 
         });
-        console.log('notificacion')
       };
   
       const intervalId = setInterval(showRandomNotification, 100000); 
