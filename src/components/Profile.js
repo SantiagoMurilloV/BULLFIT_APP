@@ -17,7 +17,6 @@ const Profile = () => {
       })
       .then((data) => {
         setUser(data);
-        console.log('Datos del usuario:', data);
       })
       .catch((error) => {
         console.error(error);

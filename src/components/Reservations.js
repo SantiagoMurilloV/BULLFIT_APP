@@ -57,7 +57,6 @@ const Reservations = () => {
         }
         const data = await response.json();
         setUserReservations(data);
-        console.log(' fetchUserReservations', data)
 
         checkAndSetReservationStatus(data);
       } catch (error) {

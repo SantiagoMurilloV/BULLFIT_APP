@@ -17,7 +17,6 @@ const Login = ({ handleLogin }) => {
         return response.json();
       })
       .then((users) => {
-        console.log(users);
 
         const user = users.find(
           (userData) => userData.Phone === phone && userData.IdentificationNumber === password
@@ -57,7 +56,7 @@ const Login = ({ handleLogin }) => {
     <div className="Login">
       <div className="center-content">
         <img
-          src={`${process.env.PUBLIC_URL}/Image/logos/Recurso213.png`}
+          src={`${process.env.PUBLIC_URL}/Image/logos/213.png`}
           alt="Logo del gimnasio"
           className="logo"
         />
@@ -84,7 +83,7 @@ const Login = ({ handleLogin }) => {
             Iniciar
           </button>
           <img
-            src={`${process.env.PUBLIC_URL}/Image/Logos/Recurso219.png`}
+            src={`${process.env.PUBLIC_URL}/Image/Logos/219.png`}
             alt="Imagen encima del botón"
             className="image-over-button"
           />
