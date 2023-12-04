@@ -1,12 +1,54 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Swal from 'sweetalert2';
 import { useNavigate } from 'react-router-dom';
+import { initializeApp } from 'firebase/app';
+import { getStorage, ref, getDownloadURL } from 'firebase/storage'; // Asegúrate de importar los métodos correctos
 import '../components/styles/Login.css';
+
+const firebaseConfig = {
+  apiKey: "AIzaSyB0uz7-LmiUQw6Rb-tHej7g_flz_VoL_GU",
+  authDomain: "bd-img-bulfit.firebaseapp.com",
+  projectId: "bd-img-bulfit",
+  storageBucket: "bd-img-bulfit.appspot.com",
+  messagingSenderId: "1069590812998",
+  appId: "1:1069590812998:web:13d91e026860d3cff42d47",
+  measurementId: "G-8X8KXY8N46"
+};
+
+const app = initializeApp(firebaseConfig);
+const storage = getStorage(app);
 
 const Login = ({ handleLogin }) => {
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
+  const [imageUrl, setImageUrl] = useState('');
+  const [imageUrl2, setImageUrl2] = useState('');
+  const [imageUrl3, setImageUrl3] = useState('');
+  const [imageUrl4, setImageUrl4] = useState('');
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchImageUrl = async () => {
+      try {
+        const imageRef = ref(storage, '219.png');
+        const imageRef2 = ref(storage, '213.png');
+        const imageRef3 = ref(storage, 'insta.png');
+        const imageRef4 = ref(storage, 'WHAT.png');
+        const url = await getDownloadURL(imageRef);
+        const url2 = await getDownloadURL(imageRef2);
+        const url3 = await getDownloadURL(imageRef3);
+        const url4 = await getDownloadURL(imageRef4);
+        setImageUrl(url);
+        setImageUrl2(url2);
+        setImageUrl3(url3);
+        setImageUrl4(url4);
+      } catch (error) {
+        console.error('Error al obtener la URL de descarga de la imagen:', error);
+      }
+    };
+
+    fetchImageUrl();
+  }, []); 
 
   const performLogin = () => {
     fetch('https://bullfit-back.onrender.com/api/users')
@@ -17,7 +59,6 @@ const Login = ({ handleLogin }) => {
         return response.json();
       })
       .then((users) => {
-
         const user = users.find(
           (userData) => userData.Phone === phone && userData.IdentificationNumber === password
         );
@@ -56,7 +97,7 @@ const Login = ({ handleLogin }) => {
     <div className="Login">
       <div className="center-content">
         <img
-          src={`${process.env.PUBLIC_URL}/Image/logos/213.png`}
+          src={imageUrl2 ||`${process.env.PUBLIC_URL}/Image/logos/213.png`}
           alt="Logo del gimnasio"
           className="logo"
         />
@@ -83,38 +124,37 @@ const Login = ({ handleLogin }) => {
             Iniciar
           </button>
           <img
-            src={`${process.env.PUBLIC_URL}/Image/Logos/219.png`}
+            src={imageUrl || `${process.env.PUBLIC_URL}/Image/logos/219.png`}
             alt="Imagen encima del botón"
             className="image-over-button"
           />
         </div>
         <div className="instagram-logo-container">
-      <div>
-      <a
-          href="https://www.instagram.com/bullfit.axm/"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <img
-            src={`${process.env.PUBLIC_URL}/Image/logos/insta.png`}
-            alt="Logo de Instagram"
-            className="instagram-logo-customers"
-          />
-        </a>
+          <div>
+            <a
+              href="https://www.instagram.com/bullfit.axm/"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <img
+                src={imageUrl3 ||`${process.env.PUBLIC_URL}/Image/logos/insta.png`}
+                alt="Logo de Instagram"
+                className="instagram-logo-customers"
+              />
+            </a>
+          </div>
+          <a
+            href="https://wa.me/573186011559?text=Hola,%20me%20podrias%20brindar%20informacion%20para%20hacer%20parte%20de%20la%20familia%20BULLFIT...!!!"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <img
+              src={imageUrl4 || `${process.env.PUBLIC_URL}/Image/logos/WHAT.png`}
+              alt="Logo de Instagram"
+              className="whatsapp-logo-customers"
+            />
+          </a>
         </div>
-        <a
-          href="https://wa.me/573186011559?text=Hola,%20me%20podrias%20brindar%20informacion%20para%20hacer%20parte%20de%20la%20familia%20BULLFIT...!!!"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <img
-            src={`${process.env.PUBLIC_URL}/Image/logos/WHAT.png`}
-            alt="Logo de Instagram"
-            className="whatsapp-logo-customers"
-          />
-        </a>
-
-      </div>
       </div>
     </div>
   );

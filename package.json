@@ -13,6 +13,7 @@
     "cldr": "^7.4.1",
     "cldr-data": "^36.0.1",
     "date-fns": "^2.30.0",
+    "firebase": "^10.7.0",
     "globalize": "^1.7.0",
     "moment": "^2.29.4",
     "path-browserify": "^1.0.1",
