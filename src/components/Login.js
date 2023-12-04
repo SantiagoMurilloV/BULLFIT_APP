@@ -3,7 +3,8 @@ import Swal from 'sweetalert2';
 import { useNavigate } from 'react-router-dom';
 import { initializeApp } from 'firebase/app';
 import { getStorage, ref, getDownloadURL } from 'firebase/storage';
-import firebaseConfig from './FireBase';
+import { BarLoader } from 'react-spinners';
+import firebaseConfig from '../FireBase';
 import '../components/styles/Login.css';
 
 const app = initializeApp(firebaseConfig);
@@ -16,6 +17,8 @@ const Login = ({ handleLogin }) => {
   const [imageUrl2, setImageUrl2] = useState('');
   const [imageUrl3, setImageUrl3] = useState('');
   const [imageUrl4, setImageUrl4] = useState('');
+  const [imagesLoaded, setImagesLoaded] = useState(false);
+  const [formLoaded, setFormLoaded] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -33,13 +36,25 @@ const Login = ({ handleLogin }) => {
         setImageUrl2(url2);
         setImageUrl3(url3);
         setImageUrl4(url4);
+        setImagesLoaded(true);
+        setTimeout(() => {
+          setFormLoaded(true);
+        }, 100);
       } catch (error) {
         console.error('Error al obtener la URL de descarga de la imagen:', error);
       }
     };
 
     fetchImageUrl();
-  }, []); 
+  }, [storage]);
+
+  if (!imagesLoaded) {
+    return (
+      <div className="loading-screen">
+        <BarLoader color="#00BFFF" loading={!imagesLoaded} height={4} width={200} />
+      </div>
+    );
+  }
 
   const performLogin = () => {
     fetch('https://bullfit-back.onrender.com/api/users')
@@ -84,42 +99,48 @@ const Login = ({ handleLogin }) => {
       });
   };
 
+
+
   return (
     <div className="Login">
       <div className="center-content">
         <img
-          src={imageUrl2 ||`${process.env.PUBLIC_URL}/Image/logos/213.png`}
+          src={imageUrl2}
           alt="Logo del gimnasio"
           className="logo"
         />
-        <div className="user">
-          <h1>Usuario</h1>
-          <input
-            className="user-input"
-            placeholder="Número de celular"
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-          />
-        </div>
-        <div>
-          <h1>Contraseña</h1>
-          <input
-            type="password"
-            placeholder="Contraseña"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-        </div>
-        <div className="button-container">
-          <button type="button" onClick={performLogin}>
-            Iniciar
-          </button>
-          <img
-            src={imageUrl || `${process.env.PUBLIC_URL}/Image/logos/219.png`}
-            alt="Imagen encima del botón"
-            className="image-over-button"
-          />
-        </div>
+        {formLoaded && (
+          <>
+            <div className="user">
+              <h1>Usuario</h1>
+              <input
+                className="user-input"
+                placeholder="Número de celular"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+              />
+            </div>
+            <div>
+              <h1>Contraseña</h1>
+              <input
+                type="password"
+                placeholder="Contraseña"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+            </div>
+            <div className="button-container">
+              <button type="button" onClick={performLogin}>
+                Iniciar
+              </button>
+              <img
+                src={imageUrl}
+                alt=""
+                className="image-over-button"
+              />
+            </div>
+          </>
+        )}
         <div className="instagram-logo-container">
           <div>
             <a
@@ -128,8 +149,8 @@ const Login = ({ handleLogin }) => {
               rel="noopener noreferrer"
             >
               <img
-                src={imageUrl3 ||`${process.env.PUBLIC_URL}/Image/logos/insta.png`}
-                alt="Logo de Instagram"
+                src={imageUrl3}
+                alt=""
                 className="instagram-logo-customers"
               />
             </a>
@@ -140,8 +161,8 @@ const Login = ({ handleLogin }) => {
             rel="noopener noreferrer"
           >
             <img
-              src={imageUrl4 || `${process.env.PUBLIC_URL}/Image/logos/WHAT.png`}
-              alt="Logo de Instagram"
+              src={imageUrl4}
+              alt=""
               className="whatsapp-logo-customers"
             />
           </a>
@@ -152,3 +173,4 @@ const Login = ({ handleLogin }) => {
 };
 
 export default Login;
+

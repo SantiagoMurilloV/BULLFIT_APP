@@ -3,7 +3,7 @@ import Swal from 'sweetalert2';
 import { Link, useParams } from 'react-router-dom';
 import { initializeApp } from 'firebase/app';
 import { getStorage, ref, getDownloadURL } from 'firebase/storage';
-import firebaseConfig from './FireBase';
+import firebaseConfig from '../FireBase';
 import '../components/styles/Profile.css';
 
 

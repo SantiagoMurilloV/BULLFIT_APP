@@ -10,7 +10,7 @@ import DatePicker from 'react-datepicker';
 import Select from 'react-select';
 import { initializeApp } from 'firebase/app';
 import { getStorage, ref, getDownloadURL } from 'firebase/storage';
-import firebaseConfig from './FireBase';
+import firebaseConfig from '../FireBase';
 
 const EditReservations = () => {
   const [userReservations, setUserReservations] = useState([]);

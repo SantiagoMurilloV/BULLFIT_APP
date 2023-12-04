@@ -8,9 +8,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 import '../components/styles/Diary.css';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import DatePicker from 'react-datepicker';
-import { initializeApp } from 'firebase/app';
-import { getStorage, ref, getDownloadURL } from 'firebase/storage';
-import firebaseConfig from './FireBase';
+
 
 
 
@@ -335,24 +333,16 @@ const Diary = () => {
   return (
     <div className={`Diary-container ${loading ? 'fade-in' : 'fade-out'}`}>
       <h2 className='title'>Agenda Semanal</h2>
-      <div className="filter-controls">
+      <div className="filter-controls-diary">
 
         <button className='butom-day' onClick={handlePreviousWeek}>Semana Anterior</button>
         <button className='butom-day' onClick={handleNextWeek}>Siguiente Semana</button>
         <button className='butom-day' onClick={handleOpenReservationForm}>Nueva Reserva</button>
         <Link to={`/userList/${id}`} >
-          <img
-            src={`${process.env.PUBLIC_URL}/image/logos/usersgroup.png`}
-            alt="usuarios"
-            className="button-l"
-          />
+        <button className='butom-day' onClick={handleOpenReservationForm}>Usuarios</button>
         </Link>
         <Link to={`/admin/${id}`} >
-          <img
-            src={`${process.env.PUBLIC_URL}/image/logos/logOut-copia.png`}
-            alt="Botón de Regresar"
-            className="button-li"
-          />
+        <button className='butom-day' onClick={handleOpenReservationForm}>Inicio</button>
         </Link>
       </div>
       <table className="table-diary">
