@@ -3,6 +3,8 @@ import moment from 'moment';
 import { Link, useParams } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import { useNavigate } from 'react-router-dom';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faClock } from '@fortawesome/free-solid-svg-icons';
 import 'moment/locale/es';
 import '../components/styles/Reservations.css';
 
@@ -21,7 +23,7 @@ const Reservations = () => {
   useEffect(() => {
     const fetchReservations = async () => {
       try {
-        const response = await fetch(`http://localhost:8084/api/reservations/${id}`);
+        const response = await fetch(`https://bullfit-back.onrender.com/api/reservations/${id}`);
         if (!response.ok) {
           throw new Error('Error en la solicitud');
         }
@@ -35,7 +37,7 @@ const Reservations = () => {
 
     const fetchUser = async () => {
       try {
-        const response = await fetch(`http://localhost:8084/api/users/${id}`);
+        const response = await fetch(`https://bullfit-back.onrender.com/api/users/${id}`);
         if (!response.ok) {
           throw new Error('Error en la solicitud');
         }
@@ -49,7 +51,7 @@ const Reservations = () => {
 
     const fetchUserReservations = async () => {
       try {
-        const response = await fetch(`http://localhost:8084/api/reservationsid/${id}`);
+        const response = await fetch(`https://bullfit-back.onrender.com/api/reservationsid/${id}`);
         if (!response.ok) {
           throw new Error('Error en la solicitud');
         }
@@ -57,7 +59,6 @@ const Reservations = () => {
         setUserReservations(data);
         console.log(' fetchUserReservations', data)
 
-        // Verificar si hay alguna reserva al cargar el componente
         checkAndSetReservationStatus(data);
       } catch (error) {
         console.error(error);
@@ -65,15 +66,12 @@ const Reservations = () => {
       }
     };
 
-    // Nueva solicitud GET al inicializar el componente para obtener las reservas actualizadas del usuario
     fetchUserReservations();
-
     fetchReservations();
     fetchUser();
   }, [id]);
 
   const checkAndSetReservationStatus = (userReservationsData) => {
-    // Verificar si hay reserva y actualizar el estado
     const reservation = userReservationsData.find(
       (reservation) => reservation.day === reservationStatus?.day && reservation.hour === reservationStatus?.hour
     );
@@ -84,7 +82,7 @@ const Reservations = () => {
 
   const fetchReservations = async () => {
     try {
-      const response = await fetch(`http://localhost:8084/api/reservations/${id}`);
+      const response = await fetch(`https://bullfit-back.onrender.com/api/reservations/${id}`);
       if (!response.ok) {
         throw new Error('Error en la solicitud');
       }
@@ -100,80 +98,106 @@ const Reservations = () => {
     setSelectedDate(moment(selectedDate).add(daysToAdd, 'days'));
   };
 
+  const getReservationsCountForHour = (dayIndex, hour) => {
+    const dateKey = moment(selectedDate).add(dayIndex, 'days').format('YYYY-MM-DD');
+    const timeKey = `${hour < 10 ? '0' : ''}${hour}:00`;
+    const reservationsForDay = reservationsData[dateKey] || {};
+    return Object.values(reservationsForDay).filter(reservationHour => reservationHour === timeKey).length;
+  };
+
+  const getReservationsCountForDay = (dateKey) => {
+    const reservationsForDay = reservationsData[dateKey] || {};
+    return Object.values(reservationsForDay).length;
+  };
+
   const handleReserveClick = async (dayIndex, hour) => {
     const dateKey = moment(selectedDate).add(dayIndex, 'days').format('YYYY-MM-DD');
     const timeKey = `${hour < 10 ? '' : ''}${hour}:00`;
 
-    const reservationForCell = userReservations.find(
-      (reservation) => reservation.day === dateKey && reservation.hour === timeKey
-    );
+    const now = moment().utcOffset(-5);
+    const reservationDateTime = moment.tz(`${dateKey} ${timeKey}`, 'America/Bogota');
 
-    if (reservationForCell) {
-      Swal.fire('Hora ya reservada', 'Esta hora ya ha sido reservada por otro usuario.', 'warning');
+    if (reservationDateTime.diff(now, 'hours') < 2) {
+      Swal.fire('Error en la reserva', 'Solo puedes reservar hasta dos horas antes del evento.', 'error');
+      return;
+    }
+
+
+    const reservationsCountForDay = getReservationsCountForDay(dateKey);
+    const maxReservationsPerDay = 8;
+
+    if (reservationsCountForDay >= maxReservationsPerDay) {
+      Swal.fire('Cupo lleno', 'No hay más cupos disponibles para este día.', 'warning');
     } else {
-      try {
-        const response = await fetch('http://localhost:8084/api/reservations', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            userId: user._id,
-            day: dateKey,
-            hour: timeKey,
-          }),
-        });
 
-        if (response.ok) {
-          // Actualizar las reservas después de una reserva exitosa
-          const updatedReservations = { ...reservationsData };
-          if (!updatedReservations[dateKey]) {
-            updatedReservations[dateKey] = {};
-          }
-          updatedReservations[dateKey][timeKey] = user.IdentificationNumber;
-          setReservationsData(updatedReservations);
+      const existingReservationForDay = userReservations.find(
+        (reservation) => reservation.day === dateKey && reservation.userId === id
+      );
 
-          // Realizar la solicitud GET general después de un POST exitoso
-          await fetchReservations();
-
-          Swal.fire({
-            title: 'Reserva Exitosa',
-            text: 'Has reservado con éxito.',
-            icon: 'success',
-            showCancelButton: true,
-            confirmButtonText: 'Seguir reservando',
-            cancelButtonText: 'Salir',
-          }).then(async (result) => {
-            if (!result.isConfirmed) {
-              navigate(`/customers/${id}`);
-            } else {
-              // Realizar la solicitud GET para verificar si hay reserva en este día y hora
-              try {
-                const getResponse = await fetch(`http://localhost:8084/api/reservations?userId=${user._id}&day=${dateKey}&hour=${timeKey}`);
-
-                if (getResponse.ok) {
-                  const data = await getResponse.json();
-                  if (data.length > 0) {
-                    // Si hay reserva, actualizar el estado para mostrar "Reservado"
-                    setReservationStatus({ day: dateKey, hour: timeKey });
-                  }
-                } else {
-                  console.error('Error al obtener la reserva');
-                }
-                window.location.reload();
-              } catch (error) {
-                console.error('Error al realizar la solicitud:', error);
-              }
-            }
+      if (existingReservationForDay) {
+        Swal.fire('Ya has reservado para este día', 'Solo se permite una reserva por día.', 'warning');
+        return;
+      } else {
+        try {
+          const response = await fetch('https://bullfit-back.onrender.com/api/reservations', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              userId: user._id,
+              day: dateKey,
+              hour: timeKey,
+            }),
           });
-        } else {
-          console.error('Error al realizar la reserva');
+
+          if (response.ok) {
+            const updatedReservations = { ...reservationsData };
+            if (!updatedReservations[dateKey]) {
+              updatedReservations[dateKey] = {};
+            }
+            updatedReservations[dateKey][timeKey] = user._id;
+            setReservationsData(updatedReservations);
+
+            await fetchReservations();
+
+            Swal.fire({
+              title: 'Reserva Exitosa',
+              text: 'Has reservado con éxito.',
+              icon: 'success',
+              showCancelButton: true,
+              confirmButtonText: 'Seguir reservando',
+              cancelButtonText: 'Salir',
+            }).then(async (result) => {
+              if (!result.isConfirmed) {
+                navigate(`/customers/${id}`);
+              } else {
+                try {
+                  const getResponse = await fetch(`https://bullfit-back.onrender.com/api/reservations?userId=${user._id}&day=${dateKey}&hour=${timeKey}`);
+
+                  if (getResponse.ok) {
+                    const data = await getResponse.json();
+                    if (data.length > 0) {
+                      setReservationStatus({ day: dateKey, hour: timeKey });
+                    }
+                  } else {
+                    console.error('Error al obtener la reserva');
+                  }
+                  window.location.reload();
+                } catch (error) {
+                  console.error('Error al realizar la solicitud:', error);
+                }
+              }
+            });
+          } else {
+            console.error('Error al realizar la reserva');
+            Swal.fire('Error al guardar la reserva', 'Ha ocurrido un error al guardar la reserva.', 'error');
+          }
+
+        } catch (error) {
+          console.error('Error al realizar la solicitud:', error);
           Swal.fire('Error al guardar la reserva', 'Ha ocurrido un error al guardar la reserva.', 'error');
         }
-
-      } catch (error) {
-        console.error('Error al realizar la solicitud:', error);
-        Swal.fire('Error al guardar la reserva', 'Ha ocurrido un error al guardar la reserva.', 'error');
       }
     }
   };
@@ -188,16 +212,14 @@ const Reservations = () => {
 
   const isHourReserved = (dayIndex, hour) => {
     const reservationsForDay = getReservationsForDay(dayIndex);
-  
+
     if (reservationsForDay) {
       const timeKey = `${hour < 10 ? '0' : ''}${hour}:00`;
-  
-      // Ajuste para manejar el formato de dos dígitos en la base de datos
       const formattedTimeKey = timeKey.length === 4 ? `0${timeKey}` : timeKey;
-  
+
       return reservationsForDay[formattedTimeKey] && user ? reservationsForDay[formattedTimeKey] === user._id : false;
     }
-  
+
     return false;
   };
 
@@ -217,25 +239,36 @@ const Reservations = () => {
         {daysOfWeek.map((_, dayIndex) => {
           const dateKey = moment(selectedDate).add(dayIndex, 'days').format('YYYY-MM-DD');
           const reservationForCell = userReservations.find(
-            (reservation) => reservation.day === dateKey && reservation.hour === `${hour}:00`
+            (reservation) =>
+              reservation.day === dateKey &&
+              reservation.hour === `${hour}:00` &&
+              reservation.userId === id
           );
-  
+
           const isReserved = reservationStatus && reservationStatus.day === dateKey && reservationStatus.hour === `${hour}:00`;
-  
+
+          const isPastDay = moment(dateKey).isBefore(moment().startOf('day'), 'day');
+
           return (
             <td key={dayIndex}>
               {isHourValid(dayIndex, hour) && (
                 <>
-                  {reservationForCell || isReserved ? (
-                    <span className="reserved-text">Reservado</span>
+                  {isPastDay ? (
+                    <FontAwesomeIcon icon={faClock} className="past-day-icon" />
                   ) : (
-                    <button
-                      onClick={() => handleReserveClick(dayIndex, hour)}
-                      disabled={isHourReserved(dayIndex, hour)}
-                      className={isHourReserved(dayIndex, hour) ? 'reserved-button' : ''}
-                    >
-                      Reservar
-                    </button>
+                    <>
+                      {reservationForCell || isReserved ? (
+                        <span className="reserved-text">Reservado</span>
+                      ) : (
+                        <button
+                          onClick={() => handleReserveClick(dayIndex, hour)}
+                          disabled={isHourReserved(dayIndex, hour)}
+                          className={isHourReserved(dayIndex, hour) ? 'reserved-button' : ''}
+                        >
+                          Reservar
+                        </button>
+                      )}
+                    </>
                   )}
                 </>
               )}
@@ -245,6 +278,7 @@ const Reservations = () => {
       </tr>
     ));
   };
+
   return (
     <div className="reservations-container">
       <h2>Horario de Reservas</h2>

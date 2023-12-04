@@ -9,7 +9,7 @@ const Login = ({ handleLogin }) => {
   const navigate = useNavigate();
 
   const performLogin = () => {
-    fetch('http://localhost:8084/api/users')
+    fetch('https://bullfit-back.onrender.com/api/users')
       .then((response) => {
         if (!response.ok) {
           throw new Error('Error al obtener la información de los usuarios');

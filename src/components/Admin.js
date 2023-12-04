@@ -13,7 +13,7 @@ const Admin = ({ currentUser }) => {
 
 
   useEffect(() => {
-    fetch(`http://localhost:8084/api/users/${id}`)
+    fetch(`https://bullfit-back.onrender.com/api/users/${id}`)
       .then((response) => {
         if (!response.ok) {
           throw new Error('Error en la solicitud');

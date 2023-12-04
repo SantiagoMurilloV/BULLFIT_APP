@@ -2,11 +2,13 @@ import React, { useEffect, useState } from 'react';
 import Swal from 'sweetalert2';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import '../components/styles/Customers.css';
+import { useToasts } from 'react-toast-notifications';
 
 const Customers = ({ currentUser }) => {
   const navigate = useNavigate();
   const [user, setUser] = useState(currentUser);
   const { id } = useParams();
+  const { addToast } = useToasts();
   const today = new Date();
   today.setHours(today.getHours() - 5);
   const formattedDate = today.toISOString().split('T')[0];
@@ -15,7 +17,7 @@ const Customers = ({ currentUser }) => {
 
 
   useEffect(() => {
-    fetch(`http://localhost:8084/api/reservations/${id}`)
+    fetch(`https://bullfit-back.onrender.com/api/reservations/${id}`)
       .then((response) => {
         if (!response.ok) {
           throw new Error('Error en la solicitud');
@@ -32,7 +34,7 @@ const Customers = ({ currentUser }) => {
         setLoading(false);
       });
 
-    fetch(`http://localhost:8084/api/users/${id}`)
+    fetch(`https://bullfit-back.onrender.com/api/users/${id}`)
       .then((response) => {
         if (!response.ok) {
           throw new Error('Error en la solicitud');
@@ -47,7 +49,43 @@ const Customers = ({ currentUser }) => {
         console.error(error);
         Swal.fire('Error al obtener los datos del usuario', 'Ha ocurrido un error al cargar los datos del usuario.', 'error');
       });
-  }, [id]);
+
+      const showRandomNotification = () => {
+        const notifications = [
+          {
+            title: 'ASEO',
+            text: 'Trae toalla. A nadie le gusta el sudor de los demás.',
+          },
+          {
+            title: 'PUNTUALIDAD',
+            text: 'Debes llegar al menos 5 minutos antes. 2 Burpees por minuto tarde.',
+          },
+          {
+            title: 'COMPROMISO',
+            text: 'Toda reserva se debe pagar, aunque faltes.',
+          },
+          {
+            title: 'RESERVAS',
+            text: 'Se deben realizar con dos horas de antelación.',
+          },
+        ];
+  
+        const randomNotification = notifications[Math.floor(Math.random() * notifications.length)];
+  
+        addToast(randomNotification.text, {
+          appearance: 'info',
+          autoDismiss: true,
+          autoDismissTimeout: 10000, 
+          placement: 'top-right', 
+        });
+        console.log('notificacion')
+      };
+  
+      const intervalId = setInterval(showRandomNotification, 100000); 
+  
+      return () => clearInterval(intervalId);
+  
+  },[id, addToast]);
 
   const handleLogout = () => {
     Swal.fire({

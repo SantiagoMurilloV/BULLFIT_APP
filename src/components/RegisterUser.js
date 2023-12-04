@@ -30,7 +30,7 @@ const RegisterUsers = () => {
       userData.Active &&
       userData.Plan
     ) {
-      fetch('http://localhost:8084/api/users', {
+      fetch('https://bullfit-back.onrender.com/api/users', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

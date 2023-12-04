@@ -15,7 +15,7 @@ const UserList = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch('http://localhost:8084/api/users');
+        const response = await fetch('https://bullfit-back.onrender.com/api/users');
         if (!response.ok) {
           throw new Error('Error en la solicitud');
         }
@@ -32,7 +32,7 @@ const UserList = () => {
         setSearchResults(filteredResults);
         setLoading(false);
 
-        const userResponse = await fetch(`http://localhost:8084/api/users/${id}`);
+        const userResponse = await fetch(`https://bullfit-back.onrender.com/api/users/${id}`);
         if (userResponse.ok) {
           const userData = await userResponse.json();
           setUser(userData);
@@ -49,7 +49,7 @@ const UserList = () => {
   const handleStatusChange = async (userId, Active) => {
     try {
       const updatedUserData = { Active };
-      const response = await fetch(`http://localhost:8084/api/users/${userId}`, {
+      const response = await fetch(`https://bullfit-back.onrender.com/api/users/${userId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -57,7 +57,7 @@ const UserList = () => {
         body: JSON.stringify(updatedUserData),
       });
       if (response.ok) {
-        const userResponse = await fetch(`http://localhost:8084/api/users/${id}`);
+        const userResponse = await fetch(`https://bullfit-back.onrender.com/api/users/${id}`);
         if (userResponse.ok) {
           const userData = await userResponse.json();
           setUser(userData);

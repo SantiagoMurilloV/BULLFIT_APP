@@ -27,7 +27,7 @@ const Diary = () => {
 
   const fetchWeeklyReservations = (startDate) => {
     const endDate = moment(startDate).endOf('isoWeek').toDate();
-    fetch(`http://localhost:8084/api/reservations?startDate=${startDate.toISOString()}&endDate=${endDate.toISOString()}`)
+    fetch(`https://bullfit-back.onrender.com/api/reservations?startDate=${startDate.toISOString()}&endDate=${endDate.toISOString()}`)
       .then((response) => response.json())
       .then((data) => {
         console.log(data)
@@ -50,7 +50,7 @@ const Diary = () => {
     setCurrentDate(currentDateInColombia);
     fetchWeeklyReservations(currentDateInColombia.startOf('isoWeek').toDate());
 
-    fetch('http://localhost:8084/api/users')
+    fetch('https://bullfit-back.onrender.com/api/users')
       .then((response) => response.json())
       .then((data) => {
         setUsers(data);
@@ -62,7 +62,7 @@ const Diary = () => {
   }, [id]);
 
   const updateTrainingType = (reservationId, TrainingType) => {
-    fetch(`http://localhost:8084/api/reservations/${reservationId}`, {
+    fetch(`https://bullfit-back.onrender.com/api/reservations/${reservationId}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -114,7 +114,7 @@ const Diary = () => {
       hour: formData.hour.value,
     };
 
-    fetch('http://localhost:8084/api/reservations', {
+    fetch('https://bullfit-back.onrender.com/api/reservations', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -136,7 +136,7 @@ const Diary = () => {
   };
 
   const updateReservationStatus = (reservationId, Status) => {
-    fetch(`http://localhost:8084/api/reservations/${reservationId}`, {
+    fetch(`https://bullfit-back.onrender.com/api/reservations/${reservationId}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -167,7 +167,7 @@ const Diary = () => {
     setWeeklyReservations(updatedReservations);
     const reservationToUpdate = weeklyReservations.find((reservation) => reservation._id === reservationId);
     if (reservationToUpdate && reservationToUpdate.Attendance !== newAttendance) {
-      fetch(`http://localhost:8084/api/reservations/${reservationId}`, {
+      fetch(`https://bullfit-back.onrender.com/api/reservations/${reservationId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

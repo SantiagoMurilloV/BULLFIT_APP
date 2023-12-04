@@ -23,7 +23,7 @@ const EditReservations = () => {
 
   const fetchUserReservations = (id , startDate) => {
     const endDate = moment(startDate).endOf('isoWeek').toDate();
-    fetch(`http://localhost:8084/api/reservationsid/${id }`)
+    fetch(`https://bullfit-back.onrender.com/api/reservationsid/${id }`)
       .then((response) => response.json())
       .then((data) => {
         setUserReservations(data);
@@ -48,7 +48,7 @@ const EditReservations = () => {
   };
 
   const updateReservationStatus = (reservationId, Status) => {
-    fetch(`http://localhost:8084/api/reservations/${reservationId}`, {
+    fetch(`https://bullfit-back.onrender.com/api/reservations/${reservationId}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -125,7 +125,7 @@ const EditReservations = () => {
   const handleSaveReservation = () => {
     const { reservationId, hour } = formData;
 
-    fetch(`http://localhost:8084/api/reservations/${reservationId}`, {
+    fetch(`https://bullfit-back.onrender.com/api/reservations/${reservationId}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -173,7 +173,7 @@ const EditReservations = () => {
           const currentDay = moment(currentDate).startOf('isoWeek').add(dayIndex, 'days').format('YYYY-MM-DD');
 
           const reservationForCell = userReservations.find(
-            (reservation) => reservation.day === currentDay && reservation.hour === hour
+            (reservation) => reservation.day === currentDay && reservation.hour === hour && reservation.userId === id
           );
 
           return (
