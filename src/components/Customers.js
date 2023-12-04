@@ -3,6 +3,13 @@ import Swal from 'sweetalert2';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import '../components/styles/Customers.css';
 import { useToasts } from 'react-toast-notifications';
+import { initializeApp } from 'firebase/app';
+import { getStorage, ref, getDownloadURL } from 'firebase/storage';
+import firebaseConfig from './FireBase';
+
+
+const app = initializeApp(firebaseConfig);
+const storage = getStorage(app);
 
 const Customers = ({ currentUser }) => {
   const navigate = useNavigate();
@@ -14,9 +21,48 @@ const Customers = ({ currentUser }) => {
   const formattedDate = today.toISOString().split('T')[0];
   const [reservationsData, setReservationsData] = useState([]);
   const [loading, setLoading] = useState(true);
-
+  const [imageUrl, setImageUrl] = useState('');
+  const [imageUrl2, setImageUrl2] = useState('');
+  const [imageUrl3, setImageUrl3] = useState('');
+  const [imageUrl4, setImageUrl4] = useState('');
+  const [imageUrl5, setImageUrl5] = useState('');
+  const [imageUrl6, setImageUrl6] = useState('');
+  const [imageUrl7, setImageUrl7] = useState('');
 
   useEffect(() => {
+    const fetchImageUrl = async () => {
+      try {
+        const imageRef = ref(storage, 'profile.png');
+        const imageRef2 = ref(storage, 'logOut.png');
+        const imageRef3= ref(storage, 'calendario.png');
+        const imageRef4 = ref(storage, 'edit.png');
+        const imageRef5= ref(storage, 'Recurso203.png');
+        const imageRef6 = ref(storage, 'insta.png');
+        const imageRef7 = ref(storage, 'WHAT.png');
+
+        const url = await getDownloadURL(imageRef);
+        const url2 = await getDownloadURL(imageRef2);
+        const url3 = await getDownloadURL(imageRef3);
+        const url4 = await getDownloadURL(imageRef4);
+        const url5 = await getDownloadURL(imageRef5);
+        const url6 = await getDownloadURL(imageRef6);
+        const url7 = await getDownloadURL(imageRef7);
+        setImageUrl(url);
+        setImageUrl2(url2);
+
+        setImageUrl3(url3);
+        setImageUrl4(url4);
+        
+        setImageUrl5(url5);
+        setImageUrl6(url6);
+        setImageUrl7(url7);
+      } catch (error) {
+        console.error('Error al obtener la URL de descarga de la imagen:', error);
+      }
+    };
+
+    fetchImageUrl();
+
     fetch(`https://bullfit-back.onrender.com/api/reservations/${id}`)
       .then((response) => {
         if (!response.ok) {
@@ -162,7 +208,7 @@ const Customers = ({ currentUser }) => {
             {user && user.Active === 'No' && user.Active !== null ? (
               <div className="button-link">
                 <img
-                  src={`${process.env.PUBLIC_URL}/image/logos/calendario.png`}
+                  src={imageUrl3 || `${process.env.PUBLIC_URL}/image/logos/calendario.png`}
                   alt="Icono de Reservar"
                   className="button-icon-image"
                 />
@@ -171,7 +217,7 @@ const Customers = ({ currentUser }) => {
             ) : (
               <Link to={`/reservations/${id}`} className="button-link">
                 <img
-                  src={`${process.env.PUBLIC_URL}/image/logos/calendario.png`}
+                  src={imageUrl3 || `${process.env.PUBLIC_URL}/image/logos/calendario.png`}
                   alt="Icono de Reservar"
                   className="button-icon-image"
                 />
@@ -185,7 +231,7 @@ const Customers = ({ currentUser }) => {
             {user && user.Active === 'No' && user.Active !== null ? (
               <div className="button-link">
                 <img
-                  src={`${process.env.PUBLIC_URL}/image/logos/edit.png`}
+                  src={imageUrl4 || `${process.env.PUBLIC_URL}/image/logos/edit.png`}
                   alt="Icono de Reservar"
                   className="button-icon-image"
                 />
@@ -194,7 +240,7 @@ const Customers = ({ currentUser }) => {
             ) : (
               <Link to={`/EditReservation/${id}`} className="button-link">
                 <img
-                  src={`${process.env.PUBLIC_URL}/image/logos/edit.png`}
+                  src={imageUrl4 || `${process.env.PUBLIC_URL}/image/logos/edit.png`}
                   alt="Icono de Reservar"
                   className="button-icon-image"
                 />
@@ -208,7 +254,7 @@ const Customers = ({ currentUser }) => {
           <button className="button-icon">
             <Link to={`/profile/${id}`} className="button-link">
               <img
-                src={`${process.env.PUBLIC_URL}/Image/Logos/profile.png`}
+                src={imageUrl || `${process.env.PUBLIC_URL}/Image/Logos/profile.png`}
                 alt="Imagen de perfil"
                 className="profile-image"
                 id="profile-image"
@@ -221,7 +267,7 @@ const Customers = ({ currentUser }) => {
         <div className="button-column">
           <button className="button-icon" onClick={handleLogout} >
             <img
-              src={`${process.env.PUBLIC_URL}/Image/Logos/logOut.png`}
+              src={imageUrl2 || `${process.env.PUBLIC_URL}/Image/Logos/logOut.png`}
               alt="Imagen de salir"
               className="logout"
               id="logout-image"
@@ -232,7 +278,7 @@ const Customers = ({ currentUser }) => {
       </div>
       <div className="header">
         <img
-          src={`${process.env.PUBLIC_URL}/Image/Logos/Recurso203.png`}
+          src={imageUrl5 || `${process.env.PUBLIC_URL}/Image/Logos/Recurso203.png`}
           alt="Imagen de perfil"
           className="header"
           id="profile-image"
@@ -246,7 +292,7 @@ const Customers = ({ currentUser }) => {
             rel="noopener noreferrer"
           >
             <img
-              src={`${process.env.PUBLIC_URL}/Image/logos/insta.png`}
+              src={imageUrl6 ||`${process.env.PUBLIC_URL}/Image/logos/insta.png`}
               alt="Logo de Instagram"
               className="instagram-logo-customers"
             />
@@ -258,7 +304,7 @@ const Customers = ({ currentUser }) => {
           rel="noopener noreferrer"
         >
           <img
-            src={`${process.env.PUBLIC_URL}/Image/logos/WHAT.png`}
+            src={imageUrl7 || `${process.env.PUBLIC_URL}/Image/logos/WHAT.png`}
             alt="Logo de Instagram"
             className="whatsapp-logo-customers"
           />
