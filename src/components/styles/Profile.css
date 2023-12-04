@@ -1,13 +1,13 @@
-/* Profile.css */
+
 
 .Profile-container {
   display: flex;
   flex-direction: column;
   align-items: center;
   padding: 20px;
-  background-color: #f0f0f069; /* Color de fondo */
+  background-color: #f0f0f069;
   border-radius: 8px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); /* Sombra */
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); 
   margin: 20px;
 }
 
@@ -52,17 +52,16 @@
 }
 
 .profile-button {
-  background-color: #007BFF; /* Color del botón */
+  background-color: #ff00006b; 
   color: white;
   border: none;
-  border-radius: 8px;
+  border-radius: 100px;
   padding: 10px 20px;
   cursor: pointer;
   font-size: 16px;
 }
 
 .profile-button-image {
-  width: 20px;
-  height: 20px;
-  margin-right: 10px;
+  width: 72px;
+  height: 44px;
 }

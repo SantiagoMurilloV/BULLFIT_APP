@@ -2,15 +2,39 @@ import React, { useEffect, useState } from 'react';
 import Swal from 'sweetalert2';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import '../components/styles/Customers.css';
-
+import { useToasts } from 'react-toast-notifications';
 
 const Customers = ({ currentUser }) => {
   const navigate = useNavigate();
   const [user, setUser] = useState(currentUser);
   const { id } = useParams();
-  console.log('id',id)
+  const { addToast } = useToasts();
+  const today = new Date();
+  today.setHours(today.getHours() - 5);
+  const formattedDate = today.toISOString().split('T')[0];
+  const [reservationsData, setReservationsData] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+
   useEffect(() => {
-    fetch(`http://localhost:8084/api/users/${id}`)
+    fetch(`https://bullfit-back.onrender.com/api/reservations/${id}`)
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error('Error en la solicitud');
+        }
+        return response.json();
+      })
+      .then((data) => {
+        setReservationsData(data);
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.error(error);
+        Swal.fire('Error al obtener las reservas', 'Ha ocurrido un error al cargar las reservas del usuario.', 'error');
+        setLoading(false);
+      });
+
+    fetch(`https://bullfit-back.onrender.com/api/users/${id}`)
       .then((response) => {
         if (!response.ok) {
           throw new Error('Error en la solicitud');
@@ -19,14 +43,50 @@ const Customers = ({ currentUser }) => {
       })
       .then((data) => {
         setUser(data);
-        console.log('Datos del usuario:', data); 
+        console.log('Datos del usuario:', data);
       })
       .catch((error) => {
-        console.error(error); 
+        console.error(error);
         Swal.fire('Error al obtener los datos del usuario', 'Ha ocurrido un error al cargar los datos del usuario.', 'error');
       });
-  }, [id]);
+
+      const showRandomNotification = () => {
+        const notifications = [
+          {
+            title: 'ASEO',
+            text: 'Trae toalla. A nadie le gusta el sudor de los demás.',
+          },
+          {
+            title: 'PUNTUALIDAD',
+            text: 'Debes llegar al menos 5 minutos antes. 2 Burpees por minuto tarde.',
+          },
+          {
+            title: 'COMPROMISO',
+            text: 'Toda reserva se debe pagar, aunque faltes.',
+          },
+          {
+            title: 'RESERVAS',
+            text: 'Se deben realizar con dos horas de antelación.',
+          },
+        ];
   
+        const randomNotification = notifications[Math.floor(Math.random() * notifications.length)];
+  
+        addToast(randomNotification.text, {
+          appearance: 'info',
+          autoDismiss: true,
+          autoDismissTimeout: 10000, 
+          placement: 'top-right', 
+        });
+        console.log('notificacion')
+      };
+  
+      const intervalId = setInterval(showRandomNotification, 100000); 
+  
+      return () => clearInterval(intervalId);
+  
+  },[id, addToast]);
+
   const handleLogout = () => {
     Swal.fire({
       title: '¿Estás seguro?',
@@ -47,7 +107,7 @@ const Customers = ({ currentUser }) => {
   };
 
   const handleReserveClasses = () => {
-    if (user && user.Active === 'SI') {
+    if (user && user.Active === 'Sí') {
       navigate(`/reservations/${user._id}`);
     } else if (user) {
       Swal.fire({
@@ -61,79 +121,119 @@ const Customers = ({ currentUser }) => {
       Swal.fire('Cargando usuario', 'Por favor, espera mientras se cargan los datos del usuario.', 'info');
     }
   };
-  
+
+  const currentDayReservation = reservationsData.find((reservation) => reservation.day === formattedDate);
 
   return (
-    <div className="StartScreen-container">
-      
-      <div className="button-logout" >
-      
-      </div>
-      <div className="info-box">
+    <div className={`StartScreen-container ${loading ? 'fade-in' : ''}`}>
+      <div className={`info-box ${loading ? 'fade-in' : ''}`}>
         <h1>Información:</h1>
         <div className="info-box-d1">
-          <h3>Plan: </h3>
-          <p>{user ? user.Plan : 'N/A'}</p>
+          <h3>Fecha: </h3>
+          <p>{formattedDate}</p>
         </div>
         <div className="info-box-d2">
-          <h3>Activo: </h3>
-          <p>{user ? user.Active : 'N/A'}</p>
+          <h3>Entrenamiento: </h3>
+          <p>
+            {currentDayReservation ? (
+              currentDayReservation.Status !== 'cancelled' && currentDayReservation.TrainingType !== ' ' ? (
+                currentDayReservation.TrainingType
+              ) : (
+                'No Asignado'
+              )
+            ) : (
+              'No hay reservas'
+            )}
+
+
+          </p>
         </div>
+
+        {/* {user && user.Active === 'No'  && user.Active !== null  ? (
+          <div className="info-box-d3">
+            <h3>Estado: </h3>
+            <p>Pago pendiente</p>
+          </div>
+        ) : (
+          <p></p>
+        )} */}
       </div>
-      <div className="bottom-buttons">
+      <div className={`bottom-buttons ${loading ? 'fade-in' : ''}`}>
         <div className="button-column">
           <button className="button-icon" onClick={handleReserveClasses}>
-            <Link to={`/reservations/${id}`}  className="button-link">
+            {user && user.Active === 'No' && user.Active !== null ? (
+              <div className="button-link">
+                <img
+                  src={`${process.env.PUBLIC_URL}/image/logos/calendario.png`}
+                  alt="Icono de Reservar"
+                  className="button-icon-image"
+                />
+                <span className="profile-text">Reservar Clase </span>
+              </div>
+            ) : (
+              <Link to={`/reservations/${id}`} className="button-link">
+                <img
+                  src={`${process.env.PUBLIC_URL}/image/logos/calendario.png`}
+                  alt="Icono de Reservar"
+                  className="button-icon-image"
+                />
+                <span className="profile-text">Reservar Clase </span>
+              </Link>
+            )}
+          </button>
+        </div>
+        <div className="button-column">
+          <button className="button-icon" >
+            {user && user.Active === 'No' && user.Active !== null ? (
+              <div className="button-link">
+                <img
+                  src={`${process.env.PUBLIC_URL}/image/logos/edit.png`}
+                  alt="Icono de Reservar"
+                  className="button-icon-image"
+                />
+                <span className="profile-text">Modificar Reserva </span>
+              </div>
+            ) : (
+              <Link to={`/EditReservation/${id}`} className="button-link">
+                <img
+                  src={`${process.env.PUBLIC_URL}/image/logos/edit.png`}
+                  alt="Icono de Reservar"
+                  className="button-icon-image"
+                />
+                <span className="profile-text">Modificar Reserva </span>
+              </Link>
+            )}
+          </button>
+        </div>
+
+        <div className="button-column">
+          <button className="button-icon">
+            <Link to={`/profile/${id}`} className="button-link">
               <img
-                src={`${process.env.PUBLIC_URL}/image/logos/calendario.png`}
-                alt="Icono de Reservar"
-                className="button-icon-image"
+                src={`${process.env.PUBLIC_URL}/Image/Logos/profile.png`}
+                alt="Imagen de perfil"
+                className="profile-image"
+                id="profile-image"
               />
-              Reservar Clases
             </Link>
+            <span className="profile-text">{user ? user.FirstName + user.LastName : 'N/A'}</span>
           </button>
         </div>
+
         <div className="button-column">
-          <button className="button-icon">
-          <Link to={`/EditReservation/${id}`} className="button-link">
+          <button className="button-icon" onClick={handleLogout} >
             <img
-              src={`${process.env.PUBLIC_URL}/image/logos/edit.png`}
-              alt="Icono de Modificar"
-              className="button-icon-image"
+              src={`${process.env.PUBLIC_URL}/Image/Logos/logOut.png`}
+              alt="Imagen de salir"
+              className="logout"
+              id="logout-image"
             />
-            Modificar Reserva
-            </Link>
-          </button>
-        </div>
-
-        <div className="button-column">
-          <button className="button-icon">
-          <Link to={`/profile/${id}`}  className="button-link">  
-          <img
-          src={`${process.env.PUBLIC_URL}/Image/Logos/profile.png`}
-          alt="Imagen de perfil"
-          className="profile-image"
-          id="profile-image"
-        />
-        </Link>
-        <span className="profile-text">{user ? user.FullName : 'N/A'}</span>
-          </button>
-        </div>
-
-        <div className="button-column">
-          <button className="button-icon"  onClick={handleLogout} >
-          <img 
-          src={`${process.env.PUBLIC_URL}/Image/Logos/logOut.png`}
-          alt="Imagen de salir"
-          className="logout"
-          id="logout-image"
-        />
-        <span className="profile-text">Salir</span>
+            <span className="profile-text">Salir</span>
           </button>
         </div>
       </div>
       <div className="header">
-      <img
+        <img
           src={`${process.env.PUBLIC_URL}/Image/Logos/Recurso203.png`}
           alt="Imagen de perfil"
           className="header"
@@ -141,18 +241,18 @@ const Customers = ({ currentUser }) => {
         />
       </div>
       <div className="instagram-logo-container">
-      <div>
-      <a
-          href="https://www.instagram.com/bullfit.axm/"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <img
-            src={`${process.env.PUBLIC_URL}/Image/logos/insta.png`}
-            alt="Logo de Instagram"
-            className="instagram-logo-customers"
-          />
-        </a>
+        <div>
+          <a
+            href="https://www.instagram.com/bullfit.axm/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <img
+              src={`${process.env.PUBLIC_URL}/Image/logos/insta.png`}
+              alt="Logo de Instagram"
+              className="instagram-logo-customers"
+            />
+          </a>
         </div>
         <a
           href="https://wa.me/573186011559?text=Hola,%20me%20podrias%20brindar%20informacion%20para%20hacer%20parte%20de%20la%20familia%20BULLFIT...!!!"
@@ -165,12 +265,12 @@ const Customers = ({ currentUser }) => {
             className="whatsapp-logo-customers"
           />
         </a>
-
       </div>
-
-
     </div>
   );
 };
 
 export default Customers;
+
+
+

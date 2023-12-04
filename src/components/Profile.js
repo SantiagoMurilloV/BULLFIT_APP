@@ -8,7 +8,7 @@ const Profile = () => {
   const { id } = useParams();
 
   useEffect(() => {
-    fetch(`http://localhost:8084/api/users/${id}`)
+    fetch(`https://bullfit-back.onrender.com/api/users/${id}`)
       .then((response) => {
         if (!response.ok) {
           throw new Error('Error en la solicitud');
@@ -33,18 +33,18 @@ const Profile = () => {
           alt="Imagen de perfil"
           className="profile-image"
         />
-        <h1>{user ? user.FullName : 'N/A'}</h1>
+        <h1>{user ? user.FirstName + ' ' + user.LastName : 'N/A'}</h1>
       </div>
       <div className="profile-info">
         <div className="profile-details">
           <p>
-            <strong>Fecha de nacimiento</strong> {user ? user.Birthday : 'N/A'}
+            <strong>Cedula:</strong> {user ? user.IdentificationNumber : 'N/A'}
           </p>
           <p>
             <strong>Teléfono:</strong> {user ? user.Phone : 'N/A'}
           </p>
           <p>
-            <strong>Eps:</strong> {user ? user.Eps : 'N/A'}
+            <strong>Active:</strong> {user ? user.Active : 'N/A'}
           </p>
           <p>
             <strong>Plan:</strong> {user ? user.Plan : 'N/A'}
@@ -53,14 +53,11 @@ const Profile = () => {
       </div>
       <div className="profile-buttons">
         <Link to={`/customers/${id}`} className="button-link">
-          <button className="profile-button">
             <img
               src={`${process.env.PUBLIC_URL}/image/logos/logOut.png`}
               alt="Botón de Regresar"
               className="profile-button-image"
             />
-            Regresar a Perfil
-          </button>
         </Link>
       </div>
     </div>

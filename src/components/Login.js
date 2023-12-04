@@ -9,7 +9,7 @@ const Login = ({ handleLogin }) => {
   const navigate = useNavigate();
 
   const performLogin = () => {
-    fetch('http://localhost:8084/api/users')
+    fetch('https://bullfit-back.onrender.com/api/users')
       .then((response) => {
         if (!response.ok) {
           throw new Error('Error al obtener la información de los usuarios');
@@ -31,7 +31,11 @@ const Login = ({ handleLogin }) => {
           });
           localStorage.setItem('user', JSON.stringify(user));
           handleLogin(user);
-          navigate(`/customers/${user._id}`);
+          if (user.Phone === '0000' && user.IdentificationNumber === '12345') {
+            navigate(`/admin/${user._id}`);
+          } else {
+            navigate(`/customers/${user._id}`);
+          }
         } else {
           Swal.fire({
             icon: 'error',
