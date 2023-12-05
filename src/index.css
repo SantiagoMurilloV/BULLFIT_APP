@@ -1,3 +1,9 @@
+@media all and (display-mode: fullscreen) {
+  body {
+    margin: 0;
+    border: 5px solid black;
+  }
+}
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',

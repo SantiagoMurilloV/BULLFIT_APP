@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Swal from 'sweetalert2';
 import { Link, useNavigate, useParams } from 'react-router-dom';
+import { Container, Grid, Paper, Typography, Button } from '@mui/material';
 import '../components/styles/Customers.css';
 import { useToasts } from 'react-toast-notifications';
 import { initializeApp } from 'firebase/app';
@@ -209,7 +210,7 @@ const Customers = ({ currentUser }) => {
         </div>
       </div>
       <div className={`bottom-buttons ${loading ? 'fade-in' : ''}`}>
-        <div className="button-column">
+        <div className="button-column-customers">
           <button className="button-icon" onClick={handleReserveClasses}>
             {user && user.Active === 'No' && user.Active !== null ? (
               <div className="button-link">
@@ -232,7 +233,7 @@ const Customers = ({ currentUser }) => {
             )}
           </button>
         </div>
-        <div className="button-column">
+        <div className="button-column-customers">
           <button className="button-icon" >
             {user && user.Active === 'No' && user.Active !== null ? (
               <div className="button-link">
@@ -256,7 +257,7 @@ const Customers = ({ currentUser }) => {
           </button>
         </div>
 
-        <div className="button-column">
+        <div className="button-column-customers">
           <button className="button-icon">
             <Link to={`/profile/${id}`} className="button-link">
               <img
@@ -270,7 +271,7 @@ const Customers = ({ currentUser }) => {
           </button>
         </div>
 
-        <div className="button-column">
+        <div className="button-column-customers">
           <button className="button-icon" onClick={handleLogout} >
             <img
               src={imageUrl2 }
