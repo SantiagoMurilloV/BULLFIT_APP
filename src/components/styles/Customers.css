@@ -1,27 +1,21 @@
-
 body {
-  margin: 0; 
-  background-color: black; 
+  margin: 0;
+  background-color: black;
   background-image: url('../../../public/Image/logos/back_2.png');
-
 }
+
 .StartScreen-container {
   display: flex;
   flex-direction: column;
   align-items: center;
-  background-size: 100% 100vh; 
-  background-size:auto;
-  background-repeat: no-repeat; 
-  background-attachment: fixed; 
+  background-size: 100% 100vh;
+  background-size: auto;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
   padding: 20px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
   box-sizing: border-box;
   height: 100vh;
 }
-
-
 
 .button-logout img {
   width: 40px;
@@ -32,10 +26,10 @@ body {
   cursor: pointer;
 }
 
-
-@media (max-width: 480px) {
+@media (max-width: 767px) {
   .StartScreen-container {
     padding: 10px;
+    margin-top: 221px;
   }
 
   .button-logout img {
@@ -54,19 +48,79 @@ body {
     margin-bottom: 10px;
     margin-top: 0;
   }
-  .button-column {
-    flex: 1;
+
+  .button-column-customers {
+    flex: 0 0;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     align-items: center;
-    width: 50%;
-    padding: 10px;
+    width: 100%;
+    padding: 11px;
+    flex-wrap: wrap;
+    justify-content: center;
   }
 
+  .info-box {
+    width: 100%;
+  }
 
+  .info-box-d1,
+  .info-box-d2,
+  .info-box-d3 {
+    flex-direction: column;
+  }
+
+  .info-box p {
+    font-size: 14px;
+  }
+
+  .info-box h1 {
+    font-size: 28px;
+  }
+
+  .info-box h3 {
+    font-size: 16px;
+  }
+
+  .button-icon {
+    width: 150px;
+    height: auto;
+    font-size: 16px;
+    padding: 7px;
+  }
+
+  .profile-image {
+    width: 50px;
+    margin-bottom: 10px;
+    margin-top: 0;
+  }
+
+  .header {
+    width: 100%;
+    margin-top: 50px;
+  }
+
+  .bottom-buttons button {
+    width: 100%;
+    height: 120px;
+  }
+
+  .logo-bull {
+    width: 150px;
+    margin-top: 50px;
+  }
+
+  .instagram-logo-customers {
+    width: 30px;
+    margin-left: 1.5em;
+  }
+
+  .whatsapp-logo-customers {
+    width: 40px;
+  }
 }
 
-.button-logout:hover{
+.button-logout:hover {
   opacity: 0.8;
 }
 
@@ -77,7 +131,8 @@ body {
   margin-bottom: 75px;
   cursor: pointer;
 }
-.profile-content :hover{
+
+.profile-content:hover {
   opacity: 0.8;
 }
 
@@ -86,22 +141,18 @@ body {
   margin-bottom: 20px;
   align-items: center;
   margin-top: -1px;
-
 }
 
-.logout{
+.logout {
   width: 149px;
-  margin-bottom: 12px
+  margin-bottom: 12px;
 }
 
 .profile-text {
   color: white;
-  margin-left: 10px; 
+  margin-left: 10px;
   font-weight: lighter;
 }
-
-
-
 
 .info-box {
   background-color: #d5d5d51f;
@@ -112,28 +163,32 @@ body {
   width: 452px;
 }
 
-
-.info-box-d1, .info-box-d2 , .info-box-d3{
+.info-box-d1,
+.info-box-d2,
+.info-box-d3 {
   display: flex;
   align-items: center;
   margin-bottom: -33px;
 }
 
-
-.info-box-d1 h3, .info-box-d2 h3, .info-box-d3 h3 {
+.info-box-d1 h3,
+.info-box-d2 h3,
+.info-box-d3 h3 {
   margin-right: 10px;
 }
 
-
-.info-box-d1 p, .info-box-d2 p,.info-box-d3 p {
+.info-box-d1 p,
+.info-box-d2 p,
+.info-box-d3 p {
   margin: 0;
 }
 
-.info-box p{
+.info-box p {
   color: #f5f5f5;
   font-weight: bolder;
   font-size: 16px;
 }
+
 .info-box h1 {
   color: white;
   font-weight: bolder;
@@ -141,11 +196,13 @@ body {
   margin-bottom: -8px;
   margin-top: 1px;
 }
-.info-box h3{
-  color:  wheat;
+
+.info-box h3 {
+  color: wheat;
   font-weight: bolder;
   font-size: 20px;
 }
+
 .button-icon {
   display: flex;
   flex-direction: column;
@@ -167,19 +224,20 @@ body {
   background-color: #d5d5d55c;
   box-shadow: 5px 7px 5px 0px rgb(241 18 18 / 21%);
 }
+
 .header {
-width: 200px;
+  width: 200px;
   margin-top: 100px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-
 }
 
 .button-icon:hover {
-  background-color: #686464; 
+  background-color: #686464;
 }
+
 .button-link {
   text-decoration: none;
   color: inherit;
@@ -189,16 +247,14 @@ width: 200px;
 }
 
 .button-icon-image {
-  width: 88px; 
-  margin-bottom: 10px; 
+  width: 88px;
+  margin-bottom: 10px;
 }
 
 .bottom-buttons {
   display: flex;
   justify-content: center;
 }
-
-
 
 .bottom-buttons button {
   display: flex;
@@ -209,9 +265,8 @@ width: 200px;
   font-size: 20px;
 }
 
-
 .button-row {
-  margin-bottom: 10px; 
+  margin-bottom: 10px;
 }
 
 .logo-bull {
@@ -225,10 +280,9 @@ width: 200px;
   display: flex;
   justify-content: center;
   align-items: center;
-  
 }
 
-.instagram-logo-customers{
+.instagram-logo-customers {
   width: 45px;
   cursor: pointer;
   margin-left: 1.5em;
@@ -242,6 +296,7 @@ width: 200px;
   width: 64px;
   cursor: pointer;
 }
+
 .whatsapp-logo-customers:hover {
   opacity: 0.8;
 }

@@ -1,13 +1,42 @@
 {
-  "name": "Bullfit-app",
-  "description": "gym reservation manager application",
-  "start_url": "/index.html",
+  "background_color": "black",
+  "categories": ["lifestyle", "health","sports","fitness"],
+  "description": "Gym class reservation management application",
+  "dir": "ltr",
+  "display_override": ["standalone", "fullscreen"],
   "display": "standalone",
   "icons": [
     {
-      "src": "/icon.png",
+      "src": "favicon.ico",
+      "type": "image/png",
       "sizes": "192x192",
-      "type": "image/png"
+      "purpose":"any"
+    },
+    {
+      "src": "favicon.ico",
+      "type": "image/png",
+      "sizes": "216x216",
+      "purpose":"any"
+    },
+    {
+      "src": "Recurso214_375.png",
+      "type": "image/png",
+      "sizes": "228x228",
+      "purpose":"any"
+    },
+    {
+      "src": "Recurso214_500.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose":"any"
     }
-  ]
+  ],
+  "lang": "es-MX",
+  "name": "Bullfit-app",
+  "orientation": "portrait",
+  "prefer_related_application": false,
+  "scope": "/",
+  "short_name": "Bullfit",
+  "start_url": "/",
+  "theme_color": "orange"
 }

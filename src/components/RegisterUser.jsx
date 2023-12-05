@@ -2,6 +2,13 @@ import React, { useEffect, useState } from 'react';
 import Swal from 'sweetalert2';
 import { Link, useParams, useNavigate } from 'react-router-dom'; 
 import '../components/styles/RegisterUser.css';
+import { initializeApp } from 'firebase/app';
+import { getStorage, ref, getDownloadURL } from 'firebase/storage';
+import firebaseConfig from '../FireBase';
+import { BarLoader } from 'react-spinners';
+
+const app = initializeApp(firebaseConfig);
+const storage = getStorage(app);
 
 const RegisterUsers = () => {
   const [userData, setUserData] = useState({
@@ -14,6 +21,24 @@ const RegisterUsers = () => {
   });
   const { id } = useParams();
   const navigate = useNavigate(); 
+  const [imageUrl, setImageUrl] = useState('');
+
+  useEffect(() => {
+    const fetchImageUrl = async () => {
+      try {
+        const imageRef = ref(storage, 'logOut.png');
+        const url = await getDownloadURL(imageRef);
+        setImageUrl(url);
+      } catch (error) {
+        console.error('Error al obtener la URL de descarga de la imagen:', error);
+      }
+    };
+
+    fetchImageUrl();
+  }, [storage]);
+
+
+
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -140,7 +165,7 @@ const RegisterUsers = () => {
               value={userData.Plan}
               onChange={handleInputChange}
             >
-               <option value=" "> </option>
+              <option value=" "> </option>
               <option value="Semanal">Semanal</option>
               <option value="Mensual">Mensual</option>
             </select>
@@ -154,8 +179,8 @@ const RegisterUsers = () => {
         <div className="profile-buttons">
           <Link to={`/admin/${id}`} className="button-link">
             <img
-              src={`${process.env.PUBLIC_URL}/image/logos/logOut.png`}
-              alt="Botón de Regresar"
+              src={imageUrl}
+              alt=""
               className="profile-button-image"
             />
           </Link>

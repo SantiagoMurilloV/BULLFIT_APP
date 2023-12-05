@@ -19,9 +19,19 @@ const Login = ({ handleLogin }) => {
   const [imageUrl4, setImageUrl4] = useState('');
   const [imagesLoaded, setImagesLoaded] = useState(false);
   const [formLoaded, setFormLoaded] = useState(false);
+  const [isReadyForInstall, setIsReadyForInstall] = React.useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
+    window.addEventListener("beforeinstallprompt", (event) => {
+      // Prevent the mini-infobar from appearing on mobile.
+      event.preventDefault();
+      console.log("👍", "beforeinstallprompt", event);
+      // Stash the event so it can be triggered later.
+      window.deferredPrompt = event;
+      // Remove the 'hidden' class from the install button container.
+      setIsReadyForInstall(true);
+    });
     const fetchImageUrl = async () => {
       try {
         const imageRef = ref(storage, '219.png');
@@ -54,6 +64,26 @@ const Login = ({ handleLogin }) => {
         <BarLoader color="#00BFFF" loading={!imagesLoaded} height={4} width={200} />
       </div>
     );
+  }
+
+  async function downloadApp() {
+    console.log("👍", "butInstall-clicked");
+    const promptEvent = window.deferredPrompt;
+    if (!promptEvent) {
+      // The deferred prompt isn't available.
+      console.log("oops, no prompt event guardado en window");
+      return;
+    }
+    // Show the install prompt.
+    promptEvent.prompt();
+    // Log the result
+    const result = await promptEvent.userChoice;
+    console.log("👍", "userChoice", result);
+    // Reset the deferred prompt variable, since
+    // prompt() can only be called once.
+    window.deferredPrompt = null;
+    // Hide the install button.
+    setIsReadyForInstall(false);
   }
 
   const performLogin = () => {
@@ -104,6 +134,11 @@ const Login = ({ handleLogin }) => {
   return (
     <div className="Login">
       <div className="center-content">
+        <div className='App'>
+        <header>
+          {isReadyForInstall && <button onClick={downloadApp}>Descargar</button>}
+        </header>
+        </div>
         <img
           src={imageUrl2}
           alt="Logo del gimnasio"

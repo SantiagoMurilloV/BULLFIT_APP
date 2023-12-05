@@ -10,17 +10,30 @@
     content="Web site created using create-react-app"
   />
   <link rel="apple-touch-icon" href="%PUBLIC_URL%/Recurso219.png" />
+  <link rel="apple-touch-icon" sizes="152x152" href="%PUBLIC_URL%/Recurso219.png" />
+<link
+  rel="apple-touch-icon"
+  sizes="180x180"
+  href="%PUBLIC_URL%/Recurso219.png"
+/>
+<link
+  rel="apple-touch-icon"
+  sizes="167x167"
+  href="%PUBLIC_URL%/Recurso219.png"
+/>
   <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
   <title>BullFit</title>
-
+  <meta name="apple-mobile-web-app-title" content="Bullfit">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <!-- Manejo del evento de instalación -->
   <script>
     let deferredPrompt;
 
     window.addEventListener('beforeinstallprompt', (event) => {
       event.preventDefault();
-      deferredPrompt = event;
-      // Puedes realizar acciones adicionales aquí si es necesario
+      deferredPrompt = event;     
+
     });
   </script>
 </head>
@@ -28,7 +41,6 @@
   <noscript>You need to enable JavaScript to run this app.</noscript>
   <div id="root"></div>
 
-  <!-- Registro del Service Worker -->
   <script>
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('%PUBLIC_URL%/service-worker.js')
@@ -41,7 +53,7 @@
     }
   </script>
 
-  <!-- Actualizaciones Automáticas (Service Worker) -->
+
   <script>
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.addEventListener('controllerchange', () => {
@@ -50,32 +62,7 @@
     }
   </script>
 
-  <!-- Notificaciones -->
-  <script>
-    function showNotification(title, text) {
-      if ('Notification' in window) {
-        Notification.requestPermission().then(permission => {
-          if (permission === 'granted') {
-            new Notification(title, { body: text });
-          }
-        });
-      }
-    }
 
-    const notifications = [
-      { title: 'ASEO', text: 'Trae toalla. A nadie le gusta el sudor de los demás.' },
-      { title: 'PUNTUALIDAD', text: 'Debes llegar al menos 5 minutos antes. 2 Burpees por minuto tarde.' },
-      { title: 'COMPROMISO', text: 'Toda reserva se debe pagar, aunque faltes.' },
-      { title: 'RESERVAS', text: 'Se deben realizar con dos horas de antelación.' },
-    ];
-
-    // Mostrar las notificaciones predefinidas
-    notifications.forEach(notification => {
-      showNotification(notification.title, notification.text);
-    });
-  </script>
-
-  <!-- Modo Oscuro/Modo Claro -->
   <script>
     function enableDarkMode() {
       document.body.classList.add('dark-mode');
