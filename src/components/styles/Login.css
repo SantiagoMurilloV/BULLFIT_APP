@@ -1,10 +1,10 @@
-
 body {
   background-color: black;
   margin: 0; 
   padding: 0; 
   font-family: 'Open Sans', sans-serif;
 }
+
 .Login {
   display: flex;
   flex-direction: column;
@@ -41,11 +41,16 @@ input {
   height: 4vh;
 }
 
+.button-container {
+  position: relative;
+}
+
 .button-container img {
   position: absolute;
-  width: 69px;
-  margin-top: 94px;
-  margin-left: -31px;
+  top: 77%;
+  left: 72%;
+  transform: translate(-50%, -50%);
+  width: 60px;
 }
 
 .button-container button {
@@ -104,7 +109,6 @@ h1 {
   font-weight: bold;
 }
 
-
 .loading-screen {
   display: flex;
   justify-content: center;
@@ -113,4 +117,88 @@ h1 {
   color: #fff;
   background-color: #000000; 
   font-size: 2rem;
+}
+.instagram-logo-container {
+  text-align: center;
+  font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.instagram-logo-login {
+  width: 45px;
+  cursor: pointer;
+  margin-left: 1.5em;
+}
+
+.instagram-logo-login:hover {
+  opacity: 0.8;
+}
+
+.whatsapp-logo-login {
+  width: 64px;
+  cursor: pointer;
+}
+
+.whatsapp-logo-login:hover {
+  opacity: 0.8;
+}
+
+/* Media Queries */
+@media only screen and (max-width: 600px) {
+
+  .logo {
+    margin-top: 10%;
+    margin-bottom: 15%;
+  }
+
+  .user h1{
+    font-size: 25px;
+  }
+  input {
+    width: 80%;
+    font-size: 17px;
+  }
+
+
+  .button-container button {
+    width: 50%;
+    font-size: 20px;
+  }
+
+  .button-container img {
+    width: 64px;
+    top: 73%;
+    left: 72%;
+
+  }
+
+  .whatsapp-logo-login {
+    width: 50px;
+  }
+  .instagram-logo-login {
+    width: 34px;
+  }
+
+
+}
+
+@media only screen and (min-width: 601px) and (max-width: 1024px) {
+  .logo {
+    margin-top: 15%;
+    margin-bottom: 15%;
+  }
+
+  input {
+    width: 70%;
+  }
+
+  .button-container button {
+    width: 50%;
+  }
+
+  .button-container img {
+    width: 50px;
+  }
 }

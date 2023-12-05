@@ -155,7 +155,7 @@ const Login = ({ handleLogin }) => {
                 onChange={(e) => setPhone(e.target.value)}
               />
             </div>
-            <div>
+            <div className="user">
               <h1>Contraseña</h1>
               <input
                 type="password"
@@ -186,7 +186,7 @@ const Login = ({ handleLogin }) => {
               <img
                 src={imageUrl3}
                 alt=""
-                className="instagram-logo-customers"
+                className="instagram-logo-login"
               />
             </a>
           </div>
@@ -198,7 +198,7 @@ const Login = ({ handleLogin }) => {
             <img
               src={imageUrl4}
               alt=""
-              className="whatsapp-logo-customers"
+              className="whatsapp-logo-login"
             />
           </a>
         </div>
