@@ -33,28 +33,7 @@ body {
   cursor: pointer;
 }
 
-@media (max-width: 768px) {
-  .StartScreen-container {
-    padding: 10px;
-  }
 
-  .button-logout img {
-    width: 30px;
-    margin-bottom: 10px;
-    margin-left: 10px;
-  }
-
-  .profile-content {
-    margin-left: 10px;
-    margin-bottom: 10px;
-  }
-
-  .user-image {
-    width: 50px;
-  }
-
-
-}
 
 @media (max-width: 480px) {
   .StartScreen-container {
@@ -87,6 +66,98 @@ body {
   }
 
 
+}
+
+
+@media (max-width: 767px) {
+  .StartScreen-container {
+    padding: 5px;
+    margin-top: 18px;
+  }
+
+  .button-column{
+    flex: 0;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width: 43%;
+    padding: 8px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .instagram-logo-container{
+    width: 10px;
+  }
+
+}
+/* Media Queries */
+@media only screen and (max-width: 600px) {
+  .StartScreen-container {
+    padding: 10px;
+    margin-top: 20px;
+  }
+
+  .button-column-admin{
+    flex: 0;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width: 45%;
+    padding: 9px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+
+  .instagram-logo-customers img {
+    width: 45px;
+  }
+  
+  .whatsapp-logo-customers img {
+    width: 64px;
+
+  }
+
+  .header-admin img{
+    width: 141px;
+    margin-top: 1%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+
+}
+
+@media only screen and (min-width: 601px) and (max-width: 1024px) {
+
+  .StartScreen-container {
+    padding: 10px;
+    margin-top: 20px;
+  }
+
+  .button-column-admin {
+    flex: 0;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width: 45%;
+    padding: 9px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .instagram-logo-container img{
+    width: 10px;
+  }
+  .header-admin img{
+    width: 200px;
+    margin-top: 100px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
 }
 
 .button-logout:hover{
@@ -123,52 +194,6 @@ body {
   font-weight: bolder;
 }
 
-
-
-
-
-.info-box {
-  background-color: #d5d5d51f;
-  padding: 20px;
-  border: 1px solid #ccc0;
-  border-radius: 5px;
-  margin-bottom: 152px;
-  width: 452px;
-}
-
-
-.info-box-d1, .info-box-d2 {
-  display: flex;
-  align-items: center;
-  margin-bottom: -33px;
-}
-
-
-.info-box-d1 h3, .info-box-d2 h3 {
-  margin-right: 10px;
-}
-
-
-.info-box-d1 p, .info-box-d2 p {
-  margin: 0;
-}
-
-.info-box p{
-  color: #f5f5f5;
-  font-weight: bolder;
-  font-size: 21px;
-}
-.info-box h1{
-  color:  white;
-  font-weight: bolder;
-  font-size: 33px;
-  margin-bottom: -7px;
-}
-.info-box h3{
-  color:  wheat;
-  font-weight: bolder;
-  font-size: 28px;
-}
 .button-icon {
   width: 100%;
   height: auto;
@@ -187,8 +212,8 @@ body {
   background-color: #d5d5d55c;
   box-shadow: 5px 7px 5px 0px rgb(241 18 18 / 21%);
 }
-.header {
-width: 200px;
+.header-admin {
+  width: 200px;
   margin-top: 100px;
   display: flex;
   flex-direction: column;
