@@ -179,6 +179,7 @@ h1 {
   }
   .instagram-logo-login {
     width: 34px;
+    margin-left: 21.5em;
   }
 
 
@@ -200,5 +201,41 @@ h1 {
 
   .button-container img {
     width: 50px;
+  }
+}
+@media screen and (width: 1406px) and (height: 625px) {
+
+
+  .logo {
+    margin-top: 10%;
+    margin-bottom: 15%;
+  }
+
+  .user h1{
+    font-size: 25px;
+  }
+  input {
+    width: 80%;
+    font-size: 17px;
+  }
+
+
+  .button-container button {
+    width: 50%;
+    font-size: 20px;
+  }
+
+  .button-container img {
+    width: 64px;
+    top: 73%;
+    left: 72%;
+
+  }
+
+  .whatsapp-logo-login {
+    width: 50px;
+  }
+  .instagram-logo-login {
+    width: 34px;
   }
 }

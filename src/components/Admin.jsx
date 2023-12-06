@@ -139,7 +139,7 @@ const Admin = ({ currentUser }) => {
 
       <div className={`bottom-buttons ${loading ? 'fade-in' : 'fade-out'}`}>
 
-        <div className="button-column">
+        <div className="button-column-admin">
           <button className="button-icon" onClick={handleReserveClasses}>
             <Link to={`/reservations/${id}`} className="button-link">
               <img
@@ -151,7 +151,7 @@ const Admin = ({ currentUser }) => {
             Registrar Usuario
           </button>
         </div>
-        <div className="button-column">
+        <div className="button-column-admin">
           <button className="button-icon">
             <Link className="button-link">
               <img
@@ -164,7 +164,7 @@ const Admin = ({ currentUser }) => {
           </button>
         </div>
 
-        <div className="button-column">
+        <div className="button-column-admin">
           <button className="button-icon">
             <Link to={`/diary/${id}`} className="button-link">
               <img
@@ -179,7 +179,7 @@ const Admin = ({ currentUser }) => {
           </button>
         </div>
 
-        <div className="button-column">
+        <div className="button-column-admin">
           <button className="button-icon" onClick={handleLogout} >
             <img
               src={imageUrl2}
@@ -191,11 +191,11 @@ const Admin = ({ currentUser }) => {
           </button>
         </div>
       </div>
-      <div className={`header- ${loading ? 'fade-in' : 'fade-out'}`}>
+      <div className={`header-admin ${loading ? 'fade-in' : 'fade-out'}`}>
         <img
           src={imageUrl5}
           alt=""
-          className="header"
+          className="header-admin"
           id="profile-image"
         />
       </div>

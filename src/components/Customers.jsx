@@ -185,8 +185,8 @@ const Customers = ({ currentUser }) => {
   const currentDayReservation = reservationsData.find((reservation) => reservation.day === formattedDate);
 
   return (
-    <div className={`StartScreen-container ${loading ? 'fade-in' : ''}`}>
-      <div className={`info-box ${loading ? 'fade-in' : ''}`}>
+    <div className={`StartScreen-container-customers ${loading ? 'fade-in' : ''}`}>
+      <div className={`info-box-customers ${loading ? 'fade-in' : ''}`}>
         <h1>Información:</h1>
         <div className="info-box-d1">
           <h3>Fecha: </h3>
@@ -283,15 +283,15 @@ const Customers = ({ currentUser }) => {
           </button>
         </div>
       </div>
-      <div className="header">
+      <div className="header-customers">
         <img
           src={imageUrl5}
           alt="Imagen de perfil"
-          className="header"
+          className="header-customers"
           id="profile-image"
         />
       </div>
-      <div className="instagram-logo-container">
+      <div className="instagram-logo-container-customers">
         <div>
           <a
             href="https://www.instagram.com/bullfit.axm/"
