@@ -7,9 +7,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faClock } from '@fortawesome/free-solid-svg-icons';
 import 'moment/locale/es';
 import '../components/styles/Reservations.css';
-import { initializeApp } from 'firebase/app';
-import { getStorage, ref, getDownloadURL } from 'firebase/storage';
-import firebaseConfig from '../FireBase';
+
 
 const morningHours = [...Array(16).keys()].map((hour) => (hour + 6).toString().padStart(2, '0')); // 06:00 am to 09:00 pm
 const daysOfWeek = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
@@ -21,6 +19,7 @@ const Reservations = () => {
   const [reservationsData, setReservationsData] = useState({});
   const [userReservations, setUserReservations] = useState([]);
   const [reservationStatus, setReservationStatus] = useState(null);
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -96,9 +95,14 @@ const Reservations = () => {
     }
   };
 
+  
+
   const handleDateChange = (daysToAdd) => {
-    setSelectedDate(moment(selectedDate).add(daysToAdd, 'days'));
+    const newSelectedDate = moment(selectedDate).add(daysToAdd, 'days').startOf('week');
+    setSelectedDate(newSelectedDate);
   };
+  
+
 
   const getReservationsCountForHour = (dayIndex, hour) => {
     const dateKey = moment(selectedDate).add(dayIndex, 'days').format('YYYY-MM-DD');
@@ -233,11 +237,47 @@ const Reservations = () => {
   const formatHour = (hour) => {
     return hour >= 12 ? `${hour - 12} PM` : `${hour} AM`;
   };
+  
+  const renderTableHeaders = () => {
+    return (
+      <tr>
+        <th className="hour-column">Hora</th>
+        {daysOfWeek.map((day, i) => {
+          const dayHeaderClass = (() => {
+            switch (i) {
+              case 0:
+              case 3:
+                return 'red-background';
+              case 1:
+              case 4:
+                return 'black-background';
+              case 2:
+              case 5:
+                return 'gray-background';
+              default:
+                return '';
+            }
+          })();
+  
+          return (
+            <th key={i} className={dayHeaderClass}>
+              {day} {moment(selectedDate).add(i, 'days').format('D')}
+            </th>
+          );
+        })}
+      </tr>
+    );
+  };
+  
+  
 
   const renderTableRows = () => {
+    const currentDay = moment().startOf('day');
+    const currentHour = moment().hour();
+
     return morningHours.map((hour) => (
       <tr key={hour}>
-        <td>{formatHour(hour)}</td>
+        <td className="hour-cell">{formatHour(hour)}</td>
         {daysOfWeek.map((_, dayIndex) => {
           const dateKey = moment(selectedDate).add(dayIndex, 'days').format('YYYY-MM-DD');
           const reservationForCell = userReservations.find(
@@ -250,25 +290,33 @@ const Reservations = () => {
           const isReserved = reservationStatus && reservationStatus.day === dateKey && reservationStatus.hour === `${hour}:00`;
 
           const isPastDay = moment(dateKey).isBefore(moment().startOf('day'), 'day');
+          const isCurrentDay = moment(dateKey).isSame(currentDay, 'day');
+          const isCurrentHourOrPast = isCurrentDay && currentHour >= parseInt(hour, 10);
 
           return (
-            <td key={dayIndex}>
+            <td key={dayIndex} >
               {isHourValid(dayIndex, hour) && (
                 <>
-                  {isPastDay ? (
+                  {isCurrentHourOrPast ? (
                     <FontAwesomeIcon icon={faClock} className="past-day-icon" />
                   ) : (
                     <>
-                      {reservationForCell || isReserved ? (
-                        <span className="reserved-text">Reservado</span>
+                      {isPastDay ? (
+                        <FontAwesomeIcon icon={faClock} className="past-day-icon" />
                       ) : (
-                        <button
-                          onClick={() => handleReserveClick(dayIndex, hour)}
-                          disabled={isHourReserved(dayIndex, hour)}
-                          className={isHourReserved(dayIndex, hour) ? 'reserved-button' : ''}
-                        >
-                          Reservar
-                        </button>
+                        <>
+                          {reservationForCell || isReserved ? (
+                            <span className="reserved-text">Reservado</span>
+                          ) : (
+                            <button
+                              onClick={() => handleReserveClick(dayIndex, hour)}
+                              disabled={isHourReserved(dayIndex, hour)}
+                              className={isHourReserved(dayIndex, hour) ? 'reserved-button' : ''}
+                            >
+                              Reservar
+                            </button>
+                          )}
+                        </>
                       )}
                     </>
                   )}
@@ -283,7 +331,7 @@ const Reservations = () => {
 
   return (
     <div className="reservations-container">
-      <h2>Horario de Reservas</h2>
+    <h2>Horario de Reservas de {moment(selectedDate).format('MMMM')}</h2>
       <div className="table-container">
         <div className="date-navigation-reservation">
           <Link to={`/customers/${id}`}>
@@ -294,16 +342,7 @@ const Reservations = () => {
         </div>
         <table>
           <thead>
-            <tr>
-              <th>Hora</th>
-              {daysOfWeek.map((day, i) => (
-                <th key={i}>
-                  {day}
-                  <br />
-                  {moment(selectedDate).add(i, 'days').format('MMMM D')}
-                </th>
-              ))}
-            </tr>
+                {renderTableHeaders()}
           </thead>
           <tbody>{renderTableRows()}</tbody>
         </table>
