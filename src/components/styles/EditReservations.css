@@ -299,5 +299,29 @@ h2 {
   font-weight: bolder;
 }
 
+th.red {
+  background-color: red;
+}
 
+th.black {
+  background-color: black;
+  color: white; /* Texto blanco para mayor contraste */
+}
+
+th.grey {
+  background-color: grey;
+}
+
+th.blue {
+  background-color: rgb(47, 85, 201); ;
+  color: #fff; 
+  text-align: center;
+}
+
+td.first-column{
+  background-color: rgb(255, 255, 255);
+  color:rgb(0, 0, 0);
+  text-align: center; 
+  font-weight: bolder;
+}
 

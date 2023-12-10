@@ -160,9 +160,25 @@ const EditReservations = () => {
         moment(currentDate).startOf('isoWeek').add(dayIndex, 'days').format('dddd (DD/MM)')
       ),
     ];
-
-    return headers.map((header, index) => <th key={index}>{header}</th>);
+  
+    const headerClasses = [
+      'blue', 
+      'red', 
+      'black', 
+      'grey', 
+      'red', 
+      'black', 
+      'grey', 
+      'blue', 
+    ];
+  
+    return headers.map((header, index) => (
+      <th key={index} className={headerClasses[index]}>
+        {header}
+      </th>
+    ));
   };
+  
 
   const renderTableRows = () => {
     const morningHours = ['06:00', '07:00', '08:00', '09:00', '10:00', '16:00', '17:00', '18:00', '19:00', '20:00'];
