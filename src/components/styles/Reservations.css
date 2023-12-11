@@ -46,14 +46,14 @@ table th {
 
 }
 table td {
-  background-color: #d5d5d5ab;
+  background-color: #d5d5d5c1;
   color: rgb(18, 17, 17);
 
 }
 
 table th,
 table td {
-  border: 1px solid #ccc;
+  border: 2px solid #000000;
   text-align: center;
 }
 
@@ -78,6 +78,36 @@ table td {
 
 .available-button.reserved {
   background-color: #827e7e;
+}
+.reserved-text{
+  color:#f6f6f6;
+  font-weight: bold;
+  background-color: green;
+
+}
+
+th.hour-column {
+  background-color: rgb(47, 85, 201); 
+  color: #fff; 
+  text-align: center;
+}
+
+td.hour-cell {
+  background-color: rgb(255, 255, 255);
+  color:rgb(0, 0, 0);
+  text-align: center; 
+  font-weight: bolder;
+}
+.red-background {
+  background-color: red;
+}
+
+.black-background {
+  background-color: black;
+}
+
+.gray-background {
+  background-color: gray;
 }
 
 button {

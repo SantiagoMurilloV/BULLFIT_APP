@@ -225,16 +225,36 @@ const Diary = () => {
     const daysOfWeek = moment.weekdays().slice(1);
     return (
       <>
-        <th>Hora</th>
-        {daysOfWeek.map((day, index) => (
-          <th key={index} className={`header-cell ${isCurrentDay(day) ? 'current-day' : ''}`}>
-            {day} <br />
-            {moment(currentDate).startOf('isoWeek').add(index, 'days').format('MM/DD')}
-          </th>
-        ))}
+        <th className="hour-column">Hora</th>
+        {daysOfWeek.map((day, index) => {
+          const dayHeaderClass = (() => {
+            switch (index) {
+              case 0:
+              case 3:
+                return 'red-background';
+              case 1:
+              case 4:
+                return 'black-background';
+              case 2:
+              case 5:
+                return 'gray-background';
+              default:
+                return '';
+            }
+          })();
+
+          return (
+
+            <th key={index} className={`header-cell ${isCurrentDay(day) ? 'current-day' : ''} ${dayHeaderClass}`}>
+              {day} <br />
+              {moment(currentDate).startOf('isoWeek').add(index, 'days').format('MM/DD')}
+            </th>
+          )
+        })}
       </>
     );
   };
+
 
   const isCurrentDay = (day) => {
     const currentDay = moment().format('dddd');
@@ -339,10 +359,10 @@ const Diary = () => {
         <button className='butom-day' onClick={handleNextWeek}>Siguiente Semana</button>
         <button className='butom-day' onClick={handleOpenReservationForm}>Nueva Reserva</button>
         <Link to={`/userList/${id}`} >
-        <button className='butom-day' onClick={handleOpenReservationForm}>Usuarios</button>
+          <button className='butom-day' onClick={handleOpenReservationForm}>Usuarios</button>
         </Link>
         <Link to={`/admin/${id}`} >
-        <button className='butom-day' onClick={handleOpenReservationForm}>Inicio</button>
+          <button className='butom-day' onClick={handleOpenReservationForm}>Inicio</button>
         </Link>
       </div>
       <table className="table-diary">
