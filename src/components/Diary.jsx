@@ -18,7 +18,7 @@ const Diary = () => {
   const { id } = useParams();
   const [loading, setLoading] = useState(true);
   const [showReservationForm, setShowReservationForm] = useState(false);
-  const [users, setUsers] = useState(null);
+  const [users, setUsers] = useState([])
   const [formData, setFormData] = useState({
     userId: '',
     date: '',
@@ -70,7 +70,6 @@ const Diary = () => {
     })
       .then((response) => {
         if (response.ok) {
-          Swal.fire('Entrenamiento actualizado', 'Se ha actualizado el entrenamiento con éxito.', 'success');
           fetchWeeklyReservations(moment(currentDate).startOf('isoWeek').toDate());
         } else {
           console.error('Error al actualizar el entrenamiento de la reserva');
@@ -79,6 +78,31 @@ const Diary = () => {
       .catch((error) => {
         console.error('Error al obtener datos actualizados:', error);
       });
+  };
+
+  const handleCreateReservationFromTable = (userId, day, hour) => {
+    const reservationData = {
+      userId,
+      day,
+      hour,
+    };
+
+    fetch('https://bullfit-back.onrender.com/api/reservations', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(reservationData),
+    })
+    .then((response) => response.json())
+    .then(() => {
+      Swal.fire('Reserva Creada', 'La reserva ha sido creada exitosamente.', 'success');
+      fetchWeeklyReservations(moment(currentDate).startOf('isoWeek').toDate());
+    })
+    .catch((error) => {
+      console.error('Error al crear reserva:', error);
+      Swal.fire('Error', 'No se pudo crear la reserva.', 'error');
+    });
   };
 
   const handleNextWeek = () => {
@@ -354,10 +378,32 @@ const Diary = () => {
               );
 
             } else {
-              reservationCells.push(<div key={`empty-${i}`} className="reservation-cell bordered-cell">□</div>);
+              reservationCells.push(
+                <div key={`empty-${i}`} className="reservation-cell bordered-cell" style={{ width: '100%' }}>
+                  <Select
+                    options={users.map((user) => ({
+                      value: user._id,
+                      label: `${user.FirstName} ${user.LastName}`,
+                    }))}
+                    onChange={(selectedOption) => handleCreateReservationFromTable(selectedOption.value, currentDay, hour)}
+                    placeholder=""
+                    styles={{
+                      container: (base) => ({ ...base, width: '100%' }),
+                      control: (base) => ({ 
+                        ...base, 
+                        minHeight: '20px', 
+                        backgroundColor: 'rgba(255, 255, 255, 0.331)',
+                      }),
+                      valueContainer: (base) => ({ ...base, height: '20px' }),
+                      input: (base) => ({ ...base, margin: 0, padding: 0 }),
+                      dropdownIndicator: (base) => ({ ...base, padding: '0px' }),
+                      clearIndicator: (base) => ({ ...base, padding: '2px' }),
+                    }}
+                  />
+                </div>
+              );
             }
           }
-
           return <td key={dayIndex}>{reservationCells}</td>;
         })}
       </tr>
