@@ -3,7 +3,7 @@ import { Link, useParams } from 'react-router-dom';
 import moment from 'moment-timezone';
 import '../components/styles/Diary.css';
 import '../../src/components/styles/EditReservations.css';
-import { faTrash, faEdit } from '@fortawesome/free-solid-svg-icons';
+import { faTrash, faEdit, faBan } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Swal from 'sweetalert2';
 import DatePicker from 'react-datepicker';
@@ -71,17 +71,44 @@ const EditReservations = () => {
 
   const handleCancelReservation = (reservationId) => {
     Swal.fire({
-      title: '¿Está seguro?',
+      title: '¿Está seguro que quieres cancelar la reserva?',
       text: 'No podrá revertir esto',
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: 'red',
       cancelButtonColor: '#3085d6',
-      confirmButtonText: 'Sí, eliminar',
-      cancelButtonText: 'Cancelar',
+      confirmButtonText: 'Sí, Cancelar Reserva',
+      cancelButtonText: 'No',
     }).then((result) => {
       if (result.isConfirmed) {
         updateReservationStatus(reservationId, 'cancelled');
+      }
+    });
+  };
+  const handleDeleteReservation = (reservationId) => {
+    Swal.fire({
+      title: '¿Está seguro de eliminar esta reserva?',
+      text: 'Esta acción no se puede revertir',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'No',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        fetch(`https://bullfit-back.onrender.com/api/reservations/${reservationId}`, {
+          method: 'DELETE',
+        })
+        .then((response) => {
+          if (response.ok) {
+            Swal.fire('Eliminado', 'La reserva ha sido eliminada.', 'success');
+            const updatedReservations = userReservations.filter(reservation => reservation._id !== reservationId);
+            setUserReservations(updatedReservations);
+          } else {
+            Swal.fire('Error', 'No se pudo eliminar la reserva.', 'error');
+          }
+        });
       }
     });
   };
@@ -106,9 +133,10 @@ const EditReservations = () => {
   ];
 
   const handleOpenReservationForm = (reservationId, date, hour) => {
+    const localDate = moment(date).tz('America/Bogota').toDate();
     setFormData({
       reservationId,
-      date,
+      date: localDate, 
       hour: { value: hour, label: hour },
     });
     setShowReservationForm(true);
@@ -182,35 +210,48 @@ const EditReservations = () => {
 
   const renderTableRows = () => {
     const morningHours = ['06:00', '07:00', '08:00', '09:00', '10:00', '16:00', '17:00', '18:00', '19:00', '20:00'];
-
+  
     return morningHours.map((hour, hourIndex) => (
       <tr key={hourIndex}>
         <td className="first-column">{hour}</td>
         {moment.weekdays().slice(1).map((day, dayIndex) => {
-          const currentDay = moment(currentDate).startOf('isoWeek').add(dayIndex, 'days').format('YYYY-MM-DD');
-
+          const currentDayStr = moment(currentDate).startOf('isoWeek').add(dayIndex, 'days').format('YYYY-MM-DD');
+          const reservationTime = moment(`${currentDayStr} ${hour}`);
+          const currentTime = moment();
+          const canDelete = reservationTime.diff(currentTime, 'hours') >= 2;
+  
           const reservationForCell = userReservations.find(
-            (reservation) => reservation.day === currentDay && reservation.hour === hour && reservation.userId === id
+            (reservation) => reservation.day === currentDayStr && reservation.hour === hour && reservation.userId === id
           );
-
+  
           return (
             <td key={dayIndex}>
               {reservationForCell ? (
                 <div className={`reservation-cell ${reservationForCell.Status === 'cancelled' ? 'cancelled' : ''}`}>
                   <div className="user-name">
                     {reservationForCell.Status === 'cancelled' ? (
-                      `Reserva (Cancelad@)`
+                      `Reserva (Cancelada)`
                     ) : (
                       `Reservado`
                     )}
                   </div>
                   {reservationForCell.Status !== 'cancelled' && (
                     <>
+                      {canDelete ? (
                       <FontAwesomeIcon
                         icon={faTrash}
-                        className="trash-icon"
-                        onClick={() => handleCancelReservation(reservationForCell._id)}
+                        className="delete-icon"
+                        onClick={() => handleDeleteReservation(reservationForCell._id)}
+                        style={{ color: '#b80f0f', cursor: 'pointer' }}
                       />
+                    ) : (
+                      <FontAwesomeIcon
+                        icon={faBan}
+                        className="cancel-icon"
+                        onClick={() => handleCancelReservation(reservationForCell._id)}
+                        style={{ color: 'rgb(255 154 112)', cursor: 'pointer' }}
+                      />
+                      )}
                       <FontAwesomeIcon
                         icon={faEdit}
                         className="edit-icon"
@@ -221,6 +262,7 @@ const EditReservations = () => {
                             reservationForCell.hour
                           )
                         }
+                        style={{ cursor: 'pointer' }}
                       />
                     </>
                   )}
@@ -234,6 +276,7 @@ const EditReservations = () => {
       </tr>
     ));
   };
+  
 
   return (
     <div className={`Diary-container ${loading ? 'fade-in' : 'fade-out'}`}>
