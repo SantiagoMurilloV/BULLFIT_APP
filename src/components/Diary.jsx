@@ -6,7 +6,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Select from 'react-select';
 import 'react-datepicker/dist/react-datepicker.css';
 import '../components/styles/Diary.css';
-import { faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faTrash, faBan } from '@fortawesome/free-solid-svg-icons';
 import DatePicker from 'react-datepicker';
 
 
@@ -57,6 +57,11 @@ const Diary = () => {
       .catch((error) => {
         console.error('Error al cargar la lista de usuarios:', error);
       });
+      
+      const intervalId = setInterval(() => {
+        fetchWeeklyReservations(currentDateInColombia.startOf('isoWeek').toDate()); 
+      }, 60000); 
+      return () => clearInterval(intervalId)
 
   }, [id]);
 
@@ -208,22 +213,49 @@ const Diary = () => {
     }
   };
 
-  const handleDeleteReservation = (reservationId) => {
+  const handlecancellation = (reservationId) => {
     Swal.fire({
-      title: '¿Está seguro?',
+      title: '¿Está seguro de cancelar esta reserva?',
       text: 'No podrá revertir esto',
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: 'red',
       cancelButtonColor: '#3085d6',
-      confirmButtonText: 'Sí, eliminar',
-      cancelButtonText: 'Cancelar',
+      confirmButtonText: 'Sí, Cancelar Reserva',
+      cancelButtonText: 'No cancelar',
     }).then((result) => {
       if (result.isConfirmed) {
         updateReservationStatus(reservationId, 'cancelled');
       }
     });
   };
+  const handleDeleteReservation = (reservationId) => {
+    Swal.fire({
+      title: '¿Está seguro de eliminar esta reserva?',
+      text: 'Esta acción no se puede revertir',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'No',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        fetch(`https://bullfit-back.onrender.com/api/reservations/${reservationId}`, {
+          method: 'DELETE',
+        })
+        .then((response) => {
+          if (response.ok) {
+            Swal.fire('Eliminado', 'La reserva ha sido eliminada.', 'success');
+            fetchWeeklyReservations(moment(currentDate).startOf('isoWeek').toDate());
+          } else {
+            Swal.fire('Error', 'No se pudo eliminar la reserva.', 'error');
+          }
+        });
+      }
+    });
+  };
+  
 
 
   const handleChange = (name, value) => {
@@ -332,9 +364,15 @@ const Diary = () => {
                     {reservation.Status !== 'cancelled' && (
                       <>
                         <FontAwesomeIcon
-                          icon={faTrash}
+                          icon={faBan}
                           className="trash-icon"
+                          onClick={() => handlecancellation(reservation._id)}
+                        />
+                        <FontAwesomeIcon
+                          icon={faTrash} 
+                          className="delete-icon"
                           onClick={() => handleDeleteReservation(reservation._id)}
+                          style={{ color: 'red', cursor: 'pointer' }} 
                         />
                       </>
                     )}
