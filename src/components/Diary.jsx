@@ -24,7 +24,7 @@ const Diary = () => {
     date: '',
     hour: '',
   });
-
+  const maxSpacesPerHour = 12;
   const fetchWeeklyReservations = (startDate) => {
     const endDate = moment(startDate).endOf('isoWeek').toDate();
     fetch(`https://bullfit-back.onrender.com/api/reservations?startDate=${startDate.toISOString()}&endDate=${endDate.toISOString()}`)
@@ -262,9 +262,24 @@ const Diary = () => {
   };
 
 
+
   const renderTableRows = () => {
     const morningHours = ['06:00', '07:00', '08:00', '09:00', '10:00', '16:00', '17:00', '18:00', '19:00', '20:00'];
-
+    const trainingTypeStyles = {
+      'Tren Superior': { backgroundColor: 'rgb(15 69 255)', color: 'white' },
+      'Jalon': { backgroundColor: '#add8e6' },
+      'Empuje': { backgroundColor: '#87CEEB' },
+      'Brazo': { backgroundColor: '#008000' },
+      'Pierna': { backgroundColor: 'rgb(255 255 160)' },
+      'Gluteo': { backgroundColor: '#ffc0cb' },
+      'Cardio': { backgroundColor: 'rgb(149 239 149)' },
+      'Primer dia': { backgroundColor: '#d8bfd8' },
+    };
+    const attendanceStyles = {
+      ' ': { backgroundColor: 'white' },
+      'Si': { backgroundColor: 'lime' },
+      'No': { backgroundColor: '#fc4646' }
+    }
     return morningHours.map((hour, hourIndex) => (
       <tr key={hourIndex}>
         <td className="first-column">{hour}</td>
@@ -274,81 +289,80 @@ const Diary = () => {
             (reservation) => reservation.day === currentDay && reservation.hour === hour
           );
 
-          return (
-            <td key={dayIndex}>
-              {reservationsForCell.length > 0 ? (
-                reservationsForCell.map((reservation, reservationIndex) => {
-                  const userFullName = `${reservation.userName} ${reservation.userLastName}`;
+          const reservationCells = [];
+          for (let i = 0; i < maxSpacesPerHour; i++) {
+            const reservation = reservationsForCell[i];
+            if (reservation) {
+              const userFullName = `${reservation.userName} ${reservation.userLastName}`;
+              const trainingType = reservation.TrainingType || '';
+              const trainingTypeClass = `training-type-${trainingType.toLowerCase().replace(/\s+/g, '-')}`;
+              reservationCells.push(
+                <div
+                  key={reservation._id}
+                  className={`reservation-cell bordered-cell ${reservation.Status === 'cancelled' ? 'cancelled' : ''}`}
+                >
+                  <div className="user-name">
+                    {reservation.Status === 'cancelled' ?
+                      `☒ ${userFullName} (Cancelado)` :
+                      `☑ ${userFullName.length > 9 ? userFullName.slice(0, 10) + '...' : userFullName + ' ⋯'}`}
+                    {reservation.Status !== 'cancelled' && (
+                      <>
+                        <FontAwesomeIcon
+                          icon={faTrash}
+                          className="trash-icon"
+                          onClick={() => handleDeleteReservation(reservation._id)}
+                        />
+                      </>
+                    )}
+                  </div>
+                  {reservation.Status !== 'cancelled' && (
+                    <>
+                      <select
+                        style={trainingTypeStyles[reservation.TrainingType]}
+                        className={`trainingType ${trainingTypeClass}`}
+                        value={reservation.TrainingType}
+                        onChange={(event) => updateTrainingType(reservation._id, event.target.value)}
 
-                  return (
-                    <div
-                      key={reservationIndex}
-                      className={`reservation-cell ${reservation.Status === 'cancelled' ? 'cancelled' : ''} ${reservation.TrainingType ? `training-type-${reservation.TrainingType.toLowerCase().replace(' ', '-')}` : ''
-                        }`}
-                    >
-                      <div className="user-name">
-                        {reservation.Status === 'cancelled' ?
-                          `➤ ${userFullName} (Cancelad@)` :
-                          `➤ ${userFullName.length > 20 ? userFullName.slice(0, 16) + ' ⋯' : userFullName + ' ⋯'}`}
-                        {reservation.Status !== 'cancelled' && (
-                          <>
-                            <FontAwesomeIcon
-                              icon={faTrash}
-                              className="trash-icon"
-                              onClick={() => handleDeleteReservation(reservation._id)}
-                            />
-                          </>
-                        )}
-                      </div>
-                      {reservation.Status !== 'cancelled' && (
-                        <>
-                          <select
-                            className={`trainingType ${reservation.TrainingType ? `training-type-${reservation.TrainingType.toLowerCase().replace(' ', '-')}` : ''}`}
-                            value={reservation.TrainingType}
-                            onChange={(event) => {
-                              const TrainingType = event.target.value;
-                              updateTrainingType(reservation._id, TrainingType);
-                            }}
-                          >
-                            <option value=' '> </option>
-                            <option value='Tren Superior'>Tren Superior</option>
-                            <option value='Jalon'>Jalon</option>
-                            <option value='Empuje'>Empuje</option>
-                            <option value='Brazo'>Brazo</option>
-                            <option value='Pierna'>Pierna</option>
-                            <option value='Gluteo'>Gluteo</option>
-                            <option value='Cardio'>Cardio</option>
-                            <option value='Primer dia'>Primer dia</option>
-                          </select>
-                          <select
-                            className={`Attendance ${reservation.TrainingType ? `training-type-${reservation.TrainingType.toLowerCase().replace(' ', '-')}` : ''}`}
-                            value={reservation.Attendance}
-                            onChange={(event) => {
-                              const Attendance = event.target.value
-                              handleAttendanceChange(reservation._id, Attendance)
-                            }}
-                          >
-                            <option value=" "></option>
-                            <option value="Si">Sí</option>
-                            <option value="No">No</option>
-                          </select>
-                        </>
-                      )}
+                      >
+                        <option value=' '> </option>
+                        <option value='Tren Superior'>Tren Superior</option>
+                        <option value='Jalon'>Jalon</option>
+                        <option value='Empuje'>Empuje</option>
+                        <option value='Brazo'>Brazo</option>
+                        <option value='Pierna'>Pierna</option>
+                        <option value='Gluteo'>Gluteo</option>
+                        <option value='Cardio'>Cardio</option>
+                        <option value='Primer dia'>Primer dia</option>
+                      </select>
+                      <select
+                        style={attendanceStyles[reservation.Attendance]}
+                        className={`Attendance ${reservation.TrainingType ? `training-type-${reservation.TrainingType.toLowerCase().replace(' ', '-')}` : ''}`}
+                        value={reservation.Attendance}
+                        onChange={(event) => {
+                          const Attendance = event.target.value
+                          handleAttendanceChange(reservation._id, Attendance)
+                        }}
+                      >
+                        <option value=" "></option>
+                        <option value="Si">✓</option>
+                        <option value="No">✖</option>
+                      </select>
+                    </>
+                  )}
 
-                    </div>
-                  );
-                })
-              ) : (
-                <div className="reservation-cell">-</div>
-              )}
-            </td>
-          );
+                </div>
+              );
+
+            } else {
+              reservationCells.push(<div key={`empty-${i}`} className="reservation-cell bordered-cell">□</div>);
+            }
+          }
+
+          return <td key={dayIndex}>{reservationCells}</td>;
         })}
       </tr>
     ));
   };
-
-
 
   return (
     <div className={`Diary-container ${loading ? 'fade-in' : 'fade-out'}`}>

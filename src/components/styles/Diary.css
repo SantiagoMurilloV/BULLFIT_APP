@@ -30,50 +30,11 @@ body {
   cursor: pointer;
   height: 50px;
 }
-.reservation-cell.training-type-tren-superior {
-  background-color: #001f3f; 
-  color: #ffffff; 
-}
-
-.reservation-cell.training-type-jalon {
-  background-color: #add8e6; 
-  color: #000000;
-}
-
-.reservation-cell.training-type-empuje {
-  background-color: #87CEEB; 
-  color: #000000; 
-}
-
-.reservation-cell.training-type-brazo {
-  background-color: #008000; 
-  color: #ffffff; 
-}
-
-.reservation-cell.training-type-pierna {
-  background-color: #ffff00;
-  color: #000000; 
-}
-
-.reservation-cell.training-type-gluteo {
-  background-color: #ffc0cb; 
-  color: #000000;
-}
-
-.reservation-cell.training-type-cardio {
-  background-color: #00ff00;
-  color: #000000; 
-}
-
-.reservation-cell.training-type-primer-dia {
-  background-color: #d8bfd8; 
-  color: #000000; 
-}
 
 
 .reservation-cell.cancelled {
   background-color: #ff0000; 
-  color: #ffffff; 
+  color: #000000; 
 }
 
 
@@ -139,11 +100,12 @@ body {
   background: #f7f7f740;
 }
 
-.table-diary table {
-  width: 90%;
+.table-diary{
+  width: 100%;
   border-collapse: collapse;
   margin-top: 20px;
   font-weight: bolder;
+  background-color: #f5f5f578;
 }
 
 h2 {
@@ -152,19 +114,20 @@ h2 {
 
 .table-diary th {
   background-color: #0c0c0c;
+  border: 3px solid #000000;
   color: white;
   font-weight: bold;
   padding: 8px;
-  text-align: center;
+  text-align: left;
 }
 
 .table-diary td {
   text-align: left;
-  border-bottom: 1px solid #dddddd97;
-  background-color: rgba(255, 255, 255, 0.331);
+  border-bottom: 3px solid #000000f0;
+  background-color: rgba(255, 255, 255, 0.75);
   font-weight: bolder;
-  font-size: 10px;
-  text-align: center;
+  font-size: 9px;
+  text-align: left;
 }
 .table-diary th {
   background-color: #0c0c0c;
@@ -173,6 +136,9 @@ h2 {
   padding: 8px;
   text-align: center;
 }
+.table-diary table th , table td{
+  border: 2px solid #000;
+}
 .table-diary .first-column {
   font-size: 16px; 
 }
@@ -180,8 +146,12 @@ h2 {
   text-align: center; 
 }
 
+td.hour-column, td.header-cell, td.first-column{
+  border-right: 4px solid #060606;
+}
+
 .current-day {
-  background-color: blue;
+  background-color: #f2f2f2;
   color: black; 
 }
 
@@ -239,6 +209,8 @@ h2 {
 .table-diary table th, table td {
   border: 1px solid #fff;
 }
+
+
 .table-diary td:not(:last-child) {
   margin-right: 2px;
 }
@@ -322,7 +294,9 @@ h2 {
 .reservation-form buttom-modal:hover {
   background-color: #7d2626;
 }
-
+.bordered-cell {
+  border: 1px solid #000000;
+}
 .close-button {
   position: absolute;
   top: 10px;
@@ -356,7 +330,9 @@ th.hour-column {
 }
 
 th.red-background {
-  background-color: red;
+  background-color: #e61010;
+  color:black;
+  font-weight: bolder;
 }
 
 th.black-background {
@@ -364,7 +340,9 @@ th.black-background {
 }
 
 th.gray-background {
-  background-color: gray;
+  background-color:#c1c1c1;
+  color:black;
+  font-weight: bolder;
 }
 
 td.first-column{
@@ -372,4 +350,7 @@ td.first-column{
   color:rgb(0, 0, 0);
   text-align: center; 
   font-weight: bolder;
+  width: 10px;
+
 }
+
