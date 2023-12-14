@@ -10,8 +10,8 @@ body {
   justify-content: space-between;
   align-items: center;
   padding: 10px;
-  background-color: #f2f2f217;
-  width: 400px;
+  background-color: #f2f2f28a;
+  width: 588px;
   font-weight: bolder;
   height: 40px;
 }
@@ -256,6 +256,7 @@ td.hour-column, td.header-cell, td.first-column{
   max-width: 400px;
   width: 100%;
   box-sizing: border-box;
+  font-weight: bold;
 }
 
 .overlay {
@@ -275,7 +276,7 @@ td.hour-column, td.header-cell, td.first-column{
 .reservation-form input,
 .reservation-form select,
 .reservation-form buttom-modal {
-  margin-bottom: 15px;
+  margin-bottom: 2px;
   width: 100%;
   padding: 12px;
   border: 1px solid #ccc;
@@ -353,4 +354,34 @@ td.first-column{
   width: 10px;
 
 }
+/* Estilos para el contenedor del checkbox y la fecha de finalización */
+.reservation-form-checkbox {
+  margin-top: 1px;
+  display: flex;
+  align-items: center;
+  justify-content: start;
+  margin-right: 212px;
+
+}
+
+/* Estilos para el label del checkbox */
+.reservation-form-checkbox label {
+  font-weight: bolder;
+  font-size: 13px;
+  color: #000000;
+  width: 250px;
+}
+
+/* Estilos para la fecha de finalización */
+.reservation-form-end-date {
+  margin-top: 15px;
+  font-size: 16px;
+  color: #000000; /* Cambia el color según tu preferencia */
+}
+
+/* Estilo opcional para dar más espacio entre el checkbox y el siguiente elemento */
+.reservation-form-checkbox + .buttom-modal {
+  margin-top: 10px;
+}
+
 

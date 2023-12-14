@@ -7,6 +7,7 @@ import { faTrash, faEdit, faBan } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Swal from 'sweetalert2';
 import DatePicker from 'react-datepicker';
+import "react-datepicker/dist/react-datepicker.css";
 import Select from 'react-select';
 
 
@@ -317,9 +318,10 @@ const EditReservations = () => {
               />
               <label>Fecha:</label>
               <DatePicker
-                className="DatePicker"
+                className='DatePicker'
                 selected={formData.date ? new Date(formData.date) : null}
-                onChange={(date) => handleChange('date', moment(date).format('YYYY-MM-DD'))}
+                onChange={(date) => handleChange('date', date)}
+                dateFormat="yyyy-MM-dd"
               />
 
               <button className="buttom-modal" onClick={handleSaveReservation}>

@@ -8,6 +8,8 @@ import 'react-datepicker/dist/react-datepicker.css';
 import '../components/styles/Diary.css';
 import { faTrash, faBan } from '@fortawesome/free-solid-svg-icons';
 import DatePicker from 'react-datepicker';
+import "react-datepicker/dist/react-datepicker.css";
+import { format, parseISO } from 'date-fns';
 
 
 
@@ -19,6 +21,8 @@ const Diary = () => {
   const [loading, setLoading] = useState(true);
   const [showReservationForm, setShowReservationForm] = useState(false);
   const [users, setUsers] = useState([])
+  const [isMonthlyReservation, setIsMonthlyReservation] = useState(false);
+const [endDate, setEndDate] = useState('');
   const [formData, setFormData] = useState({
     userId: '',
     date: '',
@@ -122,7 +126,13 @@ const Diary = () => {
     fetchWeeklyReservations(previousWeek);
   };
 
-  const handleOpenReservationForm = () => {
+  const handleOpenReservationForm = (date) => {
+    const localDate = moment(date).tz('America/Bogota').toDate();
+    setFormData({
+      userId: '',
+      date: localDate, 
+      hour:'',
+    });
     setShowReservationForm(true);
   };
 
@@ -255,6 +265,69 @@ const Diary = () => {
       }
     });
   };
+
+
+    const handleSaveMonthlyReservation = () => {
+      const { userId, hour } = formData;
+      const startDate = moment(formData.date);
+      let endDateToUse;
+    
+      if (isMonthlyReservation) {
+        // Calcula la fecha un mes después de la fecha de inicio
+        endDateToUse = moment(startDate).add(1, 'month');
+      } else {
+        // Utiliza el final del mes actual
+        endDateToUse = moment(startDate).endOf('month');
+      }
+    for (let date = moment(startDate); date.isSameOrBefore(endDateToUse,'day'); date.add(1, 'days')) {
+      if (date.isoWeekday() <= 5) { // Lunes a Viernes
+        const reservationData = {
+          userId: userId.value,
+          day: date.format('YYYY-MM-DD'),
+          hour: hour.value,
+        };
+  
+        createReservation(reservationData);
+        fetchWeeklyReservations(moment(currentDate).startOf('isoWeek').toDate());
+      }
+    }
+    handleCloseReservationForm();
+    Swal.fire('Reserva Creada', 'Las reservas mensuales están siendo procesadas.', 'success');
+  };
+  const handleMonthlyReservationChange = (e) => {
+    const checked = e.target.checked;
+    setIsMonthlyReservation(checked);
+    if (checked) {
+      const calculatedEndDate = moment(formData.date).add(1, 'month').subtract(1, 'day').format('YYYY-MM-DD');
+      setEndDate(calculatedEndDate);
+    } else {
+      setEndDate('');
+    }
+  };
+  
+  
+
+  
+  
+  const createReservation = (reservationData) => {
+    fetch('https://bullfit-back.onrender.com/api/reservations', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(reservationData),
+    })
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error('No se pudo crear la reserva');
+      }
+    })
+    .catch((error) => {
+      console.error('Error al crear reserva:', error);
+      Swal.fire('Error', 'No se pudo crear la reserva.', 'error');
+    });
+  };
+  
   
 
 
@@ -266,10 +339,10 @@ const Diary = () => {
   };
 
   const availableHours = [
-    { value: '6:00', label: '6:00' },
-    { value: '7:00', label: '7:00' },
-    { value: '8:00', label: '8:00' },
-    { value: '9:00', label: '9:00' },
+    { value: '06:00', label: '06:00' },
+    { value: '07:00', label: '07:00' },
+    { value: '08:00', label: '08:00' },
+    { value: '09:00', label: '09:00' },
     { value: '10:00', label: '10:00' },
     { value: '16:00', label: '16:00' },
     { value: '17:00', label: '17:00' },
@@ -316,6 +389,20 @@ const Diary = () => {
     const currentDay = moment().format('dddd');
     return day === currentDay;
   };
+
+  const handleNextMonth = () => {
+    const nextMonth = moment(currentDate).add(1, 'month').startOf('month');
+    setCurrentDate(nextMonth);
+    fetchWeeklyReservations(nextMonth.startOf('isoWeek').toDate());
+  };
+  
+  const handleCurrentWeek = () => {
+    const currentWeek = moment().startOf('isoWeek');
+    setCurrentDate(currentWeek);
+    fetchWeeklyReservations(currentWeek.toDate());
+  };
+  
+
 
 
 
@@ -452,14 +539,15 @@ const Diary = () => {
     <div className={`Diary-container ${loading ? 'fade-in' : 'fade-out'}`}>
       <h2 className='title'>Agenda Semanal</h2>
       <div className="filter-controls-diary">
-
         <button className='butom-day' onClick={handlePreviousWeek}>Semana Anterior</button>
         <button className='butom-day' onClick={handleNextWeek}>Siguiente Semana</button>
+        <button className='butom-day' onClick={handleCurrentWeek}>Semana Actual</button>
+        <button className='butom-day' onClick={handleNextMonth}>Siguiente Mes</button>
         <button className='butom-day' onClick={handleOpenReservationForm}>Nueva Reserva</button>
-        <Link to={`/userList/${id}`} >
+        <Link to={`/userList/${id}`}>
           <button className='butom-day' onClick={handleOpenReservationForm}>Usuarios</button>
         </Link>
-        <Link to={`/admin/${id}`} >
+        <Link to={`/admin/${id}`}>
           <button className='butom-day' onClick={handleOpenReservationForm}>Inicio</button>
         </Link>
       </div>
@@ -488,18 +576,32 @@ const Diary = () => {
               onChange={(selectedOption) => handleChange('hour', selectedOption)}
             />
             <label>Fecha:</label>
-            <DatePicker className='DatePicker'
+            <DatePicker
+              className='DatePicker'
               selected={formData.date ? new Date(formData.date) : null}
-              onChange={(date) => handleChange('date', moment(date).format('YYYY-MM-DD'))}
+              onChange={(date) => handleChange('date', date)}
+              dateFormat="yyyy-MM-dd"
             />
-
-            <button className='buttom-modal' onClick={handleSaveReservation}>Guardar</button>
+            <div className="reservation-form-checkbox">
+              <input
+                type="checkbox"
+                checked={isMonthlyReservation}
+                onChange={handleMonthlyReservationChange}
+              />
+              <label>Reserva Mensual</label>
+            </div>
+            {isMonthlyReservation && (
+              <p className="reservation-form-end-date">Fecha de finalización: {endDate}</p>
+            )}
+            <button className='buttom-modal' onClick={handleSaveMonthlyReservation}>Reservar Mes</button>
+            <button className='buttom-modal' onClick={handleSaveReservation}>Reservar día</button>
             <button className='buttom-modal' onClick={handleCloseReservationForm}>Cancelar</button>
           </div>
         </div>
       )}
     </div>
   );
+  
 };
 
 export default Diary;
