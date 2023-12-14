@@ -354,7 +354,7 @@ td.first-column{
   width: 10px;
 
 }
-/* Estilos para el contenedor del checkbox y la fecha de finalización */
+
 .reservation-form-checkbox {
   margin-top: 1px;
   display: flex;
@@ -364,7 +364,6 @@ td.first-column{
 
 }
 
-/* Estilos para el label del checkbox */
 .reservation-form-checkbox label {
   font-weight: bolder;
   font-size: 13px;
@@ -372,14 +371,14 @@ td.first-column{
   width: 250px;
 }
 
-/* Estilos para la fecha de finalización */
+
 .reservation-form-end-date {
   margin-top: 15px;
   font-size: 16px;
-  color: #000000; /* Cambia el color según tu preferencia */
+  color: #000000; 
 }
 
-/* Estilo opcional para dar más espacio entre el checkbox y el siguiente elemento */
+
 .reservation-form-checkbox + .buttom-modal {
   margin-top: 10px;
 }

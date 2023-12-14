@@ -22,7 +22,7 @@ const Diary = () => {
   const [showReservationForm, setShowReservationForm] = useState(false);
   const [users, setUsers] = useState([])
   const [isMonthlyReservation, setIsMonthlyReservation] = useState(false);
-const [endDate, setEndDate] = useState('');
+  const [endDate, setEndDate] = useState('');
   const [formData, setFormData] = useState({
     userId: '',
     date: '',
@@ -61,11 +61,11 @@ const [endDate, setEndDate] = useState('');
       .catch((error) => {
         console.error('Error al cargar la lista de usuarios:', error);
       });
-      
-      const intervalId = setInterval(() => {
-        fetchWeeklyReservations(currentDateInColombia.startOf('isoWeek').toDate()); 
-      }, 60000); 
-      return () => clearInterval(intervalId)
+
+    const intervalId = setInterval(() => {
+      fetchWeeklyReservations(currentDateInColombia.startOf('isoWeek').toDate());
+    }, 60000);
+    return () => clearInterval(intervalId)
 
   }, [id]);
 
@@ -103,15 +103,15 @@ const [endDate, setEndDate] = useState('');
       },
       body: JSON.stringify(reservationData),
     })
-    .then((response) => response.json())
-    .then(() => {
-      Swal.fire('Reserva Creada', 'La reserva ha sido creada exitosamente.', 'success');
-      fetchWeeklyReservations(moment(currentDate).startOf('isoWeek').toDate());
-    })
-    .catch((error) => {
-      console.error('Error al crear reserva:', error);
-      Swal.fire('Error', 'No se pudo crear la reserva.', 'error');
-    });
+      .then((response) => response.json())
+      .then(() => {
+        Swal.fire('Reserva Creada', 'La reserva ha sido creada exitosamente.', 'success');
+        fetchWeeklyReservations(moment(currentDate).startOf('isoWeek').toDate());
+      })
+      .catch((error) => {
+        console.error('Error al crear reserva:', error);
+        Swal.fire('Error', 'No se pudo crear la reserva.', 'error');
+      });
   };
 
   const handleNextWeek = () => {
@@ -130,8 +130,8 @@ const [endDate, setEndDate] = useState('');
     const localDate = moment(date).tz('America/Bogota').toDate();
     setFormData({
       userId: '',
-      date: localDate, 
-      hour:'',
+      date: localDate,
+      hour: '',
     });
     setShowReservationForm(true);
   };
@@ -254,39 +254,39 @@ const [endDate, setEndDate] = useState('');
         fetch(`https://bullfit-back.onrender.com/api/reservations/${reservationId}`, {
           method: 'DELETE',
         })
-        .then((response) => {
-          if (response.ok) {
-            Swal.fire('Eliminado', 'La reserva ha sido eliminada.', 'success');
-            fetchWeeklyReservations(moment(currentDate).startOf('isoWeek').toDate());
-          } else {
-            Swal.fire('Error', 'No se pudo eliminar la reserva.', 'error');
-          }
-        });
+          .then((response) => {
+            if (response.ok) {
+              Swal.fire('Eliminado', 'La reserva ha sido eliminada.', 'success');
+              fetchWeeklyReservations(moment(currentDate).startOf('isoWeek').toDate());
+            } else {
+              Swal.fire('Error', 'No se pudo eliminar la reserva.', 'error');
+            }
+          });
       }
     });
   };
 
 
-    const handleSaveMonthlyReservation = () => {
-      const { userId, hour } = formData;
-      const startDate = moment(formData.date);
-      let endDateToUse;
-    
-      if (isMonthlyReservation) {
-        // Calcula la fecha un mes después de la fecha de inicio
-        endDateToUse = moment(startDate).add(1, 'month');
-      } else {
-        // Utiliza el final del mes actual
-        endDateToUse = moment(startDate).endOf('month');
-      }
-    for (let date = moment(startDate); date.isSameOrBefore(endDateToUse,'day'); date.add(1, 'days')) {
+  const handleSaveMonthlyReservation = () => {
+    const { userId, hour } = formData;
+    const startDate = moment(formData.date);
+    let endDateToUse;
+
+    if (isMonthlyReservation) {
+      // Calcula la fecha un mes después de la fecha de inicio
+      endDateToUse = moment(startDate).add(1, 'month');
+    } else {
+      // Utiliza el final del mes actual
+      endDateToUse = moment(startDate).endOf('month');
+    }
+    for (let date = moment(startDate); date.isSameOrBefore(endDateToUse, 'day'); date.add(1, 'days')) {
       if (date.isoWeekday() <= 5) { // Lunes a Viernes
         const reservationData = {
           userId: userId.value,
           day: date.format('YYYY-MM-DD'),
           hour: hour.value,
         };
-  
+
         createReservation(reservationData);
         fetchWeeklyReservations(moment(currentDate).startOf('isoWeek').toDate());
       }
@@ -304,11 +304,11 @@ const [endDate, setEndDate] = useState('');
       setEndDate('');
     }
   };
-  
-  
 
-  
-  
+
+
+
+
   const createReservation = (reservationData) => {
     fetch('https://bullfit-back.onrender.com/api/reservations', {
       method: 'POST',
@@ -317,18 +317,18 @@ const [endDate, setEndDate] = useState('');
       },
       body: JSON.stringify(reservationData),
     })
-    .then((response) => {
-      if (!response.ok) {
-        throw new Error('No se pudo crear la reserva');
-      }
-    })
-    .catch((error) => {
-      console.error('Error al crear reserva:', error);
-      Swal.fire('Error', 'No se pudo crear la reserva.', 'error');
-    });
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error('No se pudo crear la reserva');
+        }
+      })
+      .catch((error) => {
+        console.error('Error al crear reserva:', error);
+        Swal.fire('Error', 'No se pudo crear la reserva.', 'error');
+      });
   };
-  
-  
+
+
 
 
   const handleChange = (name, value) => {
@@ -395,13 +395,13 @@ const [endDate, setEndDate] = useState('');
     setCurrentDate(nextMonth);
     fetchWeeklyReservations(nextMonth.startOf('isoWeek').toDate());
   };
-  
+
   const handleCurrentWeek = () => {
     const currentWeek = moment().startOf('isoWeek');
     setCurrentDate(currentWeek);
     fetchWeeklyReservations(currentWeek.toDate());
   };
-  
+
 
 
 
@@ -456,10 +456,10 @@ const [endDate, setEndDate] = useState('');
                           onClick={() => handlecancellation(reservation._id)}
                         />
                         <FontAwesomeIcon
-                          icon={faTrash} 
+                          icon={faTrash}
                           className="delete-icon"
                           onClick={() => handleDeleteReservation(reservation._id)}
-                          style={{ color: 'red', cursor: 'pointer' }} 
+                          style={{ color: 'red', cursor: 'pointer' }}
                         />
                       </>
                     )}
@@ -514,9 +514,9 @@ const [endDate, setEndDate] = useState('');
                     placeholder=""
                     styles={{
                       container: (base) => ({ ...base, width: '100%' }),
-                      control: (base) => ({ 
-                        ...base, 
-                        minHeight: '20px', 
+                      control: (base) => ({
+                        ...base,
+                        minHeight: '20px',
                         backgroundColor: 'rgba(255, 255, 255, 0.331)',
                       }),
                       valueContainer: (base) => ({ ...base, height: '20px' }),
@@ -601,7 +601,7 @@ const [endDate, setEndDate] = useState('');
       )}
     </div>
   );
-  
+
 };
 
 export default Diary;
