@@ -20,7 +20,6 @@ const Reservations = () => {
   const [reservationsData, setReservationsData] = useState({});
   const [userReservations, setUserReservations] = useState([]);
   const [reservationStatus, setReservationStatus] = useState(null);
-
   const navigate = useNavigate();
   const [showMonthlyReservationForm, setShowMonthlyReservationForm] = useState(false);
   const [monthlyReservationData, setMonthlyReservationData] = useState({
@@ -417,14 +416,16 @@ const Reservations = () => {
     <div className="reservations-container">
       <h2>Horario de Reservas de {moment(selectedDate).format('MMMM')}</h2>
       <div className="table-container">
-        <div className="date-navigation-reservation">
-          <Link to={`/customers/${id}`}>
-            <button>Inicio</button>
-          </Link>
+      <div className="date-navigation-reservation">
+        <Link to={`/customers/${id}`}>
+          <button>Inicio</button>
+        </Link>
+        {user && user.Plan === 'Mensual' && (
           <button onClick={handleOpenMonthlyReservationForm}>Reserva Mensual</button>
-          <button onClick={() => handleDateChange(-7)}>Semana Anterior</button>
-          <button onClick={() => handleDateChange(7)}>Semana Siguiente</button>
-        </div>
+        )}
+        <button onClick={() => handleDateChange(-7)}>Semana Anterior</button>
+        <button onClick={() => handleDateChange(7)}>Semana Siguiente</button>
+      </div>
         <table>
           <thead>
             {renderTableHeaders()}
