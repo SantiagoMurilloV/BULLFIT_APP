@@ -305,10 +305,6 @@ const Diary = () => {
     }
   };
 
-
-
-
-
   const createReservation = (reservationData) => {
     fetch('https://bullfit-back.onrender.com/api/reservations', {
       method: 'POST',
@@ -344,11 +340,11 @@ const Diary = () => {
     { value: '08:00', label: '08:00' },
     { value: '09:00', label: '09:00' },
     { value: '10:00', label: '10:00' },
-    { value: '16:00', label: '16:00' },
-    { value: '17:00', label: '17:00' },
-    { value: '18:00', label: '18:00' },
-    { value: '19:00', label: '19:00' },
-    { value: '20:00', label: '20:00' },
+    { value: '16:00', label: '04:00 pm' },
+    { value: '17:00', label: '05:00 pm' },
+    { value: '18:00', label: '06:00 pm' },
+    { value: '19:00', label: '07:00 pm' },
+    { value: '20:00', label: '08:00 pm' },
   ];
   const renderTableHeaders = () => {
     const daysOfWeek = moment.weekdays().slice(1);

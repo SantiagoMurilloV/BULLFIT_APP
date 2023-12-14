@@ -181,6 +181,19 @@ const EditReservations = () => {
     setCurrentDate(previousWeek);
     fetchUserReservations(id , previousWeek);
   };
+  const handleCurrentWeek = () => {
+    const currentWeek = moment().tz('America/Bogota').startOf('isoWeek');
+    setCurrentDate(currentWeek);
+    fetchUserReservations(id, currentWeek.toDate());
+  };
+  
+  const handleNextMonth = () => {
+    const nextMonth = moment(currentDate).add(1, 'month').startOf('isoWeek');
+    setCurrentDate(nextMonth);
+    fetchUserReservations(id, nextMonth.toDate());
+  };
+  
+
 
   const renderTableHeaders = () => {
     const headers = [
@@ -293,6 +306,9 @@ const EditReservations = () => {
           <button className="nav-button" onClick={handleNextWeek}>
             Próxima Semana
           </button>
+          <button className="nav-button" onClick={handleCurrentWeek}>Semana Actual</button>
+          <button className="nav-button" onClick={handleNextMonth}>Siguiente Mes</button>
+
           <Link to={`/customers/${id }`} >
           <button className="nav-button" >
             Inicio

@@ -5,6 +5,7 @@ import Swal from 'sweetalert2';
 import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faClock } from '@fortawesome/free-solid-svg-icons';
+import Select from 'react-select';
 import 'moment/locale/es';
 import '../components/styles/Reservations.css';
 
@@ -19,8 +20,15 @@ const Reservations = () => {
   const [reservationsData, setReservationsData] = useState({});
   const [userReservations, setUserReservations] = useState([]);
   const [reservationStatus, setReservationStatus] = useState(null);
-
   const navigate = useNavigate();
+  const [showMonthlyReservationForm, setShowMonthlyReservationForm] = useState(false);
+  const [monthlyReservationData, setMonthlyReservationData] = useState({
+    hour: '',
+    startDate: '',
+    endDate: '',
+  });
+
+
 
   useEffect(() => {
     const fetchReservations = async () => {
@@ -95,21 +103,26 @@ const Reservations = () => {
     }
   };
 
-  
+
 
   const handleDateChange = (daysToAdd) => {
     const newSelectedDate = moment(selectedDate).add(daysToAdd, 'days').startOf('week');
     setSelectedDate(newSelectedDate);
   };
-  
-
-
-  const getReservationsCountForHour = (dayIndex, hour) => {
-    const dateKey = moment(selectedDate).add(dayIndex, 'days').format('YYYY-MM-DD');
-    const timeKey = `${hour < 10 ? '0' : ''}${hour}:00`;
-    const reservationsForDay = reservationsData[dateKey] || {};
-    return Object.values(reservationsForDay).filter(reservationHour => reservationHour === timeKey).length;
+  const handleOpenMonthlyReservationForm = () => {
+    setShowMonthlyReservationForm(true);
   };
+  const handleStartDateChange = (e) => {
+    const newStartDate = e.target.value;
+    const newEndDate = moment(newStartDate).add(1, 'month').format('YYYY-MM-DD');
+
+    setMonthlyReservationData({
+      ...monthlyReservationData,
+      startDate: newStartDate,
+      endDate: newEndDate,
+    });
+  };
+
 
   const getReservationsCountForDay = (dateKey) => {
     const reservationsForDay = reservationsData[dateKey] || {};
@@ -127,7 +140,6 @@ const Reservations = () => {
       Swal.fire('Error en la reserva', 'Solo puedes reservar hasta dos horas antes del evento.', 'error');
       return;
     }
-
 
     const reservationsCountForDay = getReservationsCountForDay(dateKey);
     const maxReservationsPerDay = 8;
@@ -233,11 +245,82 @@ const Reservations = () => {
     const dateKey = moment(selectedDate).add(dayIndex, 'days').format('YYYY-MM-DD');
     return reservationsData[dateKey] || {};
   };
+  const createReservation = (reservationData) => {
+    fetch('https://bullfit-back.onrender.com/api/reservations', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(reservationData),
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error('No se pudo crear la reserva');
+        }
+      })
+      .catch((error) => {
+        console.error('Error al crear reserva:', error);
+        Swal.fire('Error', 'No se pudo crear la reserva.', 'error');
+      });
+  };
+
+
+  const handleSaveMonthlyReservation = async () => {
+    const startDate = moment(monthlyReservationData.startDate);
+    const endDate = moment(startDate).add(1, 'month');
+  
+    for (let date = moment(startDate); date.isBefore(endDate); date.add(1, 'day')) {
+      if (date.isoWeekday() <= 5) { // Lunes a Viernes
+        const reservationData = {
+          userId: id,
+          day: date.format('YYYY-MM-DD'),
+          hour: monthlyReservationData.hour ? monthlyReservationData.hour.value : null,
+        };
+  
+        try {
+          await createReservation(reservationData);
+        } catch (error) {
+          console.error('Error al crear reserva:', error);
+        }
+      }
+    }
+  
+    setShowMonthlyReservationForm(false);
+    Swal.fire({
+      title: 'Reserva Creada',
+      text: 'Las reservas mensuales están siendo procesadas.',
+      icon: 'success'
+    }).then(() => {
+      fetchReservations(); 
+      window.location.reload();
+    });
+  };
+  
+
+  const handleChange = (name, value) => {
+    setMonthlyReservationData({
+      ...monthlyReservationData,
+      [name]: value,
+    });
+  };
+  const availableHours = [
+    { value: ' ', label: ' ' },
+    { value: '06:00', label: '06:00' },
+    { value: '07:00', label: '07:00' },
+    { value: '08:00', label: '08:00' },
+    { value: '09:00', label: '09:00' },
+    { value: '10:00', label: '10:00' },
+    { value: '16:00', label: '04:00 pm' },
+    { value: '17:00', label: '05:00 pm' },
+    { value: '18:00', label: '06:00 pm' },
+    { value: '19:00', label: '07:00 pm' },
+    { value: '20:00', label: '08:00 pm' },
+  ];
 
   const formatHour = (hour) => {
     return hour >= 12 ? `${hour - 12} PM` : `${hour} AM`;
   };
-  
+
   const renderTableHeaders = () => {
     return (
       <tr>
@@ -258,7 +341,7 @@ const Reservations = () => {
                 return '';
             }
           })();
-  
+
           return (
             <th key={i} className={dayHeaderClass}>
               {day} {moment(selectedDate).add(i, 'days').format('D')}
@@ -268,8 +351,8 @@ const Reservations = () => {
       </tr>
     );
   };
-  
-  
+
+
 
   const renderTableRows = () => {
     const currentDay = moment().startOf('day');
@@ -331,22 +414,51 @@ const Reservations = () => {
 
   return (
     <div className="reservations-container">
-    <h2>Horario de Reservas de {moment(selectedDate).format('MMMM')}</h2>
+      <h2>Horario de Reservas de {moment(selectedDate).format('MMMM')}</h2>
       <div className="table-container">
-        <div className="date-navigation-reservation">
-          <Link to={`/customers/${id}`}>
-            <button>Inicio</button>
-          </Link>
-          <button onClick={() => handleDateChange(-7)}>Semana Anterior</button>
-          <button onClick={() => handleDateChange(7)}>Semana Siguiente</button>
-        </div>
+      <div className="date-navigation-reservation">
+        <Link to={`/customers/${id}`}>
+          <button>Inicio</button>
+        </Link>
+        {user && user.Plan === 'Mensual' && (
+          <button onClick={handleOpenMonthlyReservationForm}>Reserva Mensual</button>
+        )}
+        <button onClick={() => handleDateChange(-7)}>Semana Anterior</button>
+        <button onClick={() => handleDateChange(7)}>Semana Siguiente</button>
+      </div>
         <table>
           <thead>
-                {renderTableHeaders()}
+            {renderTableHeaders()}
           </thead>
           <tbody>{renderTableRows()}</tbody>
         </table>
       </div>
+      {showMonthlyReservationForm && (
+        <div className="overlay">
+          <div className="reservation-form">
+            <label>Hora:</label>
+            <Select
+              options={availableHours}
+              value={monthlyReservationData.hour}
+              onChange={(selectedOption) => handleChange('hour', selectedOption)}
+              placeholder="Selecciona una hora"
+            />
+
+            <label>Fecha de inicio:</label>
+            <input
+              type="date"
+              value={monthlyReservationData.startDate}
+              onChange={handleStartDateChange}
+            />
+            {monthlyReservationData.startDate && (
+              <p>Fecha de finalización: {monthlyReservationData.endDate}</p>
+            )}
+            <button onClick={handleSaveMonthlyReservation}>Guardar Reservas</button>
+            <button onClick={() => setShowMonthlyReservationForm(false)}>Cancelar</button>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 };
