@@ -254,7 +254,7 @@ h2 {
 .reservation-form input,
 .reservation-form select,
 .reservation-form buttom-modal {
-  margin-bottom: 15px;
+  margin-bottom: 2px;
   width: 100%;
   padding: 12px;
   border: 1px solid #ccc;
