@@ -191,7 +191,7 @@ body {
 .profile-text {
   color: white;
   margin-left: 10px; 
-  font-weight: bolder;
+  font-weight:lighter;
 }
 
 .button-icon {
@@ -231,6 +231,8 @@ body {
   height: 98px;
   width: 155px;
   font-weight: bolder;
+  font-size: 66px;
+  color: black;
 }
 
 .button-icon-image-admin {
@@ -261,6 +263,7 @@ body {
   width: 240px;
   height: 171px;
   font-size: 20px;
+  color: black;
 }
 
 

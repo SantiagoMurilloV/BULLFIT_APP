@@ -10,6 +10,7 @@ import firebaseConfig from '../FireBase';
 import { BarLoader } from 'react-spinners';
 import { environment } from '../environments.js'; 
 
+
 const app = initializeApp(firebaseConfig);
 const storage = getStorage(app);
 
@@ -213,22 +214,27 @@ const Customers = ({ currentUser }) => {
         <div className="button-column-customers">
           <button className="button-icon" onClick={handleReserveClasses}>
             {user && user.Active === 'No' && user.Active !== null ? (
-              <div className="button-link">
+              <div className="button-link-customers">
                 <img
                   src={imageUrl3}
                   alt="Icono de Reservar"
                   className="button-icon-image"
                 />
-                <span className="profile-text">Reservar Clase </span>
+                <div>
+                <span className="profile-text">Reservar Clase</span>
+                </div>
+              
               </div>
             ) : (
-              <Link to={`/reservations/${id}`} className="button-link">
+              <Link to={`/reservations/${id}`} className="button-link-customers">
                 <img
                   src={imageUrl3}
                   alt="Icono de Reservar"
                   className="button-icon-image"
                 />
-                <span className="profile-text">Reservar Clase </span>
+                <div>
+                <span className="profile-text">Reservar Clase</span>
+                </div>
               </Link>
             )}
           </button>
@@ -236,22 +242,26 @@ const Customers = ({ currentUser }) => {
         <div className="button-column-customers">
           <button className="button-icon" >
             {user && user.Active === 'No' && user.Active !== null ? (
-              <div className="button-link">
+              <div className="button-link-customers">
                 <img
                   src={imageUrl4}
                   alt="Icono de Reservar"
                   className="button-icon-image"
                 />
-                <span className="profile-text">Modificar Reserva </span>
+                <div>
+                <span className="profile-text">Modificar Reservas</span>
+                </div>  
               </div>
             ) : (
-              <Link to={`/EditReservation/${id}`} className="button-link">
+              <Link to={`/EditReservation/${id}`} className="button-link-customers">
                 <img
                   src={imageUrl4}
                   alt="Icono de Reservar"
                   className="button-icon-image"
                 />
-                <span className="profile-text">Modificar Reserva </span>
+                <div>
+                <span className="profile-text">Modificar Reservas</span>
+                </div>
               </Link>
             )}
           </button>

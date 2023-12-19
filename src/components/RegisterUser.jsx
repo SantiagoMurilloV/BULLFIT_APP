@@ -5,8 +5,9 @@ import '../components/styles/RegisterUser.css';
 import { initializeApp } from 'firebase/app';
 import { getStorage, ref, getDownloadURL } from 'firebase/storage';
 import firebaseConfig from '../FireBase';
-import { BarLoader } from 'react-spinners';
 import { environment } from '../environments'; 
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
 
 const app = initializeApp(firebaseConfig);
 const storage = getStorage(app);
@@ -18,7 +19,9 @@ const RegisterUsers = () => {
     Phone: '',
     IdentificationNumber: '',
     Active: 'Sí',
-    Plan: 'Semanal',
+    Plan: '',
+    startDate: '',
+    endDate: '',
   });
   const { id } = useParams();
   const navigate = useNavigate(); 
@@ -39,11 +42,21 @@ const RegisterUsers = () => {
   }, [storage]);
 
 
-
+  const calculateEndDate = (startDate) => {
+    let date = new Date(startDate);
+    date.setMonth(date.getMonth() + 1);
+    return date.toISOString().split('T')[0]; // Formatear a yyyy-mm-dd
+  }
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setUserData({ ...userData, [name]: value });
+    let newUserData = { ...userData, [name]: value };
+
+    if (name === 'startDate' && userData.Plan === 'Mensual') {
+      newUserData.endDate = calculateEndDate(value);
+    }
+
+    setUserData(newUserData);
   };
 
   const handleSubmit = () => {
@@ -54,7 +67,8 @@ const RegisterUsers = () => {
       userData.Phone &&
       userData.IdentificationNumber &&
       userData.Active &&
-      userData.Plan
+      userData.Plan &&
+      userData.startDate 
     ) {
       fetch(`${environment.apiURL}/api/users`, {
         method: 'POST',
@@ -82,6 +96,8 @@ const RegisterUsers = () => {
                   IdentificationNumber: '',
                   Active: '',
                   Plan: '',
+                  startDate: '',
+                  endDate: '',
                 });
               } else {
                 navigate(`/admin/${id}`);
@@ -167,23 +183,41 @@ const RegisterUsers = () => {
               onChange={handleInputChange}
             >
               <option value=" "> </option>
-              <option value="Semanal">Semanal</option>
+              <option value="Diario">Diario</option>
               <option value="Mensual">Mensual</option>
             </select>
           </div>
         </div>
         <div className="form-row">
+        <div className="form-group">
+          <label>Fecha de Inicio:</label>
+          <input
+            type="date"
+            name="startDate"
+            value={userData.startDate}
+            onChange={handleInputChange}
+          />
+        </div>
+        <div className="form-group">
+        {userData.Plan === 'Mensual' && (
+          <div className="form-group">
+            <label>Fecha Final:</label>
+            <input
+              type="date"
+              name="endDate"
+              value={userData.endDate}
+              onChange={handleInputChange}
+            />
+          </div>
+        )}
+        </div>
         </div>
         <button type="button" onClick={handleSubmit}>
           Registrar
         </button>
         <div className="profile-buttons">
-          <Link to={`/admin/${id}`} className="button-link">
-            <img
-              src={imageUrl}
-              alt=""
-              className="profile-button-image"
-            />
+          <Link to={`/admin/${id}`} className="button-link-register">
+          <FontAwesomeIcon icon={faSignOutAlt} />
           </Link>
         </div>
       </form>
