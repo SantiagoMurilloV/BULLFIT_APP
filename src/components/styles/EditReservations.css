@@ -123,7 +123,7 @@ h2 {
 }
 
 .edit-table table th, table td {
-  border: 2px solid #000;
+  border: 3px solid #360e0e;
 
 }
 .edit-table .first-column {
@@ -158,7 +158,7 @@ h2 {
   background-color: rgb(249, 249, 249);
   color: black;
   font-weight: 700;
-  width: 50px;
+  width: 74px;
 }
 .reservation-cell .Attendance {
   display: flex;

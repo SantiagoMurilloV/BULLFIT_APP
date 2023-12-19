@@ -6,6 +6,7 @@ import { getStorage, ref, getDownloadURL } from 'firebase/storage';
 import { BarLoader } from 'react-spinners';
 import firebaseConfig from '../FireBase';
 import '../components/styles/Login.css';
+import { environment } from '../environments'; 
 
 const app = initializeApp(firebaseConfig);
 const storage = getStorage(app);
@@ -70,24 +71,18 @@ const Login = ({ handleLogin }) => {
     console.log("👍", "butInstall-clicked");
     const promptEvent = window.deferredPrompt;
     if (!promptEvent) {
-      // The deferred prompt isn't available.
       console.log("oops, no prompt event guardado en window");
       return;
     }
-    // Show the install prompt.
     promptEvent.prompt();
-    // Log the result
     const result = await promptEvent.userChoice;
     console.log("👍", "userChoice", result);
-    // Reset the deferred prompt variable, since
-    // prompt() can only be called once.
     window.deferredPrompt = null;
-    // Hide the install button.
     setIsReadyForInstall(false);
   }
 
   const performLogin = () => {
-    fetch('https://bullfit-back.onrender.com/api/users')
+    fetch(`${environment.apiURL}/api/users`)
       .then((response) => {
         if (!response.ok) {
           throw new Error('Error al obtener la información de los usuarios');

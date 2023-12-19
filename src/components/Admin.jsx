@@ -6,7 +6,7 @@ import { initializeApp } from 'firebase/app';
 import { getStorage, ref, getDownloadURL } from 'firebase/storage';
 import firebaseConfig from '../FireBase'
 import { BarLoader } from 'react-spinners';
-
+import { environment } from '../environments.js'; 
 
 const app = initializeApp(firebaseConfig);
 const storage = getStorage(app);
@@ -71,7 +71,7 @@ const Admin = ({ currentUser }) => {
 
     fetchImageUrl();
 
-    fetch(`https://bullfit-back.onrender.com/api/users/${id}`)
+    fetch(`${environment.apiURL}/api/users/${id}`)
       .then((response) => {
         if (!response.ok) {
           throw new Error('Error en la solicitud');

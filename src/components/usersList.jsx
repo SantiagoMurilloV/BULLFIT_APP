@@ -3,9 +3,7 @@ import { Link, useParams } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import Select from 'react-select';
 import '../components/styles/UserList.css';
-import { initializeApp } from 'firebase/app';
-import { getStorage, ref, getDownloadURL } from 'firebase/storage';
-import firebaseConfig from '../FireBase';
+import { environment } from '../environments'; 
 
 const UserList = () => {
   const [users, setUsers] = useState([]);
@@ -18,7 +16,7 @@ const UserList = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch('https://bullfit-back.onrender.com/api/users');
+        const response = await fetch(`${environment.apiURL}/api/users`);
         if (!response.ok) {
           throw new Error('Error en la solicitud');
         }
@@ -35,7 +33,7 @@ const UserList = () => {
         setSearchResults(filteredResults);
         setLoading(false);
 
-        const userResponse = await fetch(`https://bullfit-back.onrender.com/api/users/${id}`);
+        const userResponse = await fetch(`${environment.apiURL}/api/users/${id}`);
         if (userResponse.ok) {
           const userData = await userResponse.json();
           setUser(userData);
@@ -52,7 +50,7 @@ const UserList = () => {
   const handleStatusChange = async (userId, Active) => {
     try {
       const updatedUserData = { Active };
-      const response = await fetch(`https://bullfit-back.onrender.com/api/users/${userId}`, {
+      const response = await fetch(`${environment.apiURL}/api/users/${userId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -60,7 +58,7 @@ const UserList = () => {
         body: JSON.stringify(updatedUserData),
       });
       if (response.ok) {
-        const userResponse = await fetch(`https://bullfit-back.onrender.com/api/users/${id}`);
+        const userResponse = await fetch(`${environment.apiURL}/api/users/${id}`);
         if (userResponse.ok) {
           const userData = await userResponse.json();
           setUser(userData);

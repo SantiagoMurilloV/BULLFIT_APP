@@ -20,18 +20,22 @@ body {
   width: 150px;
 }
 
-.butom-day {
-  border-radius: 5px;
+.butom-day-diary  {
+  border-radius: 2px;
   padding: 5px 10px;
   background-color: #000000;
   border-color: white;
   color: white;
   border: none;
   cursor: pointer;
-  height: 50px;
+  height: 36px;
+  width: 61px;
+  font-size: 19px;
 }
 
-
+.table-diary table th, table td {
+  border: 4px solid #000;
+}
 .reservation-cell.cancelled {
   background-color: #ff0000; 
   color: #000000; 
@@ -123,21 +127,23 @@ h2 {
 
 .table-diary td {
   text-align: left;
-  border-bottom: 3px solid #000000f0;
-  background-color: rgba(255, 255, 255, 0.75);
+  border-bottom: 5px solid #000000f0;
+  background-color: rgb(255 255 255);
   font-weight: bolder;
   font-size: 9px;
   text-align: left;
+  width: 260px;
 }
 .table-diary th {
   background-color: #0c0c0c;
+  border-bottom: 5px solid #000000f0;
   color: white;
   font-weight: bold;
   padding: 8px;
   text-align: center;
 }
-.table-diary table th , table td{
-  border: 2px solid #000;
+ table td{
+  border: 4px solid #000;
 }
 .table-diary .first-column {
   font-size: 16px; 
@@ -208,6 +214,36 @@ td.hour-column, td.header-cell, td.first-column{
 }
 .table-diary table th, table td {
   border: 1px solid #fff;
+}
+
+
+.reservation-cell {
+  display: flex;
+  justify-content: space-between;
+}
+
+.subcolumn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.subcolumn.name {
+  flex-basis: 100%;
+  justify-content: left;
+  font-size: 11px;
+}
+
+.subcolumn.training-type {
+  flex-basis: 30%; 
+}
+
+.subcolumn.attendance {
+  flex-basis: 20%; 
+}
+
+.subcolumn.actions {
+  flex-basis: 10%; 
 }
 
 
@@ -319,10 +355,6 @@ td.hour-column, td.header-cell, td.first-column{
   background-color: none;
 }
 
-.cancelled {
-  color: #ac1414f7;
-  font-weight: bolder;
-}
 
 th.hour-column {
   background-color: rgb(47, 85, 201); 

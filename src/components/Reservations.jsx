@@ -8,7 +8,7 @@ import { faClock } from '@fortawesome/free-solid-svg-icons';
 import Select from 'react-select';
 import 'moment/locale/es';
 import '../components/styles/Reservations.css';
-
+import { environment } from '../environments';
 
 const morningHours = [...Array(16).keys()].map((hour) => (hour + 6).toString().padStart(2, '0')); // 06:00 am to 09:00 pm
 const daysOfWeek = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
@@ -33,7 +33,7 @@ const Reservations = () => {
   useEffect(() => {
     const fetchReservations = async () => {
       try {
-        const response = await fetch(`https://bullfit-back.onrender.com/api/reservations/${id}`);
+        const response = await fetch(`${environment.apiURL}/api/reservations/${id}`);
         if (!response.ok) {
           throw new Error('Error en la solicitud');
         }
@@ -61,7 +61,7 @@ const Reservations = () => {
 
     const fetchUserReservations = async () => {
       try {
-        const response = await fetch(`https://bullfit-back.onrender.com/api/reservationsid/${id}`);
+        const response = await fetch(`${environment.apiURL}/api/reservationsid/${id}`);
         if (!response.ok) {
           throw new Error('Error en la solicitud');
         }
@@ -91,7 +91,7 @@ const Reservations = () => {
 
   const fetchReservations = async () => {
     try {
-      const response = await fetch(`https://bullfit-back.onrender.com/api/reservations/${id}`);
+      const response = await fetch(`${environment.apiURL}/api/reservations/${id}`);
       if (!response.ok) {
         throw new Error('Error en la solicitud');
       }
@@ -157,7 +157,7 @@ const Reservations = () => {
         return;
       } else {
         try {
-          const response = await fetch('https://bullfit-back.onrender.com/api/reservations', {
+          const response = await fetch(`${environment.apiURL}/api/reservations`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -191,7 +191,7 @@ const Reservations = () => {
                 navigate(`/customers/${id}`);
               } else {
                 try {
-                  const getResponse = await fetch(`https://bullfit-back.onrender.com/api/reservations?userId=${user._id}&day=${dateKey}&hour=${timeKey}`);
+                  const getResponse = await fetch(`${environment.apiURL}/api/reservations?userId=${user._id}&day=${dateKey}&hour=${timeKey}`);
 
                   if (getResponse.ok) {
                     const data = await getResponse.json();
@@ -246,7 +246,7 @@ const Reservations = () => {
     return reservationsData[dateKey] || {};
   };
   const createReservation = (reservationData) => {
-    fetch('https://bullfit-back.onrender.com/api/reservations', {
+    fetch(`${environment.apiURL}/api/reservations`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -268,7 +268,7 @@ const Reservations = () => {
   const handleSaveMonthlyReservation = async () => {
     const startDate = moment(monthlyReservationData.startDate);
     const endDate = moment(startDate).add(1, 'month');
-  
+
     for (let date = moment(startDate); date.isBefore(endDate); date.add(1, 'day')) {
       if (date.isoWeekday() <= 5) { // Lunes a Viernes
         const reservationData = {
@@ -276,7 +276,7 @@ const Reservations = () => {
           day: date.format('YYYY-MM-DD'),
           hour: monthlyReservationData.hour ? monthlyReservationData.hour.value : null,
         };
-  
+
         try {
           await createReservation(reservationData);
         } catch (error) {
@@ -284,18 +284,18 @@ const Reservations = () => {
         }
       }
     }
-  
+
     setShowMonthlyReservationForm(false);
     Swal.fire({
       title: 'Reserva Creada',
       text: 'Las reservas mensuales están siendo procesadas.',
       icon: 'success'
     }).then(() => {
-      fetchReservations(); 
+      fetchReservations();
       window.location.reload();
     });
   };
-  
+
 
   const handleChange = (name, value) => {
     setMonthlyReservationData({
@@ -358,74 +358,95 @@ const Reservations = () => {
     const currentDay = moment().startOf('day');
     const currentHour = moment().hour();
 
-    return morningHours.map((hour) => (
-      <tr key={hour}>
-        <td className="hour-cell">{formatHour(hour)}</td>
-        {daysOfWeek.map((_, dayIndex) => {
-          const dateKey = moment(selectedDate).add(dayIndex, 'days').format('YYYY-MM-DD');
-          const reservationForCell = userReservations.find(
-            (reservation) =>
-              reservation.day === dateKey &&
-              reservation.hour === `${hour}:00` &&
-              reservation.userId === id
-          );
+    return morningHours.map((hour, hourIndex) => {
+      const hourInt = parseInt(hour, 10);
 
-          const isReserved = reservationStatus && reservationStatus.day === dateKey && reservationStatus.hour === `${hour}:00`;
+      if (hourInt >= 11 && hourInt <= 15) {
+        return (
+          <tr key={hour}>
+            {daysOfWeek.map((_, dayIndex) => {
+              if (dayIndex === 0 && hourInt === hourInt >= 11 && hourInt <= 15) {
+                return <td key={dayIndex} rowSpan="4" colSpan={daysOfWeek.length}></td>;
+              }
+              return null;
+            })}
+          </tr>
+        );
+      } else {
+        return (
+          <tr key={hour}>
+            <td className="hour-cell">{formatHour(hourInt)}</td>
+            {daysOfWeek.map((_, dayIndex) => {
+              const dateKey = moment(selectedDate).add(dayIndex, 'days').format('YYYY-MM-DD');
+              const reservationForCell = userReservations.find(
+                (reservation) =>
+                  reservation.day === dateKey &&
+                  reservation.hour === `${hour}:00` &&
+                  reservation.userId === id
+              );
 
-          const isPastDay = moment(dateKey).isBefore(moment().startOf('day'), 'day');
-          const isCurrentDay = moment(dateKey).isSame(currentDay, 'day');
-          const isCurrentHourOrPast = isCurrentDay && currentHour >= parseInt(hour, 10);
+              const isReserved = reservationStatus && reservationStatus.day === dateKey && reservationStatus.hour === `${hour}:00`;
 
-          return (
-            <td key={dayIndex} >
-              {isHourValid(dayIndex, hour) && (
-                <>
-                  {isCurrentHourOrPast ? (
-                    <FontAwesomeIcon icon={faClock} className="past-day-icon" />
-                  ) : (
+              const isPastDay = moment(dateKey).isBefore(moment().startOf('day'), 'day');
+              const isCurrentDay = moment(dateKey).isSame(currentDay, 'day');
+              const isCurrentHourOrPast = isCurrentDay && currentHour >= hourInt;
+
+              return (
+                <td key={dayIndex}>
+                  {isHourValid(dayIndex, hourInt) && (
                     <>
-                      {isPastDay ? (
+                      {isCurrentHourOrPast ? (
                         <FontAwesomeIcon icon={faClock} className="past-day-icon" />
                       ) : (
                         <>
-                          {reservationForCell || isReserved ? (
-                            <span className="reserved-text">Reservado</span>
+                          {isPastDay ? (
+                            <FontAwesomeIcon icon={faClock} className="past-day-icon" />
                           ) : (
-                            <button
-                              onClick={() => handleReserveClick(dayIndex, hour)}
-                              disabled={isHourReserved(dayIndex, hour)}
-                              className={isHourReserved(dayIndex, hour) ? 'reserved-button' : ''}
-                            >
-                              Reservar
-                            </button>
+                            <>
+                              {reservationForCell || isReserved ? (
+                                <span className="reserved-text">Reservado</span>
+                              ) : (
+                                <button
+                                  onClick={() => handleReserveClick(dayIndex, hourInt)}
+                                  disabled={isHourReserved(dayIndex, hourInt)}
+                                  className={isHourReserved(dayIndex, hourInt) ? 'reserved-button' : ''}
+                                >
+                                  Reservar
+                                </button>
+                              )}
+                            </>
                           )}
                         </>
                       )}
                     </>
                   )}
-                </>
-              )}
-            </td>
-          );
-        })}
-      </tr>
-    ));
+                </td>
+              );
+            })}
+          </tr>
+        );
+      }
+    });
   };
+
+
+
+
 
   return (
     <div className="reservations-container">
       <h2>Horario de Reservas de {moment(selectedDate).format('MMMM')}</h2>
       <div className="table-container">
-      <div className="date-navigation-reservation">
-        <Link to={`/customers/${id}`}>
-          <button>Inicio</button>
-        </Link>
-        {user && user.Plan === 'Mensual' && (
-          <button onClick={handleOpenMonthlyReservationForm}>Reserva Mensual</button>
-        )}
-        <button onClick={() => handleDateChange(-7)}>Semana Anterior</button>
-        <button onClick={() => handleDateChange(7)}>Semana Siguiente</button>
-      </div>
+        <div className="date-navigation-reservation">
+          <Link to={`/customers/${id}`}>
+            <button>Inicio</button>
+          </Link>
+          {user && user.Plan === 'Mensual' && (
+            <button onClick={handleOpenMonthlyReservationForm}>Reserva Mensual</button>
+          )}
+          <button onClick={() => handleDateChange(-7)}>Semana Anterior</button>
+          <button onClick={() => handleDateChange(7)}>Semana Siguiente</button>
+        </div>
         <table>
           <thead>
             {renderTableHeaders()}
