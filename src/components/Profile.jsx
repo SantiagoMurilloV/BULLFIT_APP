@@ -5,7 +5,7 @@ import { initializeApp } from 'firebase/app';
 import { getStorage, ref, getDownloadURL } from 'firebase/storage';
 import firebaseConfig from '../FireBase';
 import '../components/styles/Profile.css';
-
+import { environment } from '../environments'; 
 
 
 const app = initializeApp(firebaseConfig);
@@ -35,7 +35,7 @@ const Profile = () => {
     };
 
     fetchImageUrl();
-    fetch(`https://bullfit-back.onrender.com/api/users/${id}`)
+    fetch(`${environment.apiURL}/api/users/${id}`)
       .then((response) => {
         if (!response.ok) {
           throw new Error('Error en la solicitud');

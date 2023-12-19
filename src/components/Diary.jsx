@@ -6,11 +6,12 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Select from 'react-select';
 import 'react-datepicker/dist/react-datepicker.css';
 import '../components/styles/Diary.css';
-import { faTrash, faBan } from '@fortawesome/free-solid-svg-icons';
+import { faArrowLeft, faArrowRight, faCalendarDay, faCalendarPlus, faHome, faUserFriends, faCalendarMinus } from '@fortawesome/free-solid-svg-icons';
+import { faPlus } from '@fortawesome/free-solid-svg-icons';
+import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
-import { format, parseISO } from 'date-fns';
-
+import { environment } from '../environments';
 
 
 
@@ -21,7 +22,10 @@ const Diary = () => {
   const [loading, setLoading] = useState(true);
   const [showReservationForm, setShowReservationForm] = useState(false);
   const [users, setUsers] = useState([])
-  const [isMonthlyReservation, setIsMonthlyReservation] = useState(false);
+  const [isMonthlyReservation, setIsMonthlyReservation] = useState(false)
+  const [weekOptions, setWeekOptions] = useState([]);;
+  const [isWeeklyReservation, setIsWeeklyReservation] = useState(false);
+  const [resetCounter, setResetCounter] = useState(0);
   const [endDate, setEndDate] = useState('');
   const [formData, setFormData] = useState({
     userId: '',
@@ -31,7 +35,7 @@ const Diary = () => {
   const maxSpacesPerHour = 12;
   const fetchWeeklyReservations = (startDate) => {
     const endDate = moment(startDate).endOf('isoWeek').toDate();
-    fetch(`https://bullfit-back.onrender.com/api/reservations?startDate=${startDate.toISOString()}&endDate=${endDate.toISOString()}`)
+    fetch(`${environment.apiURL}/api/reservations?startDate=${startDate.toISOString()}&endDate=${endDate.toISOString()}`)
       .then((response) => response.json())
       .then((data) => {
         const filteredData = data.filter((reservation) => {
@@ -52,8 +56,8 @@ const Diary = () => {
     const currentDateInColombia = moment.tz(new Date(), 'America/Bogota');
     setCurrentDate(currentDateInColombia);
     fetchWeeklyReservations(currentDateInColombia.startOf('isoWeek').toDate());
-
-    fetch('https://bullfit-back.onrender.com/api/users')
+    generateWeekOptions();
+    fetch(`${environment.apiURL}/api/users`)
       .then((response) => response.json())
       .then((data) => {
         setUsers(data);
@@ -67,10 +71,11 @@ const Diary = () => {
     }, 60000);
     return () => clearInterval(intervalId)
 
+
   }, [id]);
 
   const updateTrainingType = (reservationId, TrainingType) => {
-    fetch(`https://bullfit-back.onrender.com/api/reservations/${reservationId}`, {
+    fetch(`${environment.apiURL}/api/reservations/${reservationId}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -96,7 +101,7 @@ const Diary = () => {
       hour,
     };
 
-    fetch('https://bullfit-back.onrender.com/api/reservations', {
+    fetch(`${environment.apiURL}/api/reservations`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -105,7 +110,7 @@ const Diary = () => {
     })
       .then((response) => response.json())
       .then(() => {
-        Swal.fire('Reserva Creada', 'La reserva ha sido creada exitosamente.', 'success');
+        resetSelects();
         fetchWeeklyReservations(moment(currentDate).startOf('isoWeek').toDate());
       })
       .catch((error) => {
@@ -118,6 +123,9 @@ const Diary = () => {
     const nextWeek = moment(currentDate).add(1, 'weeks').startOf('isoWeek').toDate();
     setCurrentDate(nextWeek);
     fetchWeeklyReservations(nextWeek);
+  };
+  const resetSelects = () => {
+    setResetCounter(prev => prev + 1);
   };
 
   const handlePreviousWeek = () => {
@@ -152,7 +160,7 @@ const Diary = () => {
       hour: formData.hour.value,
     };
 
-    fetch('https://bullfit-back.onrender.com/api/reservations', {
+    fetch(`${environment.apiURL}/api/reservations`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -174,7 +182,7 @@ const Diary = () => {
   };
 
   const updateReservationStatus = (reservationId, Status) => {
-    fetch(`https://bullfit-back.onrender.com/api/reservations/${reservationId}`, {
+    fetch(`${environment.apiURL}/api/reservations/${reservationId}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -205,7 +213,7 @@ const Diary = () => {
     setWeeklyReservations(updatedReservations);
     const reservationToUpdate = weeklyReservations.find((reservation) => reservation._id === reservationId);
     if (reservationToUpdate && reservationToUpdate.Attendance !== newAttendance) {
-      fetch(`https://bullfit-back.onrender.com/api/reservations/${reservationId}`, {
+      fetch(`${environment.apiURL}/api/reservations/${reservationId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -222,6 +230,22 @@ const Diary = () => {
         });
     }
   };
+  const generateWeekOptions = () => {
+    const startOfMonth = moment().startOf('month');
+    const endOfMonth = moment().endOf('month');
+    let week = startOfMonth.clone();
+    const options = [];
+
+    while (week.isBefore(endOfMonth)) {
+      const weekStart = week.format('YYYY-MM-DD');
+      const weekEnd = week.clone().endOf('isoWeek').format('YYYY-MM-DD');
+      options.push({ value: weekStart, label: `Semana del ${weekStart} al ${weekEnd}` });
+      week.add(1, 'week');
+    }
+
+    setWeekOptions(options);
+  };
+
 
   const handlecancellation = (reservationId) => {
     Swal.fire({
@@ -251,7 +275,7 @@ const Diary = () => {
       cancelButtonText: 'No',
     }).then((result) => {
       if (result.isConfirmed) {
-        fetch(`https://bullfit-back.onrender.com/api/reservations/${reservationId}`, {
+        fetch(`${environment.apiURL}/api/reservations/${reservationId}`, {
           method: 'DELETE',
         })
           .then((response) => {
@@ -268,15 +292,18 @@ const Diary = () => {
 
 
   const handleSaveMonthlyReservation = () => {
+    if (!isMonthlyReservation) {
+      Swal.fire('Por favor, selecciona reservar mes');
+      return;
+    }
+
     const { userId, hour } = formData;
     const startDate = moment(formData.date);
     let endDateToUse;
 
     if (isMonthlyReservation) {
-      // Calcula la fecha un mes después de la fecha de inicio
       endDateToUse = moment(startDate).add(1, 'month');
     } else {
-      // Utiliza el final del mes actual
       endDateToUse = moment(startDate).endOf('month');
     }
     for (let date = moment(startDate); date.isSameOrBefore(endDateToUse, 'day'); date.add(1, 'days')) {
@@ -294,6 +321,7 @@ const Diary = () => {
     handleCloseReservationForm();
     Swal.fire('Reserva Creada', 'Las reservas mensuales están siendo procesadas.', 'success');
   };
+
   const handleMonthlyReservationChange = (e) => {
     const checked = e.target.checked;
     setIsMonthlyReservation(checked);
@@ -305,8 +333,37 @@ const Diary = () => {
     }
   };
 
+  const handleSaveWeeklyReservation = () => {
+    if (!formData.week) {
+      Swal.fire('Por favor, selecciona una semana.');
+      return;
+    }
+    const startOfWeek = moment(formData.week.value).startOf('isoWeek');
+    const endOfWeek = startOfWeek.clone().add(4, 'days');
+
+    Swal.fire(`Reservando desde ${startOfWeek.format('YYYY-MM-DD')} hasta ${endOfWeek.format('YYYY-MM-DD')}`);
+
+    for (let day = moment(startOfWeek); day.isSameOrBefore(endOfWeek, 'day'); day.add(1, 'days')) {
+      const reservationData = {
+        userId: formData.userId.value,
+        day: day.format('YYYY-MM-DD'),
+        hour: formData.hour.value,
+      };
+
+      createReservation(reservationData);
+      fetchWeeklyReservations(moment(currentDate).startOf('isoWeek').toDate());
+    }
+
+
+    handleCloseReservationForm();
+    setIsWeeklyReservation(false);
+  };
+
+
+
+
   const createReservation = (reservationData) => {
-    fetch('https://bullfit-back.onrender.com/api/reservations', {
+    fetch(`${environment.apiURL}/api/reservations`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -391,6 +448,11 @@ const Diary = () => {
     setCurrentDate(nextMonth);
     fetchWeeklyReservations(nextMonth.startOf('isoWeek').toDate());
   };
+  const handlePreviousMonth = () => {
+    const previousMonth = moment(currentDate).subtract(1, 'month').startOf('month').toDate();
+    setCurrentDate(previousMonth);
+    fetchWeeklyReservations(previousMonth);
+  };
 
   const handleCurrentWeek = () => {
     const currentWeek = moment().startOf('isoWeek');
@@ -416,7 +478,6 @@ const Diary = () => {
     };
     const attendanceStyles = {
       ' ': { backgroundColor: 'white' },
-      'Si': { backgroundColor: 'lime' },
       'No': { backgroundColor: '#fc4646' }
     }
     return morningHours.map((hour, hourIndex) => (
@@ -432,76 +493,55 @@ const Diary = () => {
           for (let i = 0; i < maxSpacesPerHour; i++) {
             const reservation = reservationsForCell[i];
             if (reservation) {
-              const userFullName = `${reservation.userName} ${reservation.userLastName}`;
-              const trainingType = reservation.TrainingType || '';
-              const trainingTypeClass = `training-type-${trainingType.toLowerCase().replace(/\s+/g, '-')}`;
+              const fullName = `${reservation.userName} ${reservation.userLastName}`;
+              const userFullName = fullName.length > 20 ? fullName.slice(0, 20) + '...' : fullName;
               reservationCells.push(
-                <div
-                  key={reservation._id}
-                  className={`reservation-cell bordered-cell ${reservation.Status === 'cancelled' ? 'cancelled' : ''}`}
-                >
-                  <div className="user-name">
-                    {reservation.Status === 'cancelled' ?
-                      `☒ ${userFullName} (Cancelado)` :
-                      `☑ ${userFullName.length > 9 ? userFullName.slice(0, 10) + '...' : userFullName + ' ⋯'}`}
-                    {reservation.Status !== 'cancelled' && (
-                      <>
-                        <FontAwesomeIcon
-                          icon={faBan}
-                          className="trash-icon"
-                          onClick={() => handlecancellation(reservation._id)}
-                        />
-                        <FontAwesomeIcon
-                          icon={faTrash}
-                          className="delete-icon"
-                          onClick={() => handleDeleteReservation(reservation._id)}
-                          style={{ color: 'red', cursor: 'pointer' }}
-                        />
-                      </>
-                    )}
+                <div key={reservation._id} className="reservation-cell bordered-cell">
+                  <div className="subcolumn name">{userFullName}</div>
+                  <div className="subcolumn training-type">
+                    <select
+                      style={trainingTypeStyles[reservation.TrainingType]}
+                      className="trainingType"
+                      value={reservation.TrainingType}
+                      onChange={(event) => updateTrainingType(reservation._id, event.target.value)}
+                    >
+                      <option value=' '> </option>
+                      <option value='Tren Superior'>Superior</option>
+                      <option value='Jalon'>Jalon</option>
+                      <option value='Empuje'>Empuje</option>
+                      <option value='Brazo'>Brazo</option>
+                      <option value='Pierna'>Pierna</option>
+                      <option value='Gluteo'>Gluteo</option>
+                      <option value='Cardio'>Cardio</option>
+                      <option value='Primer dia'>Full body</option>
+                    </select>
                   </div>
-                  {reservation.Status !== 'cancelled' && (
-                    <>
-                      <select
-                        style={trainingTypeStyles[reservation.TrainingType]}
-                        className={`trainingType ${trainingTypeClass}`}
-                        value={reservation.TrainingType}
-                        onChange={(event) => updateTrainingType(reservation._id, event.target.value)}
-
-                      >
-                        <option value=' '> </option>
-                        <option value='Tren Superior'>Tren Superior</option>
-                        <option value='Jalon'>Jalon</option>
-                        <option value='Empuje'>Empuje</option>
-                        <option value='Brazo'>Brazo</option>
-                        <option value='Pierna'>Pierna</option>
-                        <option value='Gluteo'>Gluteo</option>
-                        <option value='Cardio'>Cardio</option>
-                        <option value='Primer dia'>Primer dia</option>
-                      </select>
-                      <select
-                        style={attendanceStyles[reservation.Attendance]}
-                        className={`Attendance ${reservation.TrainingType ? `training-type-${reservation.TrainingType.toLowerCase().replace(' ', '-')}` : ''}`}
-                        value={reservation.Attendance}
-                        onChange={(event) => {
-                          const Attendance = event.target.value
-                          handleAttendanceChange(reservation._id, Attendance)
-                        }}
-                      >
-                        <option value=" "></option>
-                        <option value="Si">✓</option>
-                        <option value="No">✖</option>
-                      </select>
-                    </>
-                  )}
-
+                  <div className="subcolumn attendance">
+                    <select
+                      style={attendanceStyles[reservation.Attendance]}
+                      className="attendance"
+                      value={reservation.Attendance}
+                      onChange={(event) => handleAttendanceChange(reservation._id, event.target.value)}
+                    >
+                      <option value=" "></option>
+                      <option value="No">✖</option>
+                    </select>
+                  </div>
+                  <div className="subcolumn actions">
+                    <FontAwesomeIcon
+                      icon={faTrash}
+                      className="delete-icon"
+                      onClick={() => handleDeleteReservation(reservation._id)}
+                      style={{ color: 'red', cursor: 'pointer' }}
+                    />
+                  </div>
                 </div>
               );
-
             } else {
               reservationCells.push(
-                <div key={`empty-${i}`} className="reservation-cell bordered-cell" style={{ width: '100%' }}>
+                <div key={`empty-${i}`} className="reservation-cell bordered-cell">
                   <Select
+                    key={`select-user-${resetCounter}`}
                     options={users.map((user) => ({
                       value: user._id,
                       label: `${user.FirstName} ${user.LastName}`,
@@ -531,21 +571,39 @@ const Diary = () => {
     ));
   };
 
+
   return (
     <div className={`Diary-container ${loading ? 'fade-in' : 'fade-out'}`}>
       <h2 className='title'>Agenda Semanal</h2>
       <div className="filter-controls-diary">
-        <button className='butom-day' onClick={handlePreviousWeek}>Semana Anterior</button>
-        <button className='butom-day' onClick={handleNextWeek}>Siguiente Semana</button>
-        <button className='butom-day' onClick={handleCurrentWeek}>Semana Actual</button>
-        <button className='butom-day' onClick={handleNextMonth}>Siguiente Mes</button>
-        <button className='butom-day' onClick={handleOpenReservationForm}>Nueva Reserva</button>
+        <button className='butom-day-diary' onClick={handlePreviousWeek}>
+          <FontAwesomeIcon icon={faArrowLeft} />
+        </button>
+        <button className='butom-day-diary' onClick={handleNextWeek}>
+          <FontAwesomeIcon icon={faArrowRight} />
+        </button>
+        <button className='butom-day-diary' onClick={handleCurrentWeek}>
+          <FontAwesomeIcon icon={faCalendarDay} />
+        </button>
+        <button className='butom-day-diary' onClick={handleOpenReservationForm}>
+          <FontAwesomeIcon icon={faPlus} />
+        </button>
+        <button className='butom-day-diary' onClick={handleNextMonth}>
+          <FontAwesomeIcon icon={faCalendarPlus} />
+        </button>
         <Link to={`/userList/${id}`}>
-          <button className='butom-day' onClick={handleOpenReservationForm}>Usuarios</button>
+          <button className='butom-day-diary' >
+            <FontAwesomeIcon icon={faUserFriends} />
+          </button>
         </Link>
         <Link to={`/admin/${id}`}>
-          <button className='butom-day' onClick={handleOpenReservationForm}>Inicio</button>
+          <button className='butom-day-diary' >
+            <FontAwesomeIcon icon={faHome} />
+          </button>
         </Link>
+        <button className='butom-day-diary' onClick={handlePreviousMonth}>
+          <FontAwesomeIcon icon={faCalendarMinus} />
+        </button>
       </div>
       <table className="table-diary">
         <thead>
@@ -564,12 +622,14 @@ const Diary = () => {
               }))}
               value={formData.userId}
               onChange={(selectedOption) => handleChange('userId', selectedOption)}
+              required
             />
             <label>Hora:</label>
             <Select
               options={availableHours}
               value={formData.hour}
               onChange={(selectedOption) => handleChange('hour', selectedOption)}
+              required
             />
             <label>Fecha:</label>
             <DatePicker
@@ -589,7 +649,26 @@ const Diary = () => {
             {isMonthlyReservation && (
               <p className="reservation-form-end-date">Fecha de finalización: {endDate}</p>
             )}
+            <div className="reservation-form-checkbox">
+              <input
+                type="checkbox"
+                id="weekly-reservation-checkbox"
+                checked={isWeeklyReservation}
+                onChange={(e) => setIsWeeklyReservation(e.target.checked)}
+              />
+              <label htmlFor="weekly-reservation-checkbox">Reservar Semana</label>
+            </div>
+            {isWeeklyReservation && (
+              <>
+                <label>Seleccionar Semana:</label>
+                <Select
+                  options={weekOptions}
+                  onChange={(selectedOption) => handleChange('week', selectedOption)}
+                />
+              </>
+            )}
             <button className='buttom-modal' onClick={handleSaveMonthlyReservation}>Reservar Mes</button>
+            <button className='buttom-modal' onClick={handleSaveWeeklyReservation}>Reservar Semana</button>
             <button className='buttom-modal' onClick={handleSaveReservation}>Reservar día</button>
             <button className='buttom-modal' onClick={handleCloseReservationForm}>Cancelar</button>
           </div>

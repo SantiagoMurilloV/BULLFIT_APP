@@ -6,6 +6,7 @@ import { initializeApp } from 'firebase/app';
 import { getStorage, ref, getDownloadURL } from 'firebase/storage';
 import firebaseConfig from '../FireBase';
 import { BarLoader } from 'react-spinners';
+import { environment } from '../environments'; 
 
 const app = initializeApp(firebaseConfig);
 const storage = getStorage(app);
@@ -55,7 +56,7 @@ const RegisterUsers = () => {
       userData.Active &&
       userData.Plan
     ) {
-      fetch('https://bullfit-back.onrender.com/api/users', {
+      fetch(`${environment.apiURL}/api/users`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
