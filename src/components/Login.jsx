@@ -102,7 +102,7 @@ const Login = ({ handleLogin }) => {
           });
           localStorage.setItem('user', JSON.stringify(user));
           handleLogin(user);
-          if (user.Phone === '0000' && user.IdentificationNumber === '12345') {
+          if (user.Phone === '0000' && user.IdentificationNumber === '1234') {
             navigate(`/admin/${user._id}`);
           } else {
             navigate(`/customers/${user._id}`);

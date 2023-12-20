@@ -43,11 +43,19 @@
   background: #0056b3;
 }
 
-
+.button-link-register {
+  text-decoration: none;
+  color: inherit;
+  height: 98px;
+  width: 155px;
+  font-weight: bolder;
+  font-size: 30px;
+  color: black;
+}
 
 .RegisterUsers-form {
   width: 90%; 
-  max-width: 400px; 
+  max-width: 445px;
   background: #ffffff69;
   padding: 20px;
   border-radius: 5px;

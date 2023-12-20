@@ -310,3 +310,11 @@ body {
     opacity: 1;
   }
 }
+
+
+.button-link-customers, .button-link:visited, .button-link:hover, .button-link:active, .button-link:focus {
+  text-decoration: none; /* Elimina el subrayado */
+  color: inherit; /* Hereda el color del texto del elemento padre */
+  outline: none; /* Elimina el contorno al hacer foco en el enlace */
+  font-weight:lighter;
+}

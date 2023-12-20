@@ -6,7 +6,46 @@
   border-color: white;
   border-width: 10px;
 }
+.filters-container {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  margin-bottom: 20px;
+}
 
+.button-r {
+  background-color: #000000;
+  color: white;
+  padding: 10px 20px;
+  box-shadow: 5px 3px 3px 0px rgb(255 255 255 / 79%);
+  border-radius: 4px;
+  cursor: pointer;
+  text-decoration: none;
+  margin-right: 15px; 
+}
+
+.input-search {
+  padding: 22px 20px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin-right: 15px; 
+}
+
+.filter-select {
+  min-width: 150px;
+  margin-right: 15px; 
+}
+
+.filter-select__control {
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  min-height: 38px;
+}
+
+.filter-select__menu {
+  border-radius: 4px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
 .user-table td {
   text-align: left;
   border-bottom: 1px solid #dddddd97;
@@ -42,10 +81,48 @@
 }
 
 .input-search {
-  margin-bottom: 15px;
-  border-radius: 0px;
+  margin-bottom: 11px;
+  border-radius: 4px;
   width: 252px;
-  height: 7px;
+  height: 3px;
   margin-left: 23px;
   margin-top: 10px;
+}
+
+
+.Modal-userList {
+  background: #000000c7;
+  padding: 20px;
+  border-radius: 10px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 25%;
+  box-shadow: 0 5px 15px #0c0c0c;
+}
+
+.form-group-userList {
+  display: flex;
+  justify-content: space-evenly;
+  margin-bottom: 9px;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-content: flex-start;
+}
+
+.form-group-userList label {
+  flex-basis: 50%; 
+  display: block;
+  margin-bottom: 5px;
+  color: white;
+  font-size: 20px;
+  font-weight: bolder;
+}
+
+.form-group-userList input[type='text'] {
+  width:80%;
+  padding: 5px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
 }
