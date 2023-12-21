@@ -81,9 +81,25 @@ const UserList = () => {
   };
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setEditingUser({ ...editingUser, [name]: value });
+  
+    // Declara 'newEditingUser' al principio de la función
+    let newEditingUser = { ...editingUser, [name]: value };
+  
+    // Si el campo modificado es 'startDate', calcula y actualiza 'endDate'
+    if (name === 'startDate') {
+      const endDate = new Date(value);
+      endDate.setDate(endDate.getDate() + 30); // Añade 30 días
+  
+      // Formatea la fecha a YYYY-MM-DD para el input de tipo 'date'
+      const formattedEndDate = endDate.toISOString().split('T')[0];
+  
+      // Actualiza 'newEditingUser' con la nueva fecha final
+      newEditingUser.endDate = formattedEndDate;
+    }
+  
+    // Actualiza el estado con 'newEditingUser'
+    setEditingUser(newEditingUser);
   };
-
   const handleDeleteUser = (userId) => {
     Swal.fire({
       title: '¿Está seguro de eliminar esta reserva?',
@@ -329,6 +345,27 @@ const UserList = () => {
                   name="IdentificationNumber"
                   value={editingUser.IdentificationNumber}
                   onChange={handleInputChange}
+                />
+              </label>
+            </div>
+            <div className="form-group-userList">
+              <label>
+                Fecha Inicial:
+                <input
+                  type="date"
+                  name="startDate"
+                  value={editingUser.startDate}
+                  onChange={handleInputChange}
+                />
+              </label>
+              <label>
+                Fecha Final:
+                <input
+                  type="date"
+                  name="endDate"
+                  value={editingUser.endDate}
+                  onChange={handleInputChange}
+                  
                 />
               </label>
             </div>

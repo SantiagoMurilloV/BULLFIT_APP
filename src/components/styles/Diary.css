@@ -160,6 +160,9 @@ td.hour-column, td.header-cell, td.first-column{
   background-color: #f2f2f2;
   color: black; 
 }
+.morning-end-row {
+  border-bottom: 28px solid #731616; 
+}
 
 .reservation-cell {
   display: flex;
@@ -181,7 +184,7 @@ td.hour-column, td.header-cell, td.first-column{
   background-color: yellow;
   color: black;
   font-weight: 700;
-  width: 65px;
+  width: 80px;
 }
 .reservation-cell .Attendance {
   display: flex;
