@@ -481,7 +481,7 @@ const Diary = () => {
       'No': { backgroundColor: '#fc4646' }
     }
     return morningHours.map((hour, hourIndex) => (
-      <tr key={hourIndex}>
+      <tr key={hourIndex} className={hour === '10:00' ? 'morning-end-row' : ''}>
         <td className="first-column">{hour}</td>
         {moment.weekdays().slice(1).map((day, dayIndex) => {
           const currentDay = moment(currentDate).startOf('isoWeek').add(dayIndex, 'days').format('YYYY-MM-DD');
@@ -513,7 +513,7 @@ const Diary = () => {
                       <option value='Pierna'>Pierna</option>
                       <option value='Gluteo'>Gluteo</option>
                       <option value='Cardio'>Cardio</option>
-                      <option value='Primer dia'>Full body</option>
+                      <option value='Primer dia'>FullBody</option>
                     </select>
                   </div>
                   <div className="subcolumn attendance">
@@ -591,6 +591,9 @@ const Diary = () => {
         <button className='butom-day-diary' onClick={handleNextMonth}>
           <FontAwesomeIcon icon={faCalendarPlus} />
         </button>
+        <button className='butom-day-diary' onClick={handlePreviousMonth}>
+          <FontAwesomeIcon icon={faCalendarMinus} />
+        </button>
         <Link to={`/userList/${id}`}>
           <button className='butom-day-diary' >
             <FontAwesomeIcon icon={faUserFriends} />
@@ -601,9 +604,6 @@ const Diary = () => {
             <FontAwesomeIcon icon={faHome} />
           </button>
         </Link>
-        <button className='butom-day-diary' onClick={handlePreviousMonth}>
-          <FontAwesomeIcon icon={faCalendarMinus} />
-        </button>
       </div>
       <table className="table-diary">
         <thead>
