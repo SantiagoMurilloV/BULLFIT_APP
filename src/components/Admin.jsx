@@ -142,7 +142,7 @@ const Admin = ({ currentUser }) => {
         </div>
         <div className="button-column-admin">
           <button className="button-icon">
-            <Link to={``} className="button-link">
+            <Link to={`/finances/${id}`} className="button-link">
               <FontAwesomeIcon icon={faBook} />
             </Link>
             <div>
