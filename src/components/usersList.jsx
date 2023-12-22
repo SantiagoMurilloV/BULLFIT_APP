@@ -6,7 +6,7 @@ import Modal from 'react-modal';
 import '../components/styles/UserList.css';
 import { environment } from '../environments';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faEdit, faTrash , faHome} from '@fortawesome/free-solid-svg-icons';
 
 
 Modal.setAppElement('#root');
@@ -240,7 +240,13 @@ const UserList = () => {
           placeholder="Estado"
           isClearable
         />
+              <Link to={`/admin/${id}`}>
+          <button className='butom-day-diary' >
+            <FontAwesomeIcon icon={faHome} />
+          </button>
+        </Link>
       </div>
+
 
       {loading ? (
         <p>Cargando usuarios...</p>

@@ -164,6 +164,10 @@ td.hour-column, td.header-cell, td.first-column{
   border-bottom: 28px solid #731616; 
 }
 
+.reservation-cell-disabled {
+  background-color: #cccccc; /* Gris */
+  opacity: 0.5; /* Semitransparente */
+}
 .reservation-cell {
   display: flex;
   align-items: center;

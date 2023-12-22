@@ -131,16 +131,16 @@ const Reservations = () => {
 
   const handleReserveClick = async (dayIndex, hour) => {
     const dateKey = moment(selectedDate).add(dayIndex, 'days').format('YYYY-MM-DD');
-    const timeKey = `${hour < 10 ? '' : ''}${hour}:00`;
+    const timeKey = `${hour < 10 ? '0' : ''}${hour}:00`;
 
-    const now = moment().utcOffset(-5);
+    const now = moment().tz('America/Bogota');
     const reservationDateTime = moment.tz(`${dateKey} ${timeKey}`, 'America/Bogota');
+    
 
     if (reservationDateTime.diff(now, 'hours') < 2) {
       Swal.fire('Error en la reserva', 'Solo puedes reservar hasta dos horas antes del evento.', 'error');
       return;
     }
-
     const reservationsCountForDay = getReservationsCountForDay(dateKey);
     const maxReservationsPerDay = 8;
 
@@ -171,6 +171,7 @@ const Reservations = () => {
 
           if (response.ok) {
             const updatedReservations = { ...reservationsData };
+            console.log(reservationsData)
             if (!updatedReservations[dateKey]) {
               updatedReservations[dateKey] = {};
             }
@@ -192,7 +193,7 @@ const Reservations = () => {
               } else {
                 try {
                   const getResponse = await fetch(`${environment.apiURL}/api/reservations?userId=${user._id}&day=${dateKey}&hour=${timeKey}`);
-
+                  fetchReservations();
                   if (getResponse.ok) {
                     const data = await getResponse.json();
                     if (data.length > 0) {
@@ -363,10 +364,10 @@ const Reservations = () => {
 
       if (hourInt >= 11 && hourInt <= 15) {
         return (
-          <tr key={hour}>
+          <tr key={hour} >
             {daysOfWeek.map((_, dayIndex) => {
               if (dayIndex === 0 && hourInt === hourInt >= 11 && hourInt <= 15) {
-                return <td key={dayIndex} rowSpan="4" colSpan={daysOfWeek.length}></td>;
+                return <td key={dayIndex} rowSpan="4" colSpan={daysOfWeek.length} className={hour === '10' ? 'morning-end-row-reservation' : ''}></td>;
               }
               return null;
             })}
@@ -374,7 +375,7 @@ const Reservations = () => {
         );
       } else {
         return (
-          <tr key={hour}>
+          <tr key={hour} className={hour === '10' ? 'morning-end-row-reservation' : ''}>
             <td className="hour-cell">{formatHour(hourInt)}</td>
             {daysOfWeek.map((_, dayIndex) => {
               const dateKey = moment(selectedDate).add(dayIndex, 'days').format('YYYY-MM-DD');
@@ -384,6 +385,7 @@ const Reservations = () => {
                   reservation.hour === `${hour}:00` &&
                   reservation.userId === id
               );
+
 
               const isReserved = reservationStatus && reservationStatus.day === dateKey && reservationStatus.hour === `${hour}:00`;
 
