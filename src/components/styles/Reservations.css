@@ -7,6 +7,9 @@ color: rgb(255, 255, 255);
 font-weight: bolder;
 font-size: 35px;
 }
+.morning-end-row-reservation{
+  border-bottom: 12px solid #4a0808; 
+}
 .date-navigation-reservation{
   background-color: #ffffff66;
   width: auto;

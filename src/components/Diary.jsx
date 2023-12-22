@@ -460,7 +460,12 @@ const Diary = () => {
     fetchWeeklyReservations(currentWeek.toDate());
   };
 
-
+  const getSpaceAvailable = (day, hour) => {
+    if (day === 'Lunes' && hour === '06:00') {
+      return [false, true, false, true, false, true, true, true, true, true, true, true]; 
+    }
+    return Array(12).fill(true);
+  };
 
 
 
@@ -478,8 +483,9 @@ const Diary = () => {
     };
     const attendanceStyles = {
       ' ': { backgroundColor: 'white' },
-      'No': { backgroundColor: '#fc4646' }
-    }
+      'No': { backgroundColor: '#fc4646' },
+    };
+  
     return morningHours.map((hour, hourIndex) => (
       <tr key={hourIndex} className={hour === '10:00' ? 'morning-end-row' : ''}>
         <td className="first-column">{hour}</td>
@@ -488,88 +494,95 @@ const Diary = () => {
           const reservationsForCell = weeklyReservations.filter(
             (reservation) => reservation.day === currentDay && reservation.hour === hour
           );
-
-          const reservationCells = [];
-          for (let i = 0; i < maxSpacesPerHour; i++) {
-            const reservation = reservationsForCell[i];
-            if (reservation) {
-              const fullName = `${reservation.userName} ${reservation.userLastName}`;
-              const userFullName = fullName.length > 20 ? fullName.slice(0, 20) + '...' : fullName;
-              reservationCells.push(
-                <div key={reservation._id} className="reservation-cell bordered-cell">
-                  <div className="subcolumn name">{userFullName}</div>
-                  <div className="subcolumn training-type">
-                    <select
-                      style={trainingTypeStyles[reservation.TrainingType]}
-                      className="trainingType"
-                      value={reservation.TrainingType}
-                      onChange={(event) => updateTrainingType(reservation._id, event.target.value)}
-                    >
-                      <option value=' '> </option>
-                      <option value='Tren Superior'>Superior</option>
-                      <option value='Jalon'>Jalon</option>
-                      <option value='Empuje'>Empuje</option>
-                      <option value='Brazo'>Brazo</option>
-                      <option value='Pierna'>Pierna</option>
-                      <option value='Gluteo'>Gluteo</option>
-                      <option value='Cardio'>Cardio</option>
-                      <option value='Primer dia'>FullBody</option>
-                    </select>
+          const spaceAvailable = getSpaceAvailable(day, hour);
+  
+          const reservationCells = spaceAvailable.map((available, index) => {
+            const reservation = reservationsForCell[index];
+  
+            if (available) {
+              if (reservation) {
+                const fullName = `${reservation.userName} ${reservation.userLastName}`;
+                const userFullName = fullName.length > 20 ? fullName.slice(0, 20) + '...' : fullName;
+                return (
+                  <div key={reservation._id} className="reservation-cell bordered-cell">
+                    <div className="subcolumn name">{userFullName}</div>
+                    <div className="subcolumn training-type">
+                      <select
+                        style={trainingTypeStyles[reservation.TrainingType]}
+                        className="trainingType"
+                        value={reservation.TrainingType}
+                        onChange={(event) => updateTrainingType(reservation._id, event.target.value)}
+                      >
+                        <option value=' '> </option>
+                        <option value='Tren Superior'>Superior</option>
+                        <option value='Jalon'>Jalon</option>
+                        <option value='Empuje'>Empuje</option>
+                        <option value='Brazo'>Brazo</option>
+                        <option value='Pierna'>Pierna</option>
+                        <option value='Gluteo'>Gluteo</option>
+                        <option value='Cardio'>Cardio</option>
+                        <option value='Primer dia'>FullBody</option>
+                      </select>
+                    </div>
+                    <div className="subcolumn attendance">
+                      <select
+                        style={attendanceStyles[reservation.Attendance]}
+                        className="attendance"
+                        value={reservation.Attendance}
+                        onChange={(event) => handleAttendanceChange(reservation._id, event.target.value)}
+                      >
+                        <option value=" "></option>
+                        <option value="No">✖</option>
+                      </select>
+                    </div>
+                    <div className="subcolumn actions">
+                      <FontAwesomeIcon
+                        icon={faTrash}
+                        className="delete-icon"
+                        onClick={() => handleDeleteReservation(reservation._id)}
+                        style={{ color: 'red', cursor: 'pointer' }}
+                      />
+                    </div>
                   </div>
-                  <div className="subcolumn attendance">
-                    <select
-                      style={attendanceStyles[reservation.Attendance]}
-                      className="attendance"
-                      value={reservation.Attendance}
-                      onChange={(event) => handleAttendanceChange(reservation._id, event.target.value)}
-                    >
-                      <option value=" "></option>
-                      <option value="No">✖</option>
-                    </select>
-                  </div>
-                  <div className="subcolumn actions">
-                    <FontAwesomeIcon
-                      icon={faTrash}
-                      className="delete-icon"
-                      onClick={() => handleDeleteReservation(reservation._id)}
-                      style={{ color: 'red', cursor: 'pointer' }}
+                );
+              } else {
+                return (
+                  <div key={`empty-${index}`} className="reservation-cell bordered-cell">
+                    <Select
+                      key={`select-user-${resetCounter}`}
+                      options={users.map((user) => ({
+                        value: user._id,
+                        label: `${user.FirstName} ${user.LastName}`,
+                      }))}
+                      onChange={(selectedOption) => handleCreateReservationFromTable(selectedOption.value, currentDay, hour)}
+                      placeholder=""
+                      styles={{
+                        container: (base) => ({ ...base, width: '100%' }),
+                        control: (base) => ({
+                          ...base,
+                          minHeight: '20px',
+                          backgroundColor: 'rgba(255, 255, 255, 0.331)',
+                        }),
+                        valueContainer: (base) => ({ ...base, height: '20px' }),
+                        input: (base) => ({ ...base, margin: 0, padding: 0 }),
+                        dropdownIndicator: (base) => ({ ...base, padding: '0px' }),
+                        clearIndicator: (base) => ({ ...base, padding: '2px' }),
+                      }}
                     />
                   </div>
-                </div>
-              );
+                );
+              }
             } else {
-              reservationCells.push(
-                <div key={`empty-${i}`} className="reservation-cell bordered-cell">
-                  <Select
-                    key={`select-user-${resetCounter}`}
-                    options={users.map((user) => ({
-                      value: user._id,
-                      label: `${user.FirstName} ${user.LastName}`,
-                    }))}
-                    onChange={(selectedOption) => handleCreateReservationFromTable(selectedOption.value, currentDay, hour)}
-                    placeholder=""
-                    styles={{
-                      container: (base) => ({ ...base, width: '100%' }),
-                      control: (base) => ({
-                        ...base,
-                        minHeight: '20px',
-                        backgroundColor: 'rgba(255, 255, 255, 0.331)',
-                      }),
-                      valueContainer: (base) => ({ ...base, height: '20px' }),
-                      input: (base) => ({ ...base, margin: 0, padding: 0 }),
-                      dropdownIndicator: (base) => ({ ...base, padding: '0px' }),
-                      clearIndicator: (base) => ({ ...base, padding: '2px' }),
-                    }}
-                  />
-                </div>
-              );
+              return <div key={`disabled-${index}`} className="reservation-cell-disabled"></div>;
             }
-          }
+          });
+  
           return <td key={dayIndex}>{reservationCells}</td>;
         })}
       </tr>
     ));
   };
+  
 
 
   return (
