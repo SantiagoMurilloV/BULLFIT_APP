@@ -47,7 +47,7 @@ const Reservations = () => {
 
     const fetchUser = async () => {
       try {
-        const response = await fetch(`https://bullfit-back.onrender.com/api/users/${id}`);
+        const response = await fetch(`${environment.apiURL}/api/users/${id}`);
         if (!response.ok) {
           throw new Error('Error en la solicitud');
         }
