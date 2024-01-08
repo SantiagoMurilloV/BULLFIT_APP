@@ -6,7 +6,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Select from 'react-select';
 import 'react-datepicker/dist/react-datepicker.css';
 import '../components/styles/Diary.css';
-import { faArrowLeft, faArrowRight, faCalendarDay, faCalendarPlus, faHome, faUserFriends, faCalendarMinus } from '@fortawesome/free-solid-svg-icons';
+import { faArrowLeft, faArrowRight, faCalendarDay, faCalendarPlus, faHome, faUserFriends, faCalendarMinus,faDollarSign } from '@fortawesome/free-solid-svg-icons';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import DatePicker from 'react-datepicker';
@@ -25,6 +25,7 @@ const Diary = () => {
   const [isMonthlyReservation, setIsMonthlyReservation] = useState(false)
   const [weekOptions, setWeekOptions] = useState([]);;
   const [isWeeklyReservation, setIsWeeklyReservation] = useState(false);
+  const [selectEnabled, setSelectEnabled] = useState({});
   const [resetCounter, setResetCounter] = useState(0);
   const [endDate, setEndDate] = useState('');
   const [formData, setFormData] = useState({
@@ -32,6 +33,8 @@ const Diary = () => {
     date: '',
     hour: '',
   });
+  const morningHours = ['06:00', '07:00', '08:00', '09:00', '10:00'];
+  const afternoonHours = ['16:00', '17:00', '18:00', '19:00', '20:00'];
   const maxSpacesPerHour = 12;
   const fetchWeeklyReservations = (startDate) => {
     const endDate = moment(startDate).endOf('isoWeek').toDate();
@@ -118,6 +121,14 @@ const Diary = () => {
         Swal.fire('Error', 'No se pudo crear la reserva.', 'error');
       });
   };
+  const toggleSelectEnabled = (day, hour) => {
+    const key = `${day}-${hour}`;
+    setSelectEnabled(prevState => ({
+      ...prevState,
+      [key]: !prevState[key] // Cambia el estado de habilitación
+    }));
+  };
+
 
   const handleNextWeek = () => {
     const nextWeek = moment(currentDate).add(1, 'weeks').startOf('isoWeek').toDate();
@@ -461,16 +472,20 @@ const Diary = () => {
   };
 
   const getSpaceAvailable = (day, hour) => {
-    if (day === 'Lunes' && hour === '06:00') {
-      return [false, true, false, true, false, true, true, true, true, true, true, true]; 
-    }
-    return Array(12).fill(true);
-  };
+    const morningHours = ['06:00', '07:00', '08:00', '09:00', '10:00'];
+    const isMorning = morningHours.includes(hour);
+    const isSaturday = day === 'Sábado';
 
+    // Devuelve un arreglo con la disponibilidad de cada espacio
+    return Array(maxSpacesPerHour).fill(!isSaturday || isMorning);
+};
+
+  
 
 
   const renderTableRows = () => {
-    const morningHours = ['06:00', '07:00', '08:00', '09:00', '10:00', '16:00', '17:00', '18:00', '19:00', '20:00'];
+    const allHours = [...morningHours, ...afternoonHours];
+
     const trainingTypeStyles = {
       'Tren Superior': { backgroundColor: 'rgb(15 69 255)', color: 'white' },
       'Jalon': { backgroundColor: '#add8e6' },
@@ -485,20 +500,25 @@ const Diary = () => {
       ' ': { backgroundColor: 'white' },
       'No': { backgroundColor: '#fc4646' },
     };
-  
-    return morningHours.map((hour, hourIndex) => (
+
+    return allHours.map((hour, hourIndex) => (
       <tr key={hourIndex} className={hour === '10:00' ? 'morning-end-row' : ''}>
         <td className="first-column">{hour}</td>
         {moment.weekdays().slice(1).map((day, dayIndex) => {
+          if (day === 'sábado' && !morningHours.includes(hour)) {
+              return <td key={dayIndex}   style={{ backgroundColor: 'gray' }}> </td>;
+          }
+          const key = `${day}-${hour}`;
+          const isEnabled = selectEnabled[key] !== false;
           const currentDay = moment(currentDate).startOf('isoWeek').add(dayIndex, 'days').format('YYYY-MM-DD');
           const reservationsForCell = weeklyReservations.filter(
             (reservation) => reservation.day === currentDay && reservation.hour === hour
           );
           const spaceAvailable = getSpaceAvailable(day, hour);
-  
+
           const reservationCells = spaceAvailable.map((available, index) => {
             const reservation = reservationsForCell[index];
-  
+
             if (available) {
               if (reservation) {
                 const fullName = `${reservation.userName} ${reservation.userLastName}`;
@@ -555,6 +575,7 @@ const Diary = () => {
                         label: `${user.FirstName} ${user.LastName}`,
                       }))}
                       onChange={(selectedOption) => handleCreateReservationFromTable(selectedOption.value, currentDay, hour)}
+                      isDisabled={!isEnabled}
                       placeholder=""
                       styles={{
                         container: (base) => ({ ...base, width: '100%' }),
@@ -576,13 +597,13 @@ const Diary = () => {
               return <div key={`disabled-${index}`} className="reservation-cell-disabled"></div>;
             }
           });
-  
+
           return <td key={dayIndex}>{reservationCells}</td>;
         })}
       </tr>
     ));
   };
-  
+
 
 
   return (
@@ -610,6 +631,11 @@ const Diary = () => {
         <Link to={`/userList/${id}`}>
           <button className='butom-day-diary' >
             <FontAwesomeIcon icon={faUserFriends} />
+          </button>
+        </Link>
+        <Link to={`/finances/${id}`}>
+          <button className='butom-day-diary' >
+            <FontAwesomeIcon icon={faDollarSign} />
           </button>
         </Link>
         <Link to={`/admin/${id}`}>
