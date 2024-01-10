@@ -22,6 +22,7 @@ const RegisterUsers = () => {
     Plan: '',
     startDate: '',
     endDate: '',
+    registrationDate:''
   });
   const { id } = useParams();
   const navigate = useNavigate(); 
@@ -58,9 +59,40 @@ const RegisterUsers = () => {
 
     setUserData(newUserData);
   };
+  const postFinanceData = async (userId) => {
+    const financeData = {
+      userId,
+      Active: userData.Active || 'No',
+      FirstName: userData.FirstName || '',
+      LastName: userData.LastName || '',
+      IdentificationNumber: userData.IdentificationNumber || '',
+      Phone: userData.Phone || '',
+      Plan: userData.Plan || '',
+      startDate: userData.startDate || '',
+      endDate: userData.endDate || ''
+      
+    };
+  
+    try {
+      const response = await fetch(`${environment.apiURL}/api/finances`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(financeData)
+      });
+  
+      if (!response.ok) {
+        throw new Error('No se pudo registrar la información financiera del usuario');
+      }
+      console.log('Información financiera registrada con éxito');
+    } catch (error) {
+      console.error('Error al registrar la información financiera:', error);
+    }
+  };
+  
 
-  const handleSubmit = () => {
-
+  const handleSubmit = async () => {
     if (
       userData.FirstName &&
       userData.LastName &&
@@ -68,48 +100,56 @@ const RegisterUsers = () => {
       userData.IdentificationNumber &&
       userData.Active &&
       userData.Plan &&
-      userData.startDate 
+      userData.startDate &&
+      userData.registrationDate
     ) {
-      fetch(`${environment.apiURL}/api/users`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(userData),
-      })
-        .then((response) => {
-          if (response.ok) {
-            return Swal.fire({
-              icon: 'success',
-              title: 'Registro exitoso',
-              text: 'El usuario ha sido registrado correctamente.',
-              showCancelButton: true,
-              confirmButtonText: 'Registrar otro',
-              cancelButtonText: 'Salir',
-            }).then((result) => {
-              if (result.isConfirmed) {
-
-                setUserData({
-                  FirstName: '',
-                  LastName: '',
-                  Phone: '',
-                  IdentificationNumber: '',
-                  Active: '',
-                  Plan: '',
-                  startDate: '',
-                  endDate: '',
-                });
-              } else {
-                navigate(`/admin/${id}`);
-              }
-            });
-          } else {
-            console.error('Error al registrar el usuario');
-          }
-        })
-        .catch((error) => {
-          console.error('Error al realizar la solicitud POST:', error);
+      try {
+        const response = await fetch(`${environment.apiURL}/api/users`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(userData),
         });
+  
+        if (!response.ok) {
+          throw new Error('Error al registrar el usuario');
+        }
+  
+        const newUser = await response.json();
+        await postFinanceData(newUser._id);
+        const result = await Swal.fire({
+          icon: 'success',
+          title: 'Registro exitoso',
+          text: 'El usuario ha sido registrado correctamente.',
+          showCancelButton: true,
+          confirmButtonText: 'Registrar otro',
+          cancelButtonText: 'Salir',
+        });
+  
+        if (result.isConfirmed) {
+          setUserData({
+            FirstName: '',
+            LastName: '',
+            Phone: '',
+            IdentificationNumber: '',
+            Active: '',
+            Plan: '',
+            startDate: '',
+            endDate: '',
+            registrationDate:''
+          });
+        } else {
+          navigate(`/admin/${id}`);
+        }
+      } catch (error) {
+        console.error('Error al realizar la solicitud POST:', error);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'No se pudo completar el registro del usuario.',
+        });
+      }
     } else {
       Swal.fire({
         icon: 'error',
@@ -118,6 +158,9 @@ const RegisterUsers = () => {
       });
     }
   };
+  
+
+  
   return (
     <div className="RegisterUsers-container">
       <h2>Registrar Usuario</h2>
@@ -189,6 +232,15 @@ const RegisterUsers = () => {
           </div>
         </div>
         <div className="form-row">
+        <div className="form-group">
+          <label>Fecha de Ingreso</label>
+          <input
+            type="date"
+            name="registrationDate"
+            value={userData.registrationDate}
+            onChange={handleInputChange}
+          />
+        </div>
         <div className="form-group">
           <label>Fecha de Inicio:</label>
           <input

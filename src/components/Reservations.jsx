@@ -431,10 +431,6 @@ const Reservations = () => {
     });
   };
 
-
-
-
-
   return (
     <div className="reservations-container">
       <h2>Horario de Reservas de {moment(selectedDate).format('MMMM')}</h2>

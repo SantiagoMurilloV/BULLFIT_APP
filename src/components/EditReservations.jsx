@@ -252,12 +252,26 @@ const EditReservations = () => {
                   {reservationForCell.Status !== 'cancelled' && (
                     <>
                       {canDelete ? (
-                        <FontAwesomeIcon
-                          icon={faTrash}
-                          className="delete-icon"
-                          onClick={() => handleDeleteReservation(reservationForCell._id)}
-                          style={{ color: '#b80f0f', cursor: 'pointer' }}
-                        />
+                        <>
+                          <FontAwesomeIcon
+                            icon={faTrash}
+                            className="delete-icon"
+                            onClick={() => handleDeleteReservation(reservationForCell._id)}
+                            style={{ color: '#b80f0f', cursor: 'pointer' }}
+                          />
+                          <FontAwesomeIcon
+                            icon={faEdit}
+                            className="edit-icon"
+                            onClick={() =>
+                              handleOpenReservationForm(
+                                reservationForCell._id,
+                                reservationForCell.day,
+                                reservationForCell.hour
+                              )
+                            }
+                            style={{ cursor: 'pointer' }}
+                          />
+                        </>
                       ) : (
                         <FontAwesomeIcon
                           icon={faBan}
@@ -265,18 +279,7 @@ const EditReservations = () => {
                           style={{ color: 'rgb(255 154 112)' }}
                         />
                       )}
-                      <FontAwesomeIcon
-                        icon={faEdit}
-                        className="edit-icon"
-                        onClick={() =>
-                          handleOpenReservationForm(
-                            reservationForCell._id,
-                            reservationForCell.day,
-                            reservationForCell.hour
-                          )
-                        }
-                        style={{ cursor: 'pointer' }}
-                      />
+
                     </>
                   )}
                 </div>
