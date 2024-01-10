@@ -125,7 +125,7 @@ const Diary = () => {
     const key = `${day}-${hour}`;
     setSelectEnabled(prevState => ({
       ...prevState,
-      [key]: !prevState[key] // Cambia el estado de habilitación
+      [key]: !prevState[key]
     }));
   };
 
@@ -476,7 +476,6 @@ const Diary = () => {
     const isMorning = morningHours.includes(hour);
     const isSaturday = day === 'Sábado';
 
-    // Devuelve un arreglo con la disponibilidad de cada espacio
     return Array(maxSpacesPerHour).fill(!isSaturday || isMorning);
 };
 

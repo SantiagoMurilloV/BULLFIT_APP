@@ -82,22 +82,15 @@ const UserList = () => {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
   
-    // Declara 'newEditingUser' al principio de la función
     let newEditingUser = { ...editingUser, [name]: value };
-  
-    // Si el campo modificado es 'startDate', calcula y actualiza 'endDate'
     if (name === 'startDate') {
       const endDate = new Date(value);
       endDate.setDate(endDate.getDate() + 30); // Añade 30 días
-  
-      // Formatea la fecha a YYYY-MM-DD para el input de tipo 'date'
       const formattedEndDate = endDate.toISOString().split('T')[0];
-  
-      // Actualiza 'newEditingUser' con la nueva fecha final
+
       newEditingUser.endDate = formattedEndDate;
     }
-  
-    // Actualiza el estado con 'newEditingUser'
+
     setEditingUser(newEditingUser);
   };
   const handleDeleteUser = (userId) => {
@@ -113,6 +106,9 @@ const UserList = () => {
     }).then((result) => {
       if (result.isConfirmed) {
         fetch(`${environment.apiURL}/api/users/${userId}`, {
+          method: 'DELETE',
+        })
+        fetch(`${environment.apiURL}/api/finances/${userId}`, {
           method: 'DELETE',
         })
           .then((response) => {

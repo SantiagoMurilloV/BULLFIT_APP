@@ -12,6 +12,7 @@ import { faCalendarDay, faHome } from '@fortawesome/free-solid-svg-icons';
 Modal.setAppElement('#root');
 const Finance = () => {
   const [users, setUsers] = useState([]);
+  const [financeData, setFinanceData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(null);
   const { id } = useParams();
@@ -23,27 +24,41 @@ const Finance = () => {
   const [selectedWaterPaymentStatus, setSelectedWaterPaymentStatus] = useState('');
   const [selectedPreWorkoutPaymentStatus, setSelectedPreWorkoutPaymentStatus] = useState('');
   const [reservationsLoaded, setReservationsLoaded] = useState(false);
+  const [editableValues, setEditableValues] = useState({});
+  const [currentMonth, setCurrentMonth] = useState(new Date());
+
 
 
   useEffect(() => {
+    // Esta función ahora depende de currentMonth y se ejecutará cada vez que cambie.
     fetchData();
-  }, [id, searchTerm]);
-
+  }, [id, searchTerm, currentMonth]);
   useEffect(() => {
     const filterUsers = () => {
-      return users.map(user => ({
-        
-        ...user,
-        matchesReservationPaymentStatus: selectedReservationPaymentStatus ? user.reservationPaymentStatus === selectedReservationPaymentStatus.value : true,
-        matchesWaterPaymentStatus: selectedWaterPaymentStatus ? user.waterPaymentStatus === selectedWaterPaymentStatus.value : true,
-        matchesPreWorkoutPaymentStatus: selectedPreWorkoutPaymentStatus ? user.preWorkoutPaymentStatus === selectedPreWorkoutPaymentStatus.value : true,
-        matchesName: user.FirstName.toLowerCase().includes(searchTerm.toLowerCase()) || user.LastName.toLowerCase().includes(searchTerm.toLowerCase()),
-        matchesPlan: selectedPlan ? user.Plan === selectedPlan.value : true,
-        matchesStatus: selectedStatus ? user.Active === selectedStatus.value : true
-      })).filter(user => user.matchesName && user.matchesPlan && user.matchesStatus && user.matchesReservationPaymentStatus && user.matchesWaterPaymentStatus && user.matchesPreWorkoutPaymentStatus);
+      return users.filter(user => {
+
+        const userFinance = financeData.find(finance => finance.userId === user._id) || {};
+
+        const matchesReservationPaymentStatus = selectedReservationPaymentStatus
+          ? userFinance.reservationPaymentStatus === selectedReservationPaymentStatus.value
+          : true;
+        const matchesWaterPaymentStatus = selectedWaterPaymentStatus
+          ? userFinance.waterPaymentStatus === selectedWaterPaymentStatus.value
+          : true;
+        const matchesPreWorkoutPaymentStatus = selectedPreWorkoutPaymentStatus
+          ? userFinance.preWorkoutPaymentStatus === selectedPreWorkoutPaymentStatus.value
+          : true;
+
+        const matchesName = user.FirstName.toLowerCase().includes(searchTerm.toLowerCase()) || user.LastName.toLowerCase().includes(searchTerm.toLowerCase());
+        const matchesPlan = selectedPlan ? user.Plan === selectedPlan.value : true;
+        const matchesStatus = selectedStatus ? user.Active === selectedStatus.value : true;
+
+        return matchesName && matchesPlan && matchesStatus && matchesReservationPaymentStatus && matchesWaterPaymentStatus && matchesPreWorkoutPaymentStatus;
+      });
     };
+
     setSearchResults(filterUsers());
-  }, [users, searchTerm, selectedPlan, selectedStatus, selectedReservationPaymentStatus , selectedWaterPaymentStatus, selectedPreWorkoutPaymentStatus]);
+  }, [users, financeData, searchTerm, selectedPlan, selectedStatus, selectedReservationPaymentStatus, selectedWaterPaymentStatus, selectedPreWorkoutPaymentStatus]);
 
 
   const fetchData = async () => {
@@ -53,6 +68,7 @@ const Finance = () => {
         throw new Error('Error en la solicitud');
       }
       const data = await response.json();
+      await fetchFinanceData();
       setUsers(data);
       setLoading(false);
       fetchReservations(data);
@@ -60,6 +76,42 @@ const Finance = () => {
 
     }
   };
+
+
+  const fetchFinanceData = async () => {
+    const month = currentMonth.getMonth() + 1;
+    const year = currentMonth.getFullYear();
+    try {
+      const response = await fetch(`${environment.apiURL}/api/finances?month=${month}&year=${year}`);
+      if (!response.ok) throw new Error('Error al obtener datos financieros');
+      const financesData = await response.json();
+      setFinanceData(financesData);
+    } catch (error) {
+      console.error('Error al obtener datos financieros:', error);
+    }
+  };
+
+  const changeMonth = (increment) => {
+    setCurrentMonth(prevMonth => {
+      return new Date(prevMonth.getFullYear(), prevMonth.getMonth() + increment, 1);
+    });
+  };
+  useEffect(() => {
+    const newEditableValues = {};
+    users.forEach(user => {
+      const userFinance = financeData.find(f => f.userId === user._id) || {};
+      newEditableValues[user._id] = {
+        ...newEditableValues[user._id],
+        numWaters: userFinance.numWaters !== undefined ? userFinance.numWaters : (user.numWaters || 0),
+        numPreWorkouts: userFinance.numPreWorkouts !== undefined ? userFinance.numPreWorkouts : (user.numPreWorkouts || 0),
+        reservationPaymentStatus: userFinance.reservationPaymentStatus || user.reservationPaymentStatus,
+        waterPaymentStatus: userFinance.waterPaymentStatus || user.waterPaymentStatus,
+        preWorkoutPaymentStatus: userFinance.preWorkoutPaymentStatus || user.preWorkoutPaymentStatus
+      };
+    });
+    setEditableValues(newEditableValues);
+  }, [users, financeData]);
+
   useEffect(() => {
     if (users.length > 0 && !reservationsLoaded) {
       fetchReservations();
@@ -79,8 +131,7 @@ const Finance = () => {
     }
   };
 
-
-  const countReservationsByUser = (users, reservations) => {
+  const countReservationsByUser = async (users, reservations) => {
 
     const reservationCount = reservations.reduce((acc, reservation) => {
       if (reservation && reservation.userId && typeof reservation.userId === 'string') {
@@ -93,98 +144,112 @@ const Finance = () => {
 
     const updatedUsers = users.map(user => {
       const reservationCost = user.Plan === 'Mensual' ? 125000 : reservationCount[user._id] * 10000;
-      const waterCost = user.numWaters ? user.numWaters * 4000 : 0;
-      const preWorkoutCost = user.numPreWorkouts ? user.numPreWorkouts * 6000 : 0;
-
-
       return {
         ...user,
         reservationCount: reservationCount[user._id] || 0,
         totalAmount: reservationCost,
         pendingBalance: reservationCost,
-        totalConsumption: reservationCost + waterCost + preWorkoutCost,
         reservationPaymentStatus: user.reservationPaymentStatus || 'No',
         waterPaymentStatus: user.waterPaymentStatus || 'No',
         preWorkoutPaymentStatus: user.preWorkoutPaymentStatus || 'No',
         numWaters: 0,
         numPreWorkouts: 0
       };
+
+
     });
 
     setUsers(updatedUsers);
-  };
 
-  const handleItemChange = (userId, item, value) => {
-    const updatedUsers = users.map(user => {
-      if (user._id === userId) {
-        let updatedValue = parseInt(value, 10) || 0;
-        let newWaterCost = item === 'numWaters' ? updatedValue * 4000 : user.numWaters * 4000;
-        let newPreWorkoutCost = item === 'numPreWorkouts' ? updatedValue * 6000 : user.numPreWorkouts * 6000;
-
-        return {
-          ...user,
-          [item]: updatedValue,
-          totalConsumption: user.totalAmount > 0 ? user.totalAmount + newWaterCost + newPreWorkoutCost : user.totalAmount
+    updatedUsers.forEach(async (userToUpdate) => {
+      try {
+        const financeUpdateData = {
+          reservationCount: userToUpdate.reservationCount,
+          totalAmount: userToUpdate.totalAmount,
+          pendingBalance: userToUpdate.pendingBalance,
+          totalConsumption: userToUpdate.totalConsumption,
         };
+
+        const updateResponse = await fetch(`${environment.apiURL}/api/finances/${userToUpdate._id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(financeUpdateData),
+        });
+
+        if (!updateResponse.ok) {
+          throw new Error(`No se pudo actualizar los datos financieros del usuario con ID ${userToUpdate._id}`);
+        }
+
+      } catch (error) {
+        console.error(`Error al actualizar los datos financieros del usuario con ID ${userToUpdate._id}:`, error);
       }
-      return user;
     });
-    setUsers(updatedUsers);
+  };
+  const calculateConsumptions = (user) => {
+    const otherConsumption = (user.numWaters || 0) * 4000 + (user.numPreWorkouts || 0) * 6000;
+    const totalConsumption = user.totalAmount + otherConsumption;
+    return { otherConsumption, totalConsumption };
   };
 
 
-  const handleReservationPaymentStatusChange = (userId, newStatus) => {
-    const updatedUsers = users.map(user => {
-      if (user._id === userId) {
-        console.log("Filtrando por:", selectedReservationPaymentStatus, selectedWaterPaymentStatus, selectedPreWorkoutPaymentStatus);
+  const handleFinanceChange = async (userId, financeField, newValue) => {
+    try {
 
-        return {
-          ...user,
-          reservationPaymentStatus: newStatus
-        };
+      const updatedFinanceData = { [financeField]: newValue };
+      const updateResponse = await fetch(`${environment.apiURL}/api/finances/${userId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updatedFinanceData),
+      });
+
+      if (!updateResponse.ok) {
+        throw new Error('No se pudo actualizar los datos financieros del usuario');
       }
-      return user;
-    });
-    setUsers(updatedUsers);
+
+      fetchData();
+    } catch (error) {
+      console.error(`Error al actualizar los datos financieros del usuario con ID ${userId}:`, error);
+      Swal.fire('Error', 'Ha ocurrido un error al actualizar los datos financieros.', 'error');
+    }
   };
 
+  const handleNumericFinanceChange = async (userId, financeField, e) => {
 
+    const newValue = parseInt(e.target.value, 10) || 0;
+    const userToUpdate = users.find(user => user._id === userId);
 
-  const handleWaterPaymentStatusChange = (userId, newStatus) => {
-    const updatedUsers = users.map(user => {
-      if (user._id === userId) {
+    if (!userToUpdate) return;
 
-        return {
-          ...user,
-          waterPaymentStatus: newStatus,
-        };
+    const updatedUser = {
+      ...userToUpdate,
+      [financeField]: newValue
+    };
+
+    const { otherConsumption, totalConsumption } = calculateConsumptions(updatedUser);
+
+    try {
+
+      const updatedFinanceData = {
+        [financeField]: newValue,
+        otherConsumption,
+        totalConsumption
+      };
+
+      const updateResponse = await fetch(`${environment.apiURL}/api/finances/${userId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updatedFinanceData),
+      });
+
+      if (!updateResponse.ok) {
+        throw new Error('No se pudo actualizar los datos financieros del usuario');
       }
-      return user;
-    });
-    setUsers(updatedUsers);
+      fetchData();
+    } catch (error) {
+      console.error(`Error al actualizar los datos financieros del usuario con ID ${userId}:`, error);
+      Swal.fire('Error', 'Ha ocurrido un error al actualizar los datos financieros.', 'error');
+    }
   };
-
-
-
-  const handlePreWorkoutPaymentStatusChange = (userId, newStatus) => {
-    const updatedUsers = users.map(user => {
-      if (user._id === userId) {
-        return {
-          ...user,
-          preWorkoutPaymentStatus: newStatus,
-        };
-      }
-      return user;
-    });
-    setUsers(updatedUsers);
-  };
-  const paymentStatusStyles = {
-    'Si': { backgroundColor: 'green' },
-    'No': { backgroundColor: '#b50707' },
-    'default': { backgroundColor: 'white' }
-  };
-
-
 
 
   const handleStatusChange = async (userId, Active) => {
@@ -219,6 +284,11 @@ const Finance = () => {
     <div>
       <h2>Finanzas $</h2>
       <div className="filters-container">
+      {/* <div className="month-navigation">
+        <button onClick={() => changeMonth(-1)}>Mes Anterior</button>
+        <span>{`${currentMonth.toLocaleString('default', { month: 'long' })} ${currentMonth.getFullYear()}`}</span>
+        <button onClick={() => changeMonth(1)}>Mes Siguiente</button>
+      </div> */}
         <input
           className='input-search'
           type="text"
@@ -324,84 +394,93 @@ const Finance = () => {
             </tr>
           </thead>
           <tbody>
-            {searchResults.map((user) => (
-              <tr key={user._id}>
-                <td>{user.FirstName + ' ' + user.LastName}</td>
-                <td>
-                  {user.Plan}
-                </td>
-                <td>{user.startDate}</td>
-                <td>{user.endDate}</td>
-                <td>{user.reservationCount}</td>
-                <td>$ {user.totalAmount ? user.totalAmount : 0}</td>
-                <td>
+            {searchResults.map((user) => {
+              const userFinance = financeData.find(finance => finance.userId === user._id) || {};
 
-                  <select
-                    style={paymentStatusStyles[user.reservationPaymentStatus] || paymentStatusStyles['No']}
-                    value={user.reservationPaymentStatus}
-                    onChange={(event) => handleReservationPaymentStatusChange(user._id, event.target.value)}
-                  >
-                    <option value="No">✖</option>
-                    <option value="Si">✔</option>
-                  </select>
+              return (
+                <tr key={user._id}>
+                  <td>{user.FirstName + ' ' + user.LastName}</td>
+                  <td>
+                    {user.Plan}
+                  </td>
+                  <td>{userFinance.startDate}</td>
+                  <td>{userFinance.endDate}</td>
+                  <td>{user.reservationCount || 0}</td>
+                  <td>$ {user.totalAmount || 0}</td>
+                  <td>
+                    <select
+                      style={{ color: userFinance.reservationPaymentStatus === 'Si' ? '#0dab0d' : 'red' }}
+                      value={userFinance.reservationPaymentStatus}
+                      onChange={(event) => handleFinanceChange(user._id, 'reservationPaymentStatus', event.target.value)}
+                    >
+                      <option value="No">✖</option>
+                      <option value="Si">✔</option>
+                    </select>
 
-                </td>
-                <td>
-                  <input
-                    className='num'
-                    value={user.numWaters}
-                    onChange={(e) => handleItemChange(user._id, 'numWaters', e.target.value)}
-                  />
-                </td>
-                <td>
-                  <select
-                    style={paymentStatusStyles[user.waterPaymentStatus] || paymentStatusStyles['No']}
-                    value={user.waterPaymentStatus}
-                    onChange={(event) => handleWaterPaymentStatusChange(user._id, event.target.value)}
-                  >
-                    <option value="No">✖</option>
-                    <option value="Si">✔</option>
-                  </select>
-                </td>
-                <td>
-                  <input
-                    className='num'
-                    value={user.numPreWorkouts}
-                    onChange={(e) => handleItemChange(user._id, 'numPreWorkouts', e.target.value)}
-                  />
-                </td>
-                <td>
-                  <select
-                    style={paymentStatusStyles[user.preWorkoutPaymentStatus] || paymentStatusStyles['No']}
-                    value={user.preWorkoutPaymentStatus || 'No'}
-                    onChange={(event) => handlePreWorkoutPaymentStatusChange(user._id, event.target.value)}
-                  >
-                    <option value="No">✖</option>
-                    <option value="Si">✔</option>
-                  </select>
-                </td>
-                <td>
-                  <Select
-                    value={{ value: user.Active, label: user.Active }}
-                    onChange={(selectedOption) => handleStatusChange(user._id, selectedOption.value)}
-                    options={[
-                      { value: ' ', label: ' ' },
-                      { value: 'Sí', label: 'Sí' },
-                      { value: 'No', label: 'No' },
-                    ]}
-                  />
-                </td>
-                <td style={{ color: user.pendingBalance > 0 ? '#a62525' : 'black' }}>
-                  {user.pendingBalance > 0 ? `$ ${user.pendingBalance}` : '-'}
-                </td>
-                <td style={{ color: '#a62525' }}>
-                  ${0 + user.numWaters * 4000 + user.numPreWorkouts * 6000}
-                </td>
-                <td style={{ color: user.totalConsumption > 0 ? 'green' : 'black' }}>
-                  {user.totalConsumption > 0 ? `$ ${user.totalConsumption}` : '-'}
-                </td>
-              </tr>
-            ))}
+                  </td>
+                  <td>
+                    <input
+                      className='num'
+                      value={editableValues[user._id]?.numWaters || 0}
+                      onChange={(e) => handleNumericFinanceChange(user._id, 'numWaters', e)}
+                      min="0"
+                      max="20"
+                      style={{ width: '20px' }}
+                    />
+                  </td>
+                  <td>
+                    <select
+                      style={{ color: userFinance.waterPaymentStatus === 'Si' ? '#0dab0d' : 'red' }}
+                      value={userFinance.waterPaymentStatus}
+                      onChange={(event) => handleFinanceChange(user._id, 'waterPaymentStatus', event.target.value)}
+                    >
+                      <option value="No">✖</option>
+                      <option value="Si">✔</option>
+                    </select>
+                  </td>
+                  <td>
+                    <input
+                      className='num'
+                      value={editableValues[user._id]?.numPreWorkouts || 0}
+                      onChange={(e) => handleNumericFinanceChange(user._id, 'numPreWorkouts', e)}
+                      min="0"
+                      max="20"
+                      style={{ width: '20px' }}
+                    />
+                  </td>
+                  <td>
+                    <select
+                      style={{ color: userFinance.preWorkoutPaymentStatus === 'Si' ? '#0dab0d' : 'red' }}
+                      value={userFinance.preWorkoutPaymentStatus}
+                      onChange={(event) => handleFinanceChange(user._id, 'preWorkoutPaymentStatus', event.target.value)}
+                    >
+                      <option value="No">✖</option>
+                      <option value="Si">✔</option>
+                    </select>
+                  </td>
+                  <td>
+                    <Select
+                      value={{ value: user.Active, label: user.Active }}
+                      onChange={(selectedOption) => handleStatusChange(user._id, selectedOption.value)}
+                      options={[
+                        { value: ' ', label: ' ' },
+                        { value: 'Sí', label: 'Sí' },
+                        { value: 'No', label: 'No' },
+                      ]}
+                    />
+                  </td>
+                  <td style={{ color: userFinance.pendingBalance || user.pendingBalance > 0 ? '#a62525' : 'black' }}>
+                    {userFinance.pendingBalance || user.pendingBalance > 0 ? `$ ${userFinance.pendingBalance || user.pendingBalance}` : '-'}
+                  </td>
+                  <td style={{ color: '#a62525' }}>
+                    {userFinance.otherConsumption ? `$ ${userFinance.otherConsumption}` : 0}
+                  </td>
+                  <td style={{ color: userFinance.totalConsumption > 0 ? 'green' : 'black' }}>
+                    {userFinance.totalConsumption ? `$ ${userFinance.totalConsumption}` : 0}
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       )}
