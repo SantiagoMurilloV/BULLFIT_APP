@@ -20,6 +20,19 @@
   width: 55px;
   font-size: 19px;
 }
+
+.butom-day-finance-hist  {
+  border-radius: 4px;
+  padding: 5px 10px;
+  background-color: #000000;
+  border-color: white;
+  color: white;
+  border: none;
+  cursor: pointer;
+  height: 53px;
+  width: 126px;
+  font-size: 19px;
+}
 .button-diary-finance {
   background-color: #000000;
   color: white;
@@ -53,3 +66,9 @@ input.num{
   font-size: 12px;
 }
 
+input.news{
+  border-radius: 0;
+  height: 2vh;
+  background-color: rgba(255, 255, 255, 0.253);
+  font-size: 12px;
+}
