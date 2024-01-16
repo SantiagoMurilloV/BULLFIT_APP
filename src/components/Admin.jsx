@@ -8,7 +8,7 @@ import firebaseConfig from '../FireBase'
 import { BarLoader } from 'react-spinners';
 import { environment } from '../environments.js';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUserPlus, faBook, faCalendarAlt, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
+import { faUserPlus, faBook, faCalendarAlt, faSignOutAlt, faStore, faUserFriends } from '@fortawesome/free-solid-svg-icons';
 
 
 const app = initializeApp(firebaseConfig);
@@ -150,14 +150,33 @@ const Admin = ({ currentUser }) => {
             </div>
           </button>
         </div>
-
+        <div className="button-column-admin">
+          <button className="button-icon">
+            <Link to={`/store/${id}`} className="button-link">
+              <FontAwesomeIcon icon={faStore} />
+            </Link>
+            <div>
+              <span className="profile-text">Tienda</span>
+            </div>
+          </button>
+        </div>
         <div className="button-column-admin">
           <button className="button-icon">
             <Link to={`/diary/${id}`} className="button-link">
               <FontAwesomeIcon icon={faCalendarAlt} />
             </Link>
             <div>
-              <span className="profile-text">Agenda y Usuarios</span>
+              <span className="profile-text">Agenda</span>
+            </div>
+          </button>
+        </div>
+        <div className="button-column-admin">
+          <button className="button-icon">
+            <Link to={`/userList/${id}`} className="button-link">
+              <FontAwesomeIcon icon={faUserFriends} />
+            </Link>
+            <div>
+              <span className="profile-text">Usuarios</span>
             </div>
           </button>
         </div>

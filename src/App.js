@@ -10,6 +10,7 @@ import RegisterUsers from './components/RegisterUser';
 import Diary from './components/Diary';
 import UserList from './components/usersList';
 import Finances from './components/Finances';
+import Store from './components/Store';
 function App() {
   const [currentUser, setCurrentUser] = useState(null);
 
@@ -26,6 +27,7 @@ function App() {
         <Route path="/diary/:id" element = {<Diary />}/>
         <Route path="/userList/:id" element = {<UserList />}/>
         <Route path="/finances/:id" element = {<Finances />}/>
+        <Route path="/store/:id" element = {<Store />}/>
       </Routes>
     </Router>
   );
