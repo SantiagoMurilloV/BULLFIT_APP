@@ -9,8 +9,9 @@ import Select from 'react-select';
 import 'moment/locale/es';
 import '../components/styles/Reservations.css';
 import { environment } from '../environments';
+import axios from 'axios';
 
-const morningHours = [...Array(16).keys()].map((hour) => (hour + 6).toString().padStart(2, '0')); // 06:00 am to 09:00 pm
+const morningHours = [...Array(15).keys()].map((hour) => (hour + 6).toString().padStart(2, '0')); // 06:00 am to 08:00 pm
 const daysOfWeek = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
 
 const Reservations = () => {
@@ -22,6 +23,7 @@ const Reservations = () => {
   const [reservationStatus, setReservationStatus] = useState(null);
   const navigate = useNavigate();
   const [showMonthlyReservationForm, setShowMonthlyReservationForm] = useState(false);
+  const [slotInfo, setSlotInfo] = useState({});
   const [monthlyReservationData, setMonthlyReservationData] = useState({
     hour: '',
     startDate: '',
@@ -67,7 +69,6 @@ const Reservations = () => {
         }
         const data = await response.json();
         setUserReservations(data);
-
         checkAndSetReservationStatus(data);
       } catch (error) {
         console.error(error);
@@ -79,6 +80,50 @@ const Reservations = () => {
     fetchReservations();
     fetchUser();
   }, [id]);
+
+  const fetchAllReservations = async () => {
+    try {
+      const response = await fetch(`${environment.apiURL}/api/reservations`);
+      if (!response.ok) {
+        throw new Error('Error en la solicitud');
+      }
+      const data = await response.json();
+      const reservationsByDayAndHour = {};
+      data.forEach((reservation) => {
+        const dayHourKey = `${reservation.dayOfWeek}-${reservation.hour}`;
+        if (!reservationsByDayAndHour[dayHourKey]) {
+          reservationsByDayAndHour[dayHourKey] = 0;
+        }
+        reservationsByDayAndHour[dayHourKey]++;
+      });
+  
+      setReservationsData(reservationsByDayAndHour);
+    } catch (error) {
+      console.error(error);
+      Swal.fire('Error al obtener las reservas', 'Ha ocurrido un error al cargar las reservas del usuario.', 'error');
+    }
+  };
+  const fetchSlotInfo = async () => {
+    try {
+      const response = await axios.get(`${environment.apiURL}/api/slots`);
+      const slots = response.data.reduce((acc, slot) => {
+        const slotKey = `${slot.day}-${slot.hour}`;
+        acc[slotKey] = slot.slots;
+        return acc;
+      }, {});
+      setSlotInfo(slots);
+    } catch (error) {
+      console.error('Error fetching slot info:', error);
+    }
+  };
+
+  
+
+  useEffect(() => {
+    fetchAllReservations()
+    fetchSlotInfo();
+  }, []); 
+
 
   const checkAndSetReservationStatus = (userReservationsData) => {
     const reservation = userReservationsData.find(
@@ -102,6 +147,7 @@ const Reservations = () => {
       Swal.fire('Error al obtener las reservas', 'Ha ocurrido un error al cargar las reservas del usuario.', 'error');
     }
   };
+
 
 
 
@@ -129,18 +175,41 @@ const Reservations = () => {
     return Object.values(reservationsForDay).length;
   };
 
+
   const handleReserveClick = async (dayIndex, hour) => {
     const dateKey = moment(selectedDate).add(dayIndex, 'days').format('YYYY-MM-DD');
     const timeKey = `${hour < 10 ? '0' : ''}${hour}:00`;
-
+    const dayOfWeek = daysOfWeek[dayIndex];
     const now = moment().tz('America/Bogota');
-    const reservationDateTime = moment.tz(`${dateKey} ${timeKey}`, 'America/Bogota');
+    const reservationDateTime = moment.tz(`${dayOfWeek} ${timeKey}`, 'America/Bogota');
     
+    const currentReservationsCount = reservationsData[`${dayOfWeek}-${timeKey}`] || 0;
+    const availableSlots = slotInfo[`${dayOfWeek}-${timeKey}`] || 0;
+    console.log('Slot Info State:', slotInfo);
+    console.log('Reservations Data State:', reservationsData);
+    console.log('Current Reservations Count:', currentReservationsCount);
+    console.log('Available Slots:', availableSlots);
+    
+    const currentTime = moment();
+    const isCurrentTimeRestricted = currentTime.hour() >= 21 || currentTime.hour() < 5 || 
+                                  (currentTime.hour() === 5 && currentTime.minute() < 30);
+    
+    if (isCurrentTimeRestricted) {
+      Swal.fire('Reserva No Permitida', 'No se puede realizar reservas entre las 9 PM y las 5:30 AM.', 'error');
+      return;
+    }
+    
+    if (currentReservationsCount >= availableSlots) {
+      Swal.fire('Cupo lleno', 'No hay más cupos disponibles para esta hora.', 'warning');
+      return;
+    }
 
     if (reservationDateTime.diff(now, 'hours') < 2) {
       Swal.fire('Error en la reserva', 'Solo puedes reservar hasta dos horas antes del evento.', 'error');
       return;
     }
+
+
     const reservationsCountForDay = getReservationsCountForDay(dateKey);
     const maxReservationsPerDay = 8;
 
@@ -165,6 +234,7 @@ const Reservations = () => {
             body: JSON.stringify({
               userId: user._id,
               day: dateKey,
+              dayOfWeek: dayOfWeek,
               hour: timeKey,
             }),
           });
@@ -271,7 +341,7 @@ const Reservations = () => {
     const endDate = moment(startDate).add(1, 'month');
 
     for (let date = moment(startDate); date.isBefore(endDate); date.add(1, 'day')) {
-      if (date.isoWeekday() <= 5) { // Lunes a Viernes
+      if (date.isoWeekday() <= 5) {
         const reservationData = {
           userId: id,
           day: date.format('YYYY-MM-DD'),
@@ -408,6 +478,7 @@ const Reservations = () => {
                               {reservationForCell || isReserved ? (
                                 <span className="reserved-text">Reservado</span>
                               ) : (
+                                
                                 <button
                                   onClick={() => handleReserveClick(dayIndex, hourInt)}
                                   disabled={isHourReserved(dayIndex, hourInt)}
@@ -415,6 +486,7 @@ const Reservations = () => {
                                 >
                                   Reservar
                                 </button>
+                                
                               )}
                             </>
                           )}

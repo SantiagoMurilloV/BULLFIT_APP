@@ -223,75 +223,88 @@ const EditReservations = () => {
 
 
   const renderTableRows = () => {
-    const morningHours = ['06:00', '07:00', '08:00', '09:00', '10:00', '16:00', '17:00', '18:00', '19:00', '20:00'];
-
-    return morningHours.map((hour, hourIndex) => (
-      <tr key={hourIndex}>
-        <td className="first-column">{hour}</td>
-        {moment.weekdays().slice(1).map((day, dayIndex) => {
-          const currentDayStr = moment(currentDate).startOf('isoWeek').add(dayIndex, 'days').format('YYYY-MM-DD');
-          const reservationTime = moment(`${currentDayStr} ${hour}`);
-          const currentTime = moment();
-          const canDelete = reservationTime.diff(currentTime, 'hours') >= 2;
-
-          const reservationForCell = userReservations.find(
-            (reservation) => reservation.day === currentDayStr && reservation.hour === hour && reservation.userId === id
-          );
-
-          return (
-            <td key={dayIndex}>
-              {reservationForCell ? (
-                <div className={`reservation-cell ${reservationForCell.Status === 'cancelled' ? 'cancelled' : ''}`}>
-                  <div className="user-name">
-                    {reservationForCell.Status === 'cancelled' ? (
-                      `Reserva (Cancelada)`
-                    ) : (
-                      `Reservado`
-                    )}
-                  </div>
-                  {reservationForCell.Status !== 'cancelled' && (
-                    <>
-                      {canDelete ? (
+    const morningHours = ['06:00', '07:00', '08:00', '09:00', '10:00'];
+    const afternoonHours = ['16:00', '17:00', '18:00', '19:00', '20:00'];
+    const allHours = [...morningHours, 'separator', ...afternoonHours];
+  
+    return allHours.map((hour, hourIndex) => {
+      if (hour === 'separator') {
+        return (
+          <tr key="separator">
+            <td colSpan="8" style={{ backgroundColor: 'rgb(92 92 92)', textAlign: 'center', color: 'black' }}>Break</td>
+          </tr>
+        );
+      } else {
+        return (
+          <tr key={hour}>
+            <td className="first-column">{hour}</td>
+            {moment.weekdays().slice(1).map((day, dayIndex) => {
+              const currentDayStr = moment(currentDate).startOf('isoWeek').add(dayIndex, 'days').format('YYYY-MM-DD');
+              const reservationTime = moment(`${currentDayStr} ${hour}`);
+              const currentTime = moment();
+              const canDelete = reservationTime.diff(currentTime, 'hours') >= 2;
+  
+              const reservationForCell = userReservations.find(
+                (reservation) => reservation.day === currentDayStr && reservation.hour === hour && reservation.userId === id
+              );
+  
+              return (
+                <td key={dayIndex}>
+                  {reservationForCell ? (
+                    <div className={`reservation-cell ${reservationForCell.Status === 'cancelled' ? 'cancelled' : ''}`}>
+                      <div className="user-name">
+                        {reservationForCell.Status === 'cancelled' ? (
+                          `Reserva (Cancelada)`
+                        ) : (
+                          `Reservado`
+                        )}
+                      </div>
+                      {reservationForCell.Status !== 'cancelled' && (
                         <>
-                          <FontAwesomeIcon
-                            icon={faTrash}
-                            className="delete-icon"
-                            onClick={() => handleDeleteReservation(reservationForCell._id)}
-                            style={{ color: '#b80f0f', cursor: 'pointer' }}
-                          />
-                          <FontAwesomeIcon
-                            icon={faEdit}
-                            className="edit-icon"
-                            onClick={() =>
-                              handleOpenReservationForm(
-                                reservationForCell._id,
-                                reservationForCell.day,
-                                reservationForCell.hour
-                              )
-                            }
-                            style={{ cursor: 'pointer' }}
-                          />
+                          {canDelete ? (
+                            <>
+                              <FontAwesomeIcon
+                                icon={faTrash}
+                                className="delete-icon"
+                                onClick={() => handleDeleteReservation(reservationForCell._id)}
+                                style={{ color: '#b80f0f', cursor: 'pointer' }}
+                              />
+                              <FontAwesomeIcon
+                                icon={faEdit}
+                                className="edit-icon"
+                                onClick={() =>
+                                  handleOpenReservationForm(
+                                    reservationForCell._id,
+                                    reservationForCell.day,
+                                    reservationForCell.hour
+                                  )
+                                }
+                                style={{ cursor: 'pointer' }}
+                              />
+                            </>
+                          ) : (
+                            <FontAwesomeIcon
+                              icon={faBan}
+                              className="cancel-icon"
+                              style={{ color: 'rgb(255 154 112)' }}
+                            />
+                          )}
+  
                         </>
-                      ) : (
-                        <FontAwesomeIcon
-                          icon={faBan}
-                          className="cancel-icon"
-                          style={{ color: 'rgb(255 154 112)' }}
-                        />
                       )}
-
-                    </>
+                    </div>
+                  ) : (
+                    <div className="reservation-cell">☒</div>
                   )}
-                </div>
-              ) : (
-                <div className="reservation-cell">☒</div>
-              )}
-            </td>
-          );
-        })}
-      </tr>
-    ));
+                </td>
+              );
+            })}
+          </tr>
+        );
+      }
+    });
   };
+  
 
 
   return (

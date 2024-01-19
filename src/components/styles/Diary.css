@@ -11,7 +11,7 @@ body {
   align-items: center;
   padding: 10px;
   background-color: #f2f2f28a;
-  width: 588px;
+  width: 630px;
   font-weight: bolder;
   height: 40px;
 }
@@ -380,7 +380,7 @@ th.black-background {
 }
 
 th.gray-background {
-  background-color:#c1c1c1;
+  background-color:#7c7b7b;
   color:black;
   font-weight: bolder;
 }
@@ -422,4 +422,15 @@ td.first-column{
   margin-top: 10px;
 }
 
-
+.butom-day-diary-avilable  {
+  border-radius: 2px;
+  padding: 5px 10px;
+  background-color: #000000;
+  border-color: white;
+  color: white;
+  border: none;
+  cursor: pointer;
+  height: 37px;
+  width: 126px;
+  font-size: 19px;
+}

@@ -46,7 +46,7 @@ const RegisterUsers = () => {
   const calculateEndDate = (startDate) => {
     let date = new Date(startDate);
     date.setMonth(date.getMonth() + 1);
-    return date.toISOString().split('T')[0]; // Formatear a yyyy-mm-dd
+    return date.toISOString().split('T')[0];
   }
 
   const handleInputChange = (e) => {

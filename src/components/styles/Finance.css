@@ -1,3 +1,22 @@
+.user-table-finance{
+  max-height: 400px;
+  overflow-y: auto;
+  border: 3px solid #d6d6d640;
+}
+
+.user-table-finance table{
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.user-table-finance thead th{
+  position: sticky;
+  top: 0;
+
+  z-index: 10;
+} 
+
+
 .user-table-finance td {
   text-align: left;
   border-bottom: 3px solid #00000097;

@@ -1,16 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import Swal from 'sweetalert2';
-import Select from 'react-select';
 import Modal from 'react-modal';
 import '../components/styles/Finance.css';
 import { environment } from '../environments';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faHome, faStore, faCalendarAlt, faClock, faBook,  faHistory } from '@fortawesome/free-solid-svg-icons';
+import { faHome, faStore, faCalendarAlt, faClock, faBook, faDollarSign } from '@fortawesome/free-solid-svg-icons';
 
 
 Modal.setAppElement('#root');
-const Finance = () => {
+
+const ReservationHistory = () => {
   const [users, setUsers] = useState([]);
   const [financeData, setFinanceData] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -21,20 +21,12 @@ const Finance = () => {
   const [selectedPlan, setSelectedPlan] = useState('');
   const [selectedStatus, setSelectedStatus] = useState('');
   const [selectedReservationPaymentStatus, setSelectedReservationPaymentStatus] = useState('');
-  const [showPositivePayments, setShowPositivePayments] = useState(false);
   const [reservationsLoaded, setReservationsLoaded] = useState(false);
   const [editableValues, setEditableValues] = useState({});
   const [activeTable, setActiveTable] = useState('both');
-  const [storeConsumptions, setStoreConsumptions] = useState([]);
   const [currentMonth, setCurrentMonth] = useState(new Date());
 
 
-  const getUserOptions = () => {
-    return users.map(user => ({
-      value: user._id,
-      label: `${user.FirstName} ${user.LastName}`
-    }));
-  };
   const showMonthlyTable = () => {
     setActiveTable('monthly');
   };
@@ -43,17 +35,11 @@ const Finance = () => {
     setActiveTable('daily');
   };
 
-  const showBothTables = () => {
-    setActiveTable('both');
-  };
+
   useEffect(() => {
     fetchData();
   }, [id, searchTerm, currentMonth]);
 
-
-  const togglePaymentStatusFilter = () => {
-    setShowPositivePayments(!showPositivePayments);
-  };
   useEffect(() => {
     const filterUsers = () => {
       return users.filter(user => {
@@ -63,7 +49,6 @@ const Finance = () => {
         const matchesReservationPaymentStatus = selectedReservationPaymentStatus
           ? userFinance.reservationPaymentStatus === selectedReservationPaymentStatus.value
           : true;
-
 
         const matchesName = user.FirstName.toLowerCase().includes(searchTerm.toLowerCase()) || user.LastName.toLowerCase().includes(searchTerm.toLowerCase());
         const matchesPlan = selectedPlan ? user.Plan === selectedPlan.value : true;
@@ -215,7 +200,6 @@ const Finance = () => {
       if (!updateResponse.ok) {
         throw new Error('No se pudo actualizar los datos financieros del usuario');
       }
-
       await fetchFinanceData();
       await fetchData();
     } catch (error) {
@@ -224,38 +208,10 @@ const Finance = () => {
   };
 
 
-  const handleStatusChange = async (userId, Active) => {
-    try {
-      const updatedUserData = { Active };
-      const response = await fetch(`${environment.apiURL}/api/users/${userId}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(updatedUserData),
-      });
-      if (response.ok) {
-        const userResponse = await fetch(`${environment.apiURL}/api/users/${id}`);
-        if (userResponse.ok) {
-          const userData = await userResponse.json();
-          setUser(userData);
-        }
-        fetchFinanceData()
-        fetchData();
-      } else {
-        console.error('Error al actualizar el estado del usuario');
-        Swal.fire('Error al actualizar el estado', 'Ha ocurrido un error al actualizar el estado del usuario.', 'error');
-      }
-    } catch (error) {
-      console.error('Error al actualizar el estado del usuario:', error);
-      Swal.fire('Error al actualizar el estado', 'Ha ocurrido un error al actualizar el estado del usuario.', 'error');
-    }
-  };
-
 
   return (
     <div>
-      <h2>Finanzas $</h2>
+      <h2>Historial de Pagos</h2>
       <div className="filters-container">
         <input
           className='input-search'
@@ -264,57 +220,24 @@ const Finance = () => {
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
-        <button 
-          className='butom-day-finance-hist'
-          onClick={togglePaymentStatusFilter}>
-          {showPositivePayments ? 'Reservas Pagadas' : 'Reservas Pendientes'}
-        </button>
-
-        <Select
-          className="filter-select"
-          classNamePrefix="filter-select"
-          value={selectedPlan}
-          onChange={(selected) => setSelectedPlan(selected)}
-          options={[
-            { value: 'Diario', label: 'Diario' },
-            { value: 'Mensual', label: 'Mensual' },
-          ]}
-          placeholder="Plan"
-          isClearable
-        />
-
-        <Select
-          className="filter-select"
-          classNamePrefix="filter-select"
-          value={selectedStatus}
-          onChange={(selected) => setSelectedStatus(selected)}
-          options={[
-            { value: 'Sí', label: 'Sí' },
-            { value: 'No', label: 'No' },
-          ]}
-          placeholder="Activo"
-          isClearable
-        />  
-        <Link to={`/reservationHistory/${id}`}>
-          <button className='butom-day-finance-hist' >
-            <FontAwesomeIcon icon={faHistory} /> Historial
-          </button>
-        </Link>
         <button onClick={showMonthlyTable} className='butom-day-finance-hist'> <FontAwesomeIcon icon={faCalendarAlt} /> Mensual
         </button>
         <button onClick={showDailyTable} className='butom-day-finance-hist'><FontAwesomeIcon icon={faClock} /> Diario </button>
+        <Link to={`/finances/${id}`}>
+          <button className='butom-day-finance' >
+            <FontAwesomeIcon icon={faDollarSign} />
+          </button>
+        </Link>
         <Link to={`/store/${id}`}>
           <button className='butom-day-finance' >
             <FontAwesomeIcon icon={faStore} />
           </button>
         </Link>
-      
         <Link to={`/diary/${id}`}>
           <button className='butom-day-finance' >
             <FontAwesomeIcon icon={faBook} />
           </button>
         </Link>
-
         <Link to={`/admin/${id}`}>
           <button className='butom-day-finance' >
             <FontAwesomeIcon icon={faHome} />
@@ -336,17 +259,15 @@ const Finance = () => {
                       <th>Inicio Mes</th>
                       <th>Fin Mes</th>
                       <th>Usuario Activo</th>
-                      <th>$Pendiente Reservas</th>
-                      <th>pago Reservas$</th>
+                      <th>Valor Pagado</th>
+                      <th>Confirmación Pago</th>
                       <th>Novedades</th>
                     </tr>
                   </thead>
                   <tbody>
                     {searchResults.filter(user => user.Plan === 'Mensual').map(user => {
                       const userFinance = financeData.find(finance => finance.userId === user._id) || {};
-                      if (showPositivePayments && userFinance.reservationPaymentStatus !== 'Si') {
-                        return null;
-                      } else if (!showPositivePayments && userFinance.reservationPaymentStatus !== 'No') {
+                      if (userFinance.reservationPaymentStatus === 'No') {
                         return null;
                       }
                       return (
@@ -354,30 +275,11 @@ const Finance = () => {
                           <td>{user.FirstName + ' ' + user.LastName}</td>
                           <td>{userFinance.startDate || ' '}</td>
                           <td>{userFinance.endDate || ' '}</td>
-                          <td>
-                            <Select
-                              value={{ value: user.Active, label: user.Active }}
-                              onChange={(selectedOption) => handleStatusChange(user._id, selectedOption.value)}
-                              options={[
-                                { value: ' ', label: ' ' },
-                                { value: 'Sí', label: 'Sí' },
-                                { value: 'No', label: 'No' },
-                              ]}
-                            />
-                          </td>
+                          <td>{user.Active || ' '}</td>
                           <td style={{ color: userFinance.reservationPaymentStatus === 'No' ? '#a62525' : 'green' }}>
-                            {userFinance.pendingBalance  > 0 ? `$ ${userFinance.pendingBalance }` : '$ 0'}
+                            {userFinance.pendingBalance > 0 ? `$ ${userFinance.pendingBalance}` : '$ 0'}
                           </td>
-                          <td>
-                            <select
-                              style={{ color: userFinance.reservationPaymentStatus === 'Si' ? '#0dab0d' : 'red' }}
-                              value={userFinance.reservationPaymentStatus}
-                              onChange={(event) => handleFinanceChange(user._id, 'reservationPaymentStatus', event.target.value)}
-                            >
-                              <option value="No">✖</option>
-                              <option value="Si">✔</option>
-                            </select>
-                          </td>
+                          <td>{userFinance.reservationPaymentStatus === 'Si' ? '✔' : '✖' || ' '}</td>
                           <td>
                             <input
                               type="text"
@@ -403,17 +305,15 @@ const Finance = () => {
                       <th>Fecha inicio</th>
                       <th># Reservas</th>
                       <th>Usuario Activo</th>
-                      <th>$Pendiente Reservas</th>
-                      <th>pago Reservas$</th>
+                      <th>Valor Pagado</th>
+                      <th>Confirmación Pago</th>
                       <th>Novedades</th>
                     </tr>
                   </thead>
                   <tbody>
                     {searchResults.filter(user => user.Plan === 'Diario').map(user => {
                       const userFinance = financeData.find(finance => finance.userId === user._id) || {};
-                      if (showPositivePayments && userFinance.reservationPaymentStatus !== 'Si') {
-                        return null;
-                      } else if (!showPositivePayments && userFinance.reservationPaymentStatus !== 'No') {
+                      if (userFinance.reservationPaymentStatus === 'No') {
                         return null;
                       }
                       return (
@@ -421,31 +321,12 @@ const Finance = () => {
                           <td>{user.FirstName + ' ' + user.LastName}</td>
                           <td>{userFinance.startDate || 'N/A'}</td>
                           <td>{user.reservationCount || 0}</td>
-                          <td>
-                            <Select
-                              value={{ value: user.Active, label: user.Active }}
-                              onChange={(selectedOption) => handleStatusChange(user._id, selectedOption.value)}
-                              options={[
-                                { value: ' ', label: ' ' },
-                                { value: 'Sí', label: 'Sí' },
-                                { value: 'No', label: 'No' },
-                              ]}
-                            />
+                          <td>{user.Active || ' '}
                           </td>
                           <td style={{ color: userFinance.reservationPaymentStatus === 'No' ? '#a62525' : 'green' }}>
-                            {userFinance.pendingBalance  > 0 ? `$ ${userFinance.pendingBalance }` : '$ 0'}
+                            {userFinance.pendingBalance > 0 ? `$ ${userFinance.pendingBalance}` : '$ 0'}
                           </td>
-                          <td>
-                            <select
-                              style={{ color: userFinance.reservationPaymentStatus === 'Si' ? '#0dab0d' : 'red' }}
-                              value={userFinance.reservationPaymentStatus}
-                              onChange={(event) => handleFinanceChange(user._id, 'reservationPaymentStatus', event.target.value)}
-                            >
-                              <option value="No">✖</option>
-                              <option value="Si">✔</option>
-                            </select>
-
-                          </td>
+                          <td>{userFinance.reservationPaymentStatus === 'Si' ? '✔' : '✖' || ' '}</td>
                           <td>
                             <input
                               type="text"
@@ -470,4 +351,4 @@ const Finance = () => {
   );
 };
 
-export default Finance;
+export default ReservationHistory;

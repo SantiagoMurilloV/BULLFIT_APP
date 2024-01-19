@@ -37,19 +37,17 @@ const Store = () => {
 
 
   useEffect(() => {
-    const filterUsers = () => {
-      return users.filter(user => {
-
-
-        const matchesName = user.FirstName.toLowerCase().includes(searchTerm.toLowerCase()) || user.LastName.toLowerCase().includes(searchTerm.toLowerCase());
-
-
-        return matchesName ;
+    const filterStoreConsumptions = () => {
+      return storeConsumptions.filter(consumption => {
+        if (consumption.name && typeof consumption.name.label === 'string') {
+          return consumption.name.label.toLowerCase().includes(searchTerm.toLowerCase());
+        }
+        return false;
       });
     };
-
-    setSearchResults(filterUsers());
-  }, [users, searchTerm]);
+    
+    setSearchResults(filterStoreConsumptions());
+  }, [storeConsumptions, searchTerm]);
 
 
   const fetchUserData = async () => {
@@ -200,11 +198,6 @@ const Store = () => {
     <div>
       <h2>Registro de Consumo.</h2>
       <div className="filters-container">
-        {/* <div className="month-navigation">
-        <button onClick={() => changeMonth(-1)}>Mes Anterior</button>
-        <span>{`${currentMonth.toLocaleString('default', { month: 'long' })} ${currentMonth.getFullYear()}`}</span>
-        <button onClick={() => changeMonth(1)}>Mes Siguiente</button>
-      </div> */}
         <input
           className='input-search'
           type="text"
@@ -214,7 +207,7 @@ const Store = () => {
         />
         <button
         className='butom-day-finance-hist'
-         onClick={() => setShowPaidConsumptions(!showPaidConsumptions)}>
+          onClick={() => setShowPaidConsumptions(!showPaidConsumptions)}>
           {showPaidConsumptions ? 'Historial de Consumo' : 'Consumos Pendientes'}
         </button>
 
