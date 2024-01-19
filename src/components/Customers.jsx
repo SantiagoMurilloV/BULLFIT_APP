@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Swal from 'sweetalert2';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { Container, Grid, Paper, Typography, Button } from '@mui/material';
 import '../components/styles/Customers.css';
 import { useToasts } from 'react-toast-notifications';
 import { initializeApp } from 'firebase/app';
@@ -9,6 +8,8 @@ import { getStorage, ref, getDownloadURL } from 'firebase/storage';
 import firebaseConfig from '../FireBase';
 import { BarLoader } from 'react-spinners';
 import { environment } from '../environments.js'; 
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {  faSignOut,faUserAlt,  faSquarePen, faCalendarDays } from '@fortawesome/free-solid-svg-icons';
 
 
 const app = initializeApp(firebaseConfig);
@@ -24,10 +25,6 @@ const Customers = ({ currentUser }) => {
   const formattedDate = today.toISOString().split('T')[0];
   const [reservationsData, setReservationsData] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [imageUrl, setImageUrl] = useState('');
-  const [imageUrl2, setImageUrl2] = useState('');
-  const [imageUrl3, setImageUrl3] = useState('');
-  const [imageUrl4, setImageUrl4] = useState('');
   const [imageUrl5, setImageUrl5] = useState('');
   const [imageUrl6, setImageUrl6] = useState('');
   const [imageUrl7, setImageUrl7] = useState('');
@@ -37,26 +34,14 @@ const Customers = ({ currentUser }) => {
   useEffect(() => {
     const fetchImageUrl = async () => {
       try {
-        const imageRef = ref(storage, 'profile.png');
-        const imageRef2 = ref(storage, 'logOut.png');
-        const imageRef3= ref(storage, 'calendario.png');
-        const imageRef4 = ref(storage, 'edit.png');
         const imageRef5= ref(storage, 'Recurso203.png');
         const imageRef6 = ref(storage, 'insta.png');
         const imageRef7 = ref(storage, 'WHAT.png');
 
-        const url = await getDownloadURL(imageRef);
-        const url2 = await getDownloadURL(imageRef2);
-        const url3 = await getDownloadURL(imageRef3);
-        const url4 = await getDownloadURL(imageRef4);
         const url5 = await getDownloadURL(imageRef5);
         const url6 = await getDownloadURL(imageRef6);
         const url7 = await getDownloadURL(imageRef7);
-        setImageUrl(url);
-        setImageUrl2(url2);
 
-        setImageUrl3(url3);
-        setImageUrl4(url4);
         
         setImageUrl5(url5);
         setImageUrl6(url6);
@@ -205,8 +190,6 @@ const Customers = ({ currentUser }) => {
             ) : (
               'No hay reservas'
             )}
-
-
           </p>
         </div>
       </div>
@@ -214,68 +197,40 @@ const Customers = ({ currentUser }) => {
         <div className="button-column-customers">
           <button className="button-icon" onClick={handleReserveClasses}>
             {user && user.Active === 'No' && user.Active !== null ? (
-              <div className="button-link-customers">
-                <img
-                  src={imageUrl3}
-                  alt="Icono de Reservar"
-                  className="button-icon-image"
-                />
-                <div>
-                <span className="profile-text">Reservar Clase</span>
-                </div>
-              
+              <div className="button-link">
+                <FontAwesomeIcon className="button-icon-image" icon={faCalendarDays} />
               </div>
+
             ) : (
-              <Link to={`/reservations/${id}`} className="button-link-customers">
-                <img
-                  src={imageUrl3}
-                  alt="Icono de Reservar"
-                  className="button-icon-image"
-                />
-                <div>
-                <span className="profile-text">Reservar Clase</span>
-                </div>
+
+              <Link to={`/reservations/${id}`} className="button-link">
+                <FontAwesomeIcon className="button-icon-image" icon={faCalendarDays} />
               </Link>
+              
             )}
+            <span className="profile-text">Reservar Clase</span>
           </button>
         </div>
         <div className="button-column-customers">
           <button className="button-icon" >
             {user && user.Active === 'No' && user.Active !== null ? (
-              <div className="button-link-customers">
-                <img
-                  src={imageUrl4}
-                  alt="Icono de Reservar"
-                  className="button-icon-image"
-                />
-                <div>
-                <span className="profile-text">Modificar Reservas</span>
-                </div>  
+              <div className="button-link">
+                <FontAwesomeIcon className="button-icon-image-" icon={faSquarePen} />
               </div>
             ) : (
-              <Link to={`/EditReservation/${id}`} className="button-link-customers">
-                <img
-                  src={imageUrl4}
-                  alt="Icono de Reservar"
-                  className="button-icon-image"
-                />
-                <div>
-                <span className="profile-text">Modificar Reservas</span>
-                </div>
+              <Link to={`/EditReservation/${id}`} className="button-link">
+                <FontAwesomeIcon className="button-icon-image" icon={faSquarePen} />
               </Link>
+              
             )}
+            <span className="profile-text">Modificar Reservas</span>
           </button>
         </div>
 
         <div className="button-column-customers">
           <button className="button-icon">
             <Link to={`/profile/${id}`} className="button-link">
-              <img
-                src={imageUrl}
-                alt="Imagen de perfil"
-                className="profile-image"
-                id="profile-image"
-              />
+            <FontAwesomeIcon className="button-icon-image" icon={faUserAlt} />
             </Link>
             <span className="profile-text">{user ? user.FirstName + user.LastName : 'N/A'}</span>
           </button>
@@ -283,12 +238,10 @@ const Customers = ({ currentUser }) => {
 
         <div className="button-column-customers">
           <button className="button-icon" onClick={handleLogout} >
-            <img
-              src={imageUrl2 }
-              alt="Imagen de salir"
-              className="logout"
-              id="logout-image"
-            />
+            <div className="button-link">
+              <FontAwesomeIcon className="button-icon-image" icon={faSignOut} />
+            </div>
+            
             <span className="profile-text">Salir</span>
           </button>
         </div>

@@ -85,7 +85,7 @@ const UserList = () => {
     let newEditingUser = { ...editingUser, [name]: value };
     if (name === 'startDate') {
       const endDate = new Date(value);
-      endDate.setDate(endDate.getDate() + 30); // Añade 30 días
+      endDate.setDate(endDate.getDate() + 30);
       const formattedEndDate = endDate.toISOString().split('T')[0];
 
       newEditingUser.endDate = formattedEndDate;
@@ -255,8 +255,6 @@ const UserList = () => {
               <th>Cédula</th>
               <th>Plan</th>
               <th>Estado $</th>
-              <th>Fecha Inicial</th>
-              <th>Fecha Final</th>
               <th>Acciones</th>
             </tr>
           </thead>
@@ -288,8 +286,7 @@ const UserList = () => {
                     ]}
                   />
                 </td>
-                <td>{user.startDate}</td>
-                <td>{user.endDate}</td>
+
                 <td>
                   <button onClick={() => openModal(user)}><FontAwesomeIcon icon={faEdit} /></button>
                   <button onClick={() => handleDeleteUser(user._id)}><FontAwesomeIcon icon={faTrash} /></button>

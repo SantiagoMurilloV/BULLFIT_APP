@@ -1,3 +1,14 @@
+input.slotNum{
+  border-radius: 5px;
+  height: 2px;
+  width: 22px;
+  background-color: rgb(255 253 253);
+  font-size: 19px;
+  font-weight: bolder;
+  text-align: center;
+}
+
+
 body {
   background-color: white;
 }
@@ -30,7 +41,7 @@ table {
   border-collapse: collapse;
   width: 100%;
   margin: 20px auto;
-  background-color: #f5f5f591;
+  background-color: #ffffff00;
 }
 .save button{
   border: white;
@@ -60,34 +71,7 @@ table td {
   text-align: center;
 }
 
-.available-button {
-  background-color: #4CAF50;
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  text-align: center;
-  text-decoration: none;
-  display: inline-block;
-  font-size: 16px;
-  margin: 4px 2px;
-  cursor: pointer;
-  width: 100%;
-}
 
-.available-button:disabled {
-  background-color: #ccc;
-  cursor: not-allowed;
-}
-
-.available-button.reserved {
-  background-color: #827e7e;
-}
-.reserved-text{
-  color:#f6f6f6;
-  font-weight: bold;
-  background-color: green;
-
-}
 
 th.hour-column {
   background-color: rgb(47, 85, 201); 
@@ -101,18 +85,32 @@ td.hour-cell {
   text-align: center; 
   font-weight: bolder;
 }
-.red-background {
-  background-color: red;
-  
+
+.hour-header {
+  background-color: blue;
 }
 
-.black-background {
+.lunes-header, .jueves-header {
+  background-color: red;
+  color: black;
+}
+
+.martes-header, .viernes-header {
   background-color: black;
 }
 
-.gray-background {
-  background-color: gray;
+.miércoles-header, .sabado-header {
+  background-color: grey;
   color: black;
+}
+
+.separation-row {
+  height: 20px;
+  background-color: #727273b3;
+  text-align: center;
+  color: black;
+  font-size: medium;
+  font-weight: bolder;
 }
 
 button {

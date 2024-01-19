@@ -302,6 +302,7 @@ h2 {
 
 th.red {
   background-color: red;
+  color: black;
 }
 
 th.black {
@@ -310,7 +311,8 @@ th.black {
 }
 
 th.grey {
-  background-color: grey;
+  background-color: #706f6f;
+  color: black;
 }
 
 th.blue {

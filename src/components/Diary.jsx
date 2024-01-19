@@ -6,7 +6,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Select from 'react-select';
 import 'react-datepicker/dist/react-datepicker.css';
 import '../components/styles/Diary.css';
-import { faArrowLeft, faArrowRight, faCalendarDay, faCalendarPlus, faHome, faUserFriends, faCalendarMinus,faDollarSign } from '@fortawesome/free-solid-svg-icons';
+import { faArrowLeft, faArrowRight, faCalendarDay, faCalendarPlus, faHome, faUserFriends, faCalendarMinus,faDollarSign} from '@fortawesome/free-solid-svg-icons';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import DatePicker from 'react-datepicker';
@@ -318,7 +318,7 @@ const Diary = () => {
       endDateToUse = moment(startDate).endOf('month');
     }
     for (let date = moment(startDate); date.isSameOrBefore(endDateToUse, 'day'); date.add(1, 'days')) {
-      if (date.isoWeekday() <= 5) { // Lunes a Viernes
+      if (date.isoWeekday() <= 5) {
         const reservationData = {
           userId: userId.value,
           day: date.format('YYYY-MM-DD'),
@@ -612,20 +612,20 @@ const Diary = () => {
         <button className='butom-day-diary' onClick={handlePreviousWeek}>
           <FontAwesomeIcon icon={faArrowLeft} />
         </button>
-        <button className='butom-day-diary' onClick={handleNextWeek}>
-          <FontAwesomeIcon icon={faArrowRight} />
-        </button>
         <button className='butom-day-diary' onClick={handleCurrentWeek}>
           <FontAwesomeIcon icon={faCalendarDay} />
         </button>
-        <button className='butom-day-diary' onClick={handleOpenReservationForm}>
-          <FontAwesomeIcon icon={faPlus} />
+        <button className='butom-day-diary' onClick={handleNextWeek}>
+          <FontAwesomeIcon icon={faArrowRight} />
+        </button>
+        <button className='butom-day-diary' onClick={handlePreviousMonth}>
+          <FontAwesomeIcon icon={faCalendarMinus} />
         </button>
         <button className='butom-day-diary' onClick={handleNextMonth}>
           <FontAwesomeIcon icon={faCalendarPlus} />
         </button>
-        <button className='butom-day-diary' onClick={handlePreviousMonth}>
-          <FontAwesomeIcon icon={faCalendarMinus} />
+        <button className='butom-day-diary' onClick={handleOpenReservationForm}>
+          <FontAwesomeIcon icon={faPlus} />
         </button>
         <Link to={`/userList/${id}`}>
           <button className='butom-day-diary' >
@@ -635,6 +635,11 @@ const Diary = () => {
         <Link to={`/finances/${id}`}>
           <button className='butom-day-diary' >
             <FontAwesomeIcon icon={faDollarSign} />
+          </button>
+        </Link>
+        <Link to={`/quotaLimits/${id}`}>
+          <button className='butom-day-diary-avilable' >
+            Cupos/hora
           </button>
         </Link>
         <Link to={`/admin/${id}`}>
