@@ -6,7 +6,7 @@ import Modal from 'react-modal';
 import '../components/styles/UserList.css';
 import { environment } from '../environments';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEdit, faTrash , faHome} from '@fortawesome/free-solid-svg-icons';
+import { faEdit, faTrash , faHome, faDownload, faFileDownload} from '@fortawesome/free-solid-svg-icons';
 
 
 Modal.setAppElement('#root');
@@ -21,10 +21,12 @@ const UserList = () => {
   const [editingUser, setEditingUser] = useState(null);
   const [selectedPlan, setSelectedPlan] = useState('');
   const [selectedStatus, setSelectedStatus] = useState('');
+  const [termsLink, setTermsLink] = useState(null);
 
 
   useEffect(() => {
     fetchData();
+    fetchTermsLink();
   }, [id, searchTerm]);
 
   useEffect(() => {
@@ -67,6 +69,24 @@ const UserList = () => {
     } catch (error) {
       console.error(error);
       Swal.fire('Error al cargar los datos', 'Ha ocurrido un error al cargar los datos.', 'error');
+    }
+  };
+  const fetchTermsLink = async () => {
+    try {
+      const response = await fetch(`${environment.apiURL}/api/termsAndConditions`);
+      if (response.ok) {
+        const termsData = await response.json();
+        const linksMap = {};
+        termsData.forEach(term => {
+          if (term.link && term.userId) {
+            linksMap[term.userId] = term.link;
+          }
+        });
+        setTermsLink(linksMap);
+      }
+    } catch (error) {
+      console.error('Error al cargar los términos y condiciones:', error);
+      setTermsLink({});
     }
   };
 
@@ -271,11 +291,12 @@ const UserList = () => {
               <th>Plan</th>
               <th>Estado $</th>
               <th>Acciones</th>
+
             </tr>
           </thead>
           <tbody>
             {searchResults.map((user) => (
-              <tr key={user._id}>
+                <tr key={user._id}>
                 <td>{user.FirstName + ' ' + user.LastName}</td>
                 <td>{user.Phone}</td>
                 <td>{user.IdentificationNumber}</td>
@@ -303,6 +324,11 @@ const UserList = () => {
                 </td>
 
                 <td>
+                {termsLink && termsLink[user._id] && (
+                    <a href={termsLink[user._id]} target="_blank" rel="noopener noreferrer">
+                      <button><FontAwesomeIcon icon={faFileDownload} /></button>
+                    </a>
+                  )}
                   <button onClick={() => openModal(user)}><FontAwesomeIcon icon={faEdit} /></button>
                   <button onClick={() => handleDeleteUser(user._id)}><FontAwesomeIcon icon={faTrash} /></button>
                 </td>

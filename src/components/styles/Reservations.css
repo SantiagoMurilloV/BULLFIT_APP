@@ -115,7 +115,7 @@ td.hour-cell {
   color: black;
 }
 
-button {
+.reserved-button button{
   margin: 5px;
   padding: 5px 10px;
   background-color: #000000;
@@ -123,9 +123,29 @@ button {
   color: white;
   border: none;
   cursor: pointer;
+  width: 56px;
 }
 
-button:hover {
+reserved-button button:hover {
   background-color: #414f77;
 }
+
+
+@media screen and (max-width: 768px) {
+  .table-container {
+    overflow-x: auto;
+    max-width: 400px;
+  }
+  .table-container table {
+    border-collapse: collapse;
+    width: 130%;
+    margin: 20px auto;
+    background-color: #ffffff00;
+    font-size: 10px;
+}
+.reserved-button button{
+  width: 56px;
+}
+}
+
 
