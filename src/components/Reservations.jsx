@@ -82,27 +82,33 @@ const Reservations = () => {
   }, [id]);
 
   const fetchAllReservations = async () => {
+    const startOfWeek = moment(selectedDate).startOf('isoWeek').format('YYYY-MM-DD');
+    const endOfWeek = moment(selectedDate).endOf('isoWeek').format('YYYY-MM-DD');
+  
     try {
-      const response = await fetch(`${environment.apiURL}/api/reservations`);
+      const response = await fetch(`${environment.apiURL}/api/reservations`, {
+        params: { startDate: startOfWeek, endDate: endOfWeek }
+      });
+  
       if (!response.ok) {
         throw new Error('Error en la solicitud');
       }
+  
       const data = await response.json();
-      const reservationsByDayAndHour = {};
+      const reservationsByDateAndHour = {};
       data.forEach((reservation) => {
-        const dayHourKey = `${reservation.dayOfWeek}-${reservation.hour}`;
-        if (!reservationsByDayAndHour[dayHourKey]) {
-          reservationsByDayAndHour[dayHourKey] = 0;
-        }
-        reservationsByDayAndHour[dayHourKey]++;
+        const dateHourKey = `${reservation.day}-${reservation.hour}`;
+        reservationsByDateAndHour[dateHourKey] = (reservationsByDateAndHour[dateHourKey] || 0) + 1;
       });
   
-      setReservationsData(reservationsByDayAndHour);
+      setReservationsData(reservationsByDateAndHour);
     } catch (error) {
       console.error(error);
       Swal.fire('Error al obtener las reservas', 'Ha ocurrido un error al cargar las reservas del usuario.', 'error');
     }
   };
+
+  
   const fetchSlotInfo = async () => {
     try {
       const response = await axios.get(`${environment.apiURL}/api/slots`);
@@ -154,6 +160,7 @@ const Reservations = () => {
   const handleDateChange = (daysToAdd) => {
     const newSelectedDate = moment(selectedDate).add(daysToAdd, 'days').startOf('week');
     setSelectedDate(newSelectedDate);
+    fetchAllReservations();
   };
   const handleOpenMonthlyReservationForm = () => {
     setShowMonthlyReservationForm(true);
@@ -177,18 +184,16 @@ const Reservations = () => {
 
 
   const handleReserveClick = async (dayIndex, hour) => {
+
     const dateKey = moment(selectedDate).add(dayIndex, 'days').format('YYYY-MM-DD');
     const timeKey = `${hour < 10 ? '0' : ''}${hour}:00`;
+    const dateHourKey = `${dateKey}-${timeKey}`;
     const dayOfWeek = daysOfWeek[dayIndex];
     const now = moment().tz('America/Bogota');
     const reservationDateTime = moment.tz(`${dayOfWeek} ${timeKey}`, 'America/Bogota');
     
-    const currentReservationsCount = reservationsData[`${dayOfWeek}-${timeKey}`] || 0;
+    const currentReservationsCount = reservationsData[dateHourKey] || 0;
     const availableSlots = slotInfo[`${dayOfWeek}-${timeKey}`] || 0;
-    console.log('Slot Info State:', slotInfo);
-    console.log('Reservations Data State:', reservationsData);
-    console.log('Current Reservations Count:', currentReservationsCount);
-    console.log('Available Slots:', availableSlots);
     
     const currentTime = moment();
     const isCurrentTimeRestricted = currentTime.hour() >= 21 || currentTime.hour() < 5 || 
@@ -202,7 +207,8 @@ const Reservations = () => {
     if (currentReservationsCount >= availableSlots) {
       Swal.fire('Cupo lleno', 'No hay más cupos disponibles para esta hora.', 'warning');
       return;
-    }
+  }
+  
 
     if (reservationDateTime.diff(now, 'hours') < 2) {
       Swal.fire('Error en la reserva', 'Solo puedes reservar hasta dos horas antes del evento.', 'error');
@@ -342,9 +348,13 @@ const Reservations = () => {
 
     for (let date = moment(startDate); date.isBefore(endDate); date.add(1, 'day')) {
       if (date.isoWeekday() <= 5) {
+        const dayOfWeek = date.format('dddd');
+        const capitalizedDayOfWeek = dayOfWeek.charAt(0).toUpperCase() + dayOfWeek.slice(1); 
+
         const reservationData = {
           userId: id,
           day: date.format('YYYY-MM-DD'),
+          dayOfWeek: capitalizedDayOfWeek,
           hour: monthlyReservationData.hour ? monthlyReservationData.hour.value : null,
         };
 

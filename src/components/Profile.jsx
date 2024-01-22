@@ -119,11 +119,14 @@ const Profile = () => {
 
 
   const shouldShowRenewButton = () => {
+    if (!financeInfo) return false;
+  
     const today = new Date();
-    const endDate = new Date(user?.endDate);
+    const endDate = new Date(financeInfo.endDate); 
     const differenceInDays = (endDate - today) / (1000 * 3600 * 24);
     return differenceInDays <= 3 && differenceInDays >= 0;
   };
+  
 
   const handleStartDateChange = (e) => {
     const newStartDate = e.target.value;
@@ -142,7 +145,7 @@ const Profile = () => {
         throw new Error('Error al obtener datos financieros');
       }
       const financeData = await response.json();
-      setFinanceInfo(financeData);
+      setFinanceInfo(financeData); 
       setFinanceRecords(financeData);
     } catch (error) {
       console.error('Error al obtener datos financieros:', error);
@@ -153,15 +156,19 @@ const Profile = () => {
   const handleSaveMonthlyReservation = async () => {
     const startDate = moment(monthlyReservationData.startDate);
     const endDate = moment(startDate).add(1, 'month');
-
+  
     for (let date = moment(startDate); date.isBefore(endDate); date.add(1, 'day')) {
       if (date.isoWeekday() <= 5) { 
+        const dayOfWeek = date.format('dddd');
+        const capitalizedDayOfWeek = dayOfWeek.charAt(0).toUpperCase() + dayOfWeek.slice(1); 
+  
         const reservationData = {
           userId: id,
           day: date.format('YYYY-MM-DD'),
+          dayOfWeek: capitalizedDayOfWeek, 
           hour: monthlyReservationData.hour ? monthlyReservationData.hour.value : null,
         };
-
+  
         try {
           await createReservation(reservationData);
         } catch (error) {
@@ -204,7 +211,6 @@ const Profile = () => {
         throw new Error('No se pudo renovar la membresía');
       }
 
-      Swal.fire('Éxito', 'Membresía renovada y datos financieros actualizados', 'success');
 
       fetchFinanceData();
     } catch (error) {
@@ -237,24 +243,6 @@ const Profile = () => {
   const handleRenewButtonClick = () => {
     handleOpenMonthlyReservationForm();
     renewMembershipAndPostFinanceData();
-  };
-
-  const renderFinanceInfo = () => {
-    const today = new Date();
-    return financeRecords.filter(record => record.reservationPaymentStatus === 'No').map((record, index) => {
-      const endDate = new Date(record.endDate);
-      const isPastDue = endDate < today;
-      const financeInfoStyle = {
-        color: isPastDue ? 'red' : 'black',
-        fontWeight: index === 0 ? 'bold' : 'normal', 
-      };
-
-      return (
-        <div key={index} className="finance-info" style={financeInfoStyle}>
-          {/* ... */}
-        </div>
-      );
-    });
   };
 
 

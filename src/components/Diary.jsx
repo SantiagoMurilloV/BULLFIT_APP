@@ -6,7 +6,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Select from 'react-select';
 import 'react-datepicker/dist/react-datepicker.css';
 import '../components/styles/Diary.css';
-import { faArrowLeft, faArrowRight, faCalendarDay, faCalendarPlus, faHome, faUserFriends, faCalendarMinus,faDollarSign} from '@fortawesome/free-solid-svg-icons';
+import { faArrowLeft, faArrowRight, faCalendarDay, faCalendarPlus, faHome, faUserFriends, faCalendarMinus, faDollarSign } from '@fortawesome/free-solid-svg-icons';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import DatePicker from 'react-datepicker';
@@ -33,9 +33,19 @@ const Diary = () => {
     date: '',
     hour: '',
   });
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [selectedUserId, setSelectedUserId] = useState('');
+  const [deletionDate, setDeletionDate] = useState(new Date());
+
+
   const morningHours = ['06:00', '07:00', '08:00', '09:00', '10:00'];
   const afternoonHours = ['16:00', '17:00', '18:00', '19:00', '20:00'];
   const maxSpacesPerHour = 12;
+  const getCapitalizedDayOfWeek = (date) => {
+    const dayOfWeek = moment(date).format('dddd');
+    return dayOfWeek.charAt(0).toUpperCase() + dayOfWeek.slice(1);
+  };
+
   const fetchWeeklyReservations = (startDate) => {
     const endDate = moment(startDate).endOf('isoWeek').toDate();
     fetch(`${environment.apiURL}/api/reservations?startDate=${startDate.toISOString()}&endDate=${endDate.toISOString()}`)
@@ -98,9 +108,12 @@ const Diary = () => {
   };
 
   const handleCreateReservationFromTable = (userId, day, hour) => {
+    const capitalizedDayOfWeek = getCapitalizedDayOfWeek(day);
+
     const reservationData = {
       userId,
       day,
+      dayOfWeek: capitalizedDayOfWeek,
       hour,
     };
 
@@ -121,13 +134,7 @@ const Diary = () => {
         Swal.fire('Error', 'No se pudo crear la reserva.', 'error');
       });
   };
-  const toggleSelectEnabled = (day, hour) => {
-    const key = `${day}-${hour}`;
-    setSelectEnabled(prevState => ({
-      ...prevState,
-      [key]: !prevState[key]
-    }));
-  };
+
 
 
   const handleNextWeek = () => {
@@ -163,11 +170,50 @@ const Diary = () => {
       hour: '',
     });
   };
+  const handleUserSelection = (userId) => {
+    setSelectedUserId(userId);
+  };
+
+  const handleDeletionDateChange = (date) => {
+    setDeletionDate(date);
+  };
+
+  const handleDeleteUserReservations = async () => {
+    const formattedDeletionDate = moment(deletionDate).format('YYYY-MM-DD');
+
+    try {
+      const response = await fetch(`${environment.apiURL}/api/reservations?userId=${selectedUserId}`);
+      if (!response.ok) throw new Error('Error al recuperar reservas');
+
+      const reservations = await response.json();
+      const reservationsToDelete = reservations.filter(reservation => moment(reservation.day).isAfter(formattedDeletionDate));
+
+      for (const reservation of reservationsToDelete) {
+        const deleteResponse = await fetch(`${environment.apiURL}/api/reservations/${reservation._id}`, {
+          method: 'DELETE'
+        });
+        if (!deleteResponse.ok) throw new Error('Error al eliminar reserva');
+      }
+      fetchWeeklyReservations(moment(currentDate).startOf('isoWeek').toDate());
+      Swal.fire('Eliminado', 'Las reservas han sido eliminadas.', 'success');
+      fetchWeeklyReservations(currentDate);
+    } catch (error) {
+      console.error('Error:', error);
+      Swal.fire('Error', 'No se pudo eliminar las reservas.', 'error');
+    }
+
+    setShowDeleteModal(false);
+  };
+
+
+
 
   const handleSaveReservation = () => {
+    const formattedDate = moment(formData.date).format('YYYY-MM-DD');
     const reservationData = {
       userId: formData.userId.value,
-      day: formData.date,
+      day: formattedDate,
+      dayOfWeek: getCapitalizedDayOfWeek(formattedDate),
       hour: formData.hour.value,
     };
 
@@ -319,9 +365,12 @@ const Diary = () => {
     }
     for (let date = moment(startDate); date.isSameOrBefore(endDateToUse, 'day'); date.add(1, 'days')) {
       if (date.isoWeekday() <= 5) {
+        const dayOfWeek = date.format('dddd');
+        const capitalizedDayOfWeek = dayOfWeek.charAt(0).toUpperCase() + dayOfWeek.slice(1);
         const reservationData = {
           userId: userId.value,
           day: date.format('YYYY-MM-DD'),
+          dayOfWeek: capitalizedDayOfWeek,
           hour: hour.value,
         };
 
@@ -355,9 +404,13 @@ const Diary = () => {
     Swal.fire(`Reservando desde ${startOfWeek.format('YYYY-MM-DD')} hasta ${endOfWeek.format('YYYY-MM-DD')}`);
 
     for (let day = moment(startOfWeek); day.isSameOrBefore(endOfWeek, 'day'); day.add(1, 'days')) {
+      const dayOfWeek = day.format('dddd');
+      const capitalizedDayOfWeek = dayOfWeek.charAt(0).toUpperCase() + dayOfWeek.slice(1);
+
       const reservationData = {
         userId: formData.userId.value,
         day: day.format('YYYY-MM-DD'),
+        dayOfWeek: capitalizedDayOfWeek,
         hour: formData.hour.value,
       };
 
@@ -365,10 +418,10 @@ const Diary = () => {
       fetchWeeklyReservations(moment(currentDate).startOf('isoWeek').toDate());
     }
 
-
     handleCloseReservationForm();
     setIsWeeklyReservation(false);
   };
+
 
 
 
@@ -477,9 +530,9 @@ const Diary = () => {
     const isSaturday = day === 'Sábado';
 
     return Array(maxSpacesPerHour).fill(!isSaturday || isMorning);
-};
+  };
 
-  
+
 
 
   const renderTableRows = () => {
@@ -505,7 +558,7 @@ const Diary = () => {
         <td className="first-column">{hour}</td>
         {moment.weekdays().slice(1).map((day, dayIndex) => {
           if (day === 'sábado' && !morningHours.includes(hour)) {
-              return <td key={dayIndex}   style={{ backgroundColor: 'gray' }}> </td>;
+            return <td key={dayIndex} style={{ backgroundColor: 'gray' }}> </td>;
           }
           const key = `${day}-${hour}`;
           const isEnabled = selectEnabled[key] !== false;
@@ -642,6 +695,9 @@ const Diary = () => {
             Cupos/hora
           </button>
         </Link>
+        <button className='butom-delete' onClick={() => setShowDeleteModal(true)}>
+          Eliminar Reservas
+        </button>
         <Link to={`/admin/${id}`}>
           <button className='butom-day-diary' >
             <FontAwesomeIcon icon={faHome} />
@@ -717,6 +773,29 @@ const Diary = () => {
           </div>
         </div>
       )}
+      {showDeleteModal && (
+        <div className="overlay">
+          <div className="reservation-form">
+            <h3>Eliminar Reservas </h3>
+            <Select
+              options={users.map((user) => ({
+                value: user._id,
+                label: `${user.FirstName} ${user.LastName}`,
+              }))}
+              onChange={(selectedOption) => handleUserSelection(selectedOption.value)}
+              placeholder="Seleccionar usuario"
+            />
+            <DatePicker
+              selected={deletionDate}
+              onChange={handleDeletionDateChange}
+              dateFormat="yyyy-MM-dd"
+            />
+            <button className='buttom-modal' onClick={handleDeleteUserReservations}>Eliminar</button>
+            <button className='buttom-modal' onClick={() => setShowDeleteModal(false)}>Cancelar</button>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 

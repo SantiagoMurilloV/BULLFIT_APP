@@ -20,6 +20,7 @@ const QuotaLimits = () => {
   const [cupos, setCupos] = useState({});
   const [createdSlots, setCreatedSlots] = useState({});
 
+
   useEffect(() => {
     fetchSlots();
   }, [id]);
@@ -46,21 +47,23 @@ const QuotaLimits = () => {
     const newCupos = { ...cupos, [key]: value };
     setCupos(newCupos);
 
+
     if (createdSlots[key]) {
       try {
-        await axios.put(`${environment.apiURL}/api/slots/${day}/${hour}`, { slots: value });
+        await axios.put(`${environment.apiURL}/api/slots/${day}/${hour}`, { slots: value});
       } catch (error) {
         console.error('Error updating slot:', error);
       }
     } else {
       try {
-        await axios.post(`${environment.apiURL}/api/slots`, { day, hour, slots: value });
+        await axios.post(`${environment.apiURL}/api/slots`, { day, hour, slots: value  });
         setCreatedSlots({ ...createdSlots, [key]: true });
       } catch (error) {
         console.error('Error creating slot:', error);
       }
     }
   };
+
   
 
   return (

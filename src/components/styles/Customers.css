@@ -318,3 +318,100 @@ body {
   outline: none; /* Elimina el contorno al hacer foco en el enlace */
   font-weight:lighter;
 }
+
+.button-renew{
+  margin-top: 27px;
+  padding: 5px 10px;
+  background-color: #000000;
+  border-color: white;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+.Modal-termAnsCondition {
+  max-height: 400px;
+  overflow-y: auto;
+  background: #ffffff;
+  padding: 20px;
+  border-radius: 10px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 30%;
+  box-shadow: 0 5px 15px #0c0c0c;
+}
+.Overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.75);
+  z-index: 1000; 
+}
+
+
+.checkbox-container {
+  display: block;
+  position: relative;
+  padding-left: 35px;
+  margin-bottom: 12px;
+  cursor: pointer;
+  font-size: 22px;
+  user-select: none;
+}
+
+
+.checkbox-container input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+
+.checkbox-custom {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 25px;
+  width: 25px;
+  background-color: #908989;
+  border-radius: 5px;
+}
+
+
+.checkbox-container input:checked ~ .checkbox-custom {
+  background-color: #2196F3;
+}
+
+
+.checkbox-custom:after {
+  content: "";
+  position: absolute;
+  display: none;
+}
+
+
+.checkbox-container input:checked ~ .checkbox-custom:after {
+  display: block;
+}
+
+
+.checkbox-container .checkbox-custom:after {
+  left: 9px;
+  top: 5px;
+  width: 5px;
+  height: 10px;
+  border: solid white;
+  border-width: 0 3px 3px 0;
+  transform: rotate(45deg);
+}
+
+button:disabled {
+  background-color: #cccccc; 
+  color: #666666; 
+  cursor: not-allowed; 
+  border: 1px solid #cccccc; 
+}
