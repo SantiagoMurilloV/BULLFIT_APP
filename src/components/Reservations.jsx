@@ -4,7 +4,7 @@ import { Link, useParams } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faClock } from '@fortawesome/free-solid-svg-icons';
+import { faArrowAltCircleLeft, faArrowLeft, faArrowRight, faCalendar, faCheck, faClock, faHome, faHomeAlt } from '@fortawesome/free-solid-svg-icons';
 import Select from 'react-select';
 import 'moment/locale/es';
 import '../components/styles/Reservations.css';
@@ -442,6 +442,7 @@ const Reservations = () => {
     return morningHours.map((hour, hourIndex) => {
       const hourInt = parseInt(hour, 10);
 
+
       if (hourInt >= 11 && hourInt <= 15) {
         return (
           <tr key={hour} >
@@ -458,7 +459,9 @@ const Reservations = () => {
           <tr key={hour} className={hour === '10' ? 'morning-end-row-reservation' : ''}>
             <td className="hour-cell">{formatHour(hourInt)}</td>
             {daysOfWeek.map((_, dayIndex) => {
+
               const dateKey = moment(selectedDate).add(dayIndex, 'days').format('YYYY-MM-DD');
+              
               const reservationForCell = userReservations.find(
                 (reservation) =>
                   reservation.day === dateKey &&
@@ -493,8 +496,9 @@ const Reservations = () => {
                                   onClick={() => handleReserveClick(dayIndex, hourInt)}
                                   disabled={isHourReserved(dayIndex, hourInt)}
                                   className={isHourReserved(dayIndex, hourInt) ? 'reserved-button' : ''}
+
                                 >
-                                  Reservar
+                                  <FontAwesomeIcon icon={faCheck} />
                                 </button>
                                 
                               )}
@@ -513,21 +517,24 @@ const Reservations = () => {
     });
   };
 
+  
   return (
     <div className="reservations-container">
       <h2>Horario de Reservas de {moment(selectedDate).format('MMMM')}</h2>
       <div className="table-container">
         <div className="date-navigation-reservation">
           <Link to={`/customers/${id}`}>
-            <button>Inicio</button>
+            <button><FontAwesomeIcon icon={faHomeAlt} /></button>
           </Link>
           {user && user.Plan === 'Mensual' && (
-            <button onClick={handleOpenMonthlyReservationForm}>Reserva Mensual</button>
+            <button onClick={handleOpenMonthlyReservationForm}>
+              <FontAwesomeIcon icon={faCalendar} />
+              </button>
           )}
-          <button onClick={() => handleDateChange(-7)}>Semana Anterior</button>
-          <button onClick={() => handleDateChange(7)}>Semana Siguiente</button>
+          <button onClick={() => handleDateChange(-7)}><FontAwesomeIcon icon={faArrowLeft} /></button>
+          <button onClick={() => handleDateChange(7)}><FontAwesomeIcon icon={faArrowRight} /> </button>
         </div>
-        <table>
+        <table >
           <thead>
             {renderTableHeaders()}
           </thead>

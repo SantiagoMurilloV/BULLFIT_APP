@@ -446,3 +446,106 @@ td.first-column{
   width: 126px;
   font-size: 19px;
 }
+
+
+@media screen and (max-width: 768px) {
+  .filter-controls-diary {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px;
+    background-color: #f2f2f28a;
+    width: 500px;
+    font-weight: bolder;
+    height: 96px;
+    flex-flow: wrap;
+  }
+
+
+  .subcolumn.name {
+      flex-basis: 100%;
+      justify-content: left;
+      font-size: 10px;
+  }
+
+
+
+  .reservation-cell .trainingType {
+      display: flex;
+      align-items: center;
+      background-color: rgb(249, 249, 249);
+      color: black;
+      font-weight: 300;
+      width: 49px;
+  }
+  th.red-background {
+    background-color: #e61010;
+    color: black;
+    font-weight: bolder;
+    font-size: 10px;
+  }
+  th.black-background {
+    background-color: black;
+    font-size: 10px;
+  }
+  th.gray-background {
+    background-color: #7c7b7b;
+    color: black;
+    font-weight: bolder;
+    font-size: 10px;
+  
+  }
+  .table-diary .first-column {
+    font-size: 12px;
+  }
+  .table-diary {
+    width: 128%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    font-weight: bolder;
+    background-color: #f5f5f578;
+  }
+  th.hour-column {
+    background-color: rgb(47, 85, 201);
+    color: #fff;
+    text-align: center;
+    font-size: 10px;
+  }
+
+}
+
+
+@media screen and (max-width: 375px) {
+  .filter-controls-diary {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px;
+    background-color: #f2f2f28a;
+    width: 500px;
+    font-weight: bolder;
+    height: 96px;
+    flex-flow: wrap;
+  }
+
+
+  .subcolumn.name {
+      flex-basis: 100%;
+      justify-content: left;
+      font-size: 10px;
+  }
+
+
+
+  .reservation-cell .trainingType {
+      display: flex;
+      align-items: center;
+      background-color: rgb(249, 249, 249);
+      color: black;
+      font-weight: 300;
+      width: 49px;
+  }
+
+
+
+}

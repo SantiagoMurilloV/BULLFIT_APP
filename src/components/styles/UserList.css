@@ -126,3 +126,65 @@
   border: 1px solid #ddd;
   border-radius: 5px;
 }
+
+
+
+@media screen and (max-width: 768px) {
+  .filters-container {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    margin-bottom: -17px;
+    width: 140%;
+    font-size: 22px;
+    flex-flow: wrap;
+    align-self: flex-start;
+  }
+  table {
+    border-collapse: collapse;
+    width: 631px;
+    margin: 20px auto;
+    background-color: #ffffff00;
+  }
+  .user-table th {
+    background-color: #0c0c0c;
+    color: white;
+    font-weight: bold;
+    padding: 30px;
+    text-align: center;
+}
+
+
+  .user-table td:not(:last-child) {
+      margin-right: 2px;
+      font-size: 10px;
+  }
+
+  button {
+      margin: 5px;
+      padding: 0px 0px;
+      background-color: #000000;
+      border-color: white;
+      color: white;
+      border: none;
+      cursor: pointer;
+      width: 26px;
+      height: 24px;
+      font-size: 10px;
+  }
+}
+
+
+@media screen and (max-width: 375px) {
+  .filters-container {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    margin-bottom: -17px;
+    width: 140%;
+    font-size: 22px;
+    flex-flow: wrap;
+    align-self: flex-start;
+}
+
+}
