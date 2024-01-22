@@ -6,7 +6,7 @@ import Modal from 'react-modal';
 import '../components/styles/Finance.css';
 import { environment } from '../environments';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faHome, faStore, faCalendarAlt, faClock, faBook, faHistory } from '@fortawesome/free-solid-svg-icons';
+import { faHome, faStore, faCalendarAlt, faClock, faBook,  faHistory } from '@fortawesome/free-solid-svg-icons';
 
 
 Modal.setAppElement('#root');
@@ -14,7 +14,7 @@ const Finance = () => {
   const [users, setUsers] = useState([]);
   const [financeData, setFinanceData] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [userInfomation, setUserInfo] = useState(null);
+  const [user, setUser] = useState(null);
   const { id } = useParams();
   const [searchTerm, setSearchTerm] = useState('');
   const [searchResults, setSearchResults] = useState([]);
@@ -78,10 +78,8 @@ const Finance = () => {
 
 
   const fetchData = async () => {
-    const month = currentMonth.getMonth() + 1;
-    const year = currentMonth.getFullYear();
     try {
-      const response = await fetch(`${environment.apiURL}/api/finances?month=${month}&year=${year}`);
+      const response = await fetch(`${environment.apiURL}/api/users`);
       if (!response.ok) {
         throw new Error('Error en la solicitud');
       }
@@ -89,7 +87,6 @@ const Finance = () => {
       await fetchFinanceData();
       setUsers(data);
       setLoading(false);
-      userInfo()
       fetchReservations(data);
 
     } catch (error) {
@@ -97,20 +94,6 @@ const Finance = () => {
     }
   };
 
-
-  const userInfo = async () => {
-
-    try {
-      const response = await fetch(`${environment.apiURL}/api/users`);
-      if (!response.ok) {
-        throw new Error('Error en la solicitud');
-      }
-      const data = await response.json();
-      setUserInfo(data)
-    } catch (error) {
-
-    }
-  };
 
   const fetchFinanceData = async () => {
     const month = currentMonth.getMonth() + 1;
@@ -204,7 +187,7 @@ const Finance = () => {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(financeUpdateData),
         });
-        await fetchFinanceData()
+        fetchFinanceData()
         if (!updateResponse.ok) {
           throw new Error(`No se pudo actualizar los datos financieros del usuario con ID ${userToUpdate._id}`);
         }
@@ -227,15 +210,12 @@ const Finance = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(updatedFinanceData),
       });
-      await fetch(`${environment.apiURL}/api/finances/${userId}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(updatedFinanceData),
-      });
+
 
       if (!updateResponse.ok) {
         throw new Error('No se pudo actualizar los datos financieros del usuario');
       }
+
       await fetchFinanceData();
       await fetchData();
     } catch (error) {
@@ -254,13 +234,18 @@ const Finance = () => {
         },
         body: JSON.stringify(updatedUserData),
       });
-
-      if (!response.ok) {
+      if (response.ok) {
+        const userResponse = await fetch(`${environment.apiURL}/api/users/${id}`);
+        if (userResponse.ok) {
+          const userData = await userResponse.json();
+          setUser(userData);
+        }
+        fetchFinanceData()
+        fetchData();
+      } else {
         console.error('Error al actualizar el estado del usuario');
+        Swal.fire('Error al actualizar el estado', 'Ha ocurrido un error al actualizar el estado del usuario.', 'error');
       }
-      await fetchData();
-
-
     } catch (error) {
       console.error('Error al actualizar el estado del usuario:', error);
       Swal.fire('Error al actualizar el estado', 'Ha ocurrido un error al actualizar el estado del usuario.', 'error');
@@ -279,7 +264,7 @@ const Finance = () => {
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
-        <button
+        <button 
           className='butom-day-finance-hist'
           onClick={togglePaymentStatusFilter}>
           {showPositivePayments ? 'Reservas Pagadas' : 'Reservas Pendientes'}
@@ -309,7 +294,7 @@ const Finance = () => {
           ]}
           placeholder="Activo"
           isClearable
-        />
+        />  
         <Link to={`/reservationHistory/${id}`}>
           <button className='butom-day-finance-hist' >
             <FontAwesomeIcon icon={faHistory} /> Historial
@@ -323,7 +308,7 @@ const Finance = () => {
             <FontAwesomeIcon icon={faStore} />
           </button>
         </Link>
-
+      
         <Link to={`/diary/${id}`}>
           <button className='butom-day-finance' >
             <FontAwesomeIcon icon={faBook} />
@@ -358,34 +343,35 @@ const Finance = () => {
                   </thead>
                   <tbody>
                     {searchResults.filter(user => user.Plan === 'Mensual').map(user => {
-                      const userInfo = userInfomation && userInfomation.find(dataUser => dataUser._id === user.userId) || {};
-                      if (showPositivePayments && user.reservationPaymentStatus !== 'Si') {
+                      const userFinance = financeData.find(finance => finance.userId === user._id) || {};
+                      if (showPositivePayments && userFinance.reservationPaymentStatus !== 'Si') {
                         return null;
-                      } else if (!showPositivePayments && user.reservationPaymentStatus !== 'No') {
+                      } else if (!showPositivePayments && userFinance.reservationPaymentStatus !== 'No') {
                         return null;
                       }
                       return (
                         <tr key={user._id}>
-                          <td>{user.FirstName + ' ' + user.LastName}</td>
-                          <td>{user.startDate || ' '}</td>
-                          <td>{user.endDate || ' '}</td>
+                          <td>{userFinance.FirstName + ' ' + userFinance.LastName}</td>
+                          <td>{userFinance.startDate || ' '}</td>
+                          <td>{userFinance.endDate || ' '}</td>
+                          <td>
+                            <Select
+                              value={{ value: user.Active, label: user.Active }}
+                              onChange={(selectedOption) => handleStatusChange(user._id, selectedOption.value)}
+                              options={[
+                                { value: ' ', label: ' ' },
+                                { value: 'Sí', label: 'Sí' },
+                                { value: 'No', label: 'No' },
+                              ]}
+                            />
+                          </td>
+                          <td style={{ color: userFinance.reservationPaymentStatus === 'No' ? '#a62525' : 'green' }}>
+                            {userFinance.pendingBalance  > 0 ? `$ ${userFinance.pendingBalance }` : '$ 0'}
+                          </td>
                           <td>
                             <select
-                              value={userInfo && userInfo.Active}
-                              onChange={(e) => handleStatusChange(userInfo._id, e.target.value)}
-                            >
-                              <option value=""> </option>
-                              <option value="Sí">Sí</option>
-                              <option value="No">No</option>
-                            </select>
-                          </td>
-                          <td style={{ color: user.reservationPaymentStatus === 'No' ? '#a62525' : 'green' }}>
-                            {user.pendingBalance > 0 ? `$ ${user.pendingBalance}` : '$ 0'}
-                          </td>
-                          <td>
-                            <select
-                              style={{ color: user.reservationPaymentStatus === 'Si' ? '#0dab0d' : 'red' }}
-                              value={user.reservationPaymentStatus}
+                              style={{ color: userFinance.reservationPaymentStatus === 'Si' ? '#0dab0d' : 'red' }}
+                              value={userFinance.reservationPaymentStatus}
                               onChange={(event) => handleFinanceChange(user._id, 'reservationPaymentStatus', event.target.value)}
                             >
                               <option value="No">✖</option>
@@ -396,8 +382,8 @@ const Finance = () => {
                             <input
                               type="text"
                               className='news'
-                              value={user.news || ''}
-                              onChange={(event) => handleFinanceChange(user.userId, 'news', event.target.value)}
+                              value={userFinance.news || ''}
+                              onChange={(event) => handleFinanceChange(user._id, 'news', event.target.value)}
                             />
                           </td>
                         </tr>
@@ -424,35 +410,35 @@ const Finance = () => {
                   </thead>
                   <tbody>
                     {searchResults.filter(user => user.Plan === 'Diario').map(user => {
-                      const userInfo = userInfomation && userInfomation.find(dataUser => dataUser._id === user.userId) || {};
-
-                      if (showPositivePayments && user.reservationPaymentStatus !== 'Si') {
+                      const userFinance = financeData.find(finance => finance.userId === user._id) || {};
+                      if (showPositivePayments && userFinance.reservationPaymentStatus !== 'Si') {
                         return null;
-                      } else if (!showPositivePayments && user.reservationPaymentStatus !== 'No') {
+                      } else if (!showPositivePayments && userFinance.reservationPaymentStatus !== 'No') {
                         return null;
                       }
                       return (
                         <tr key={user._id}>
                           <td>{user.FirstName + ' ' + user.LastName}</td>
-                          <td>{user.startDate || 'N/A'}</td>
+                          <td>{userFinance.startDate || 'N/A'}</td>
                           <td>{user.reservationCount || 0}</td>
                           <td>
-                            <select
-                              value={userInfo && userInfo.Active}
-                              onChange={(e) => handleStatusChange(userInfo._id, e.target.value)}
-                            >
-                              <option value=""> </option>
-                              <option value="Sí">Sí</option>
-                              <option value="No">No</option>
-                            </select>
+                            <Select
+                              value={{ value: user.Active, label: user.Active }}
+                              onChange={(selectedOption) => handleStatusChange(user._id, selectedOption.value)}
+                              options={[
+                                { value: ' ', label: ' ' },
+                                { value: 'Sí', label: 'Sí' },
+                                { value: 'No', label: 'No' },
+                              ]}
+                            />
                           </td>
-                          <td style={{ color: user.reservationPaymentStatus === 'No' ? '#a62525' : 'green' }}>
-                            {user.pendingBalance > 0 ? `$ ${user.pendingBalance}` : '$ 0'}
+                          <td style={{ color: userFinance.reservationPaymentStatus === 'No' ? '#a62525' : 'green' }}>
+                            {userFinance.pendingBalance  > 0 ? `$ ${userFinance.pendingBalance }` : '$ 0'}
                           </td>
                           <td>
                             <select
-                              style={{ color: user.reservationPaymentStatus === 'Si' ? '#0dab0d' : 'red' }}
-                              value={user.reservationPaymentStatus}
+                              style={{ color: userFinance.reservationPaymentStatus === 'Si' ? '#0dab0d' : 'red' }}
+                              value={userFinance.reservationPaymentStatus}
                               onChange={(event) => handleFinanceChange(user._id, 'reservationPaymentStatus', event.target.value)}
                             >
                               <option value="No">✖</option>
@@ -464,7 +450,7 @@ const Finance = () => {
                             <input
                               type="text"
                               className='news'
-                              value={user.news || ''}
+                              value={userFinance.news || ''}
                               onChange={(event) => handleFinanceChange(user._id, 'news', event.target.value)}
                             />
                           </td>

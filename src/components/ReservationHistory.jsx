@@ -5,7 +5,7 @@ import Modal from 'react-modal';
 import '../components/styles/Finance.css';
 import { environment } from '../environments';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faHome, faStore, faCalendarAlt, faClock, faBook, faDollarSign } from '@fortawesome/free-solid-svg-icons';
+import { faHome, faStore, faCalendarAlt, faClock, faBook, faDollarSign, faCalendarPlus, faCalendarDay, faCalendarMinus } from '@fortawesome/free-solid-svg-icons';
 
 
 Modal.setAppElement('#root');
@@ -42,29 +42,36 @@ const ReservationHistory = () => {
 
   useEffect(() => {
     const filterUsers = () => {
+      const month = currentMonth.getMonth();
+      const year = currentMonth.getFullYear();
+
       return users.filter(user => {
 
-        const userFinance = financeData.find(finance => finance.userId === user._id) || {};
+        const startDate = new Date(user.startDate);
 
         const matchesReservationPaymentStatus = selectedReservationPaymentStatus
-          ? userFinance.reservationPaymentStatus === selectedReservationPaymentStatus.value
+          ? user.reservationPaymentStatus === selectedReservationPaymentStatus.value
           : true;
 
         const matchesName = user.FirstName.toLowerCase().includes(searchTerm.toLowerCase()) || user.LastName.toLowerCase().includes(searchTerm.toLowerCase());
         const matchesPlan = selectedPlan ? user.Plan === selectedPlan.value : true;
         const matchesStatus = selectedStatus ? user.Active === selectedStatus.value : true;
+        const matchesMonth = startDate.getMonth() === month && startDate.getFullYear() === year;
 
-        return matchesName && matchesPlan && matchesStatus && matchesReservationPaymentStatus;
+        return matchesName && matchesPlan && matchesStatus && matchesReservationPaymentStatus && matchesMonth;
       });
     };
 
     setSearchResults(filterUsers());
-  }, [users, financeData, searchTerm, selectedPlan, selectedStatus, selectedReservationPaymentStatus]);
+  }, [users, financeData, searchTerm, selectedPlan, selectedStatus, selectedReservationPaymentStatus, currentMonth]);
+
 
 
   const fetchData = async () => {
+    const month = currentMonth.getMonth() + 1;
+    const year = currentMonth.getFullYear();
     try {
-      const response = await fetch(`${environment.apiURL}/api/users`);
+      const response = await fetch(`${environment.apiURL}/api/finances?month=${month}&year=${year}`);
       if (!response.ok) {
         throw new Error('Error en la solicitud');
       }
@@ -79,7 +86,19 @@ const ReservationHistory = () => {
     }
   };
 
+  const goToPreviousMonth = () => {
+    setCurrentMonth(prevMonth => new Date(prevMonth.getFullYear(), prevMonth.getMonth() - 1, 1));
+  };
+  const goToNextMonth = () => {
+    setCurrentMonth(prevMonth => new Date(prevMonth.getFullYear(), prevMonth.getMonth() + 1, 1));
+  };
 
+  const goToCurrentMonth = () => {
+    setCurrentMonth(new Date());
+  };
+  const getFormattedMonth = () => {
+    return currentMonth.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });
+  };
   const fetchFinanceData = async () => {
     const month = currentMonth.getMonth() + 1;
     const year = currentMonth.getFullYear();
@@ -211,7 +230,7 @@ const ReservationHistory = () => {
 
   return (
     <div>
-      <h2>Historial de Pagos</h2>
+      <h2>Historial de Pagos - {getFormattedMonth()}</h2>
       <div className="filters-container">
         <input
           className='input-search'
@@ -238,11 +257,22 @@ const ReservationHistory = () => {
             <FontAwesomeIcon icon={faBook} />
           </button>
         </Link>
+
+        <button className='butom-day-finance' onClick={goToPreviousMonth}>
+          <FontAwesomeIcon icon={faCalendarMinus} />
+        </button>
+        <button className='butom-day-finance' onClick={goToCurrentMonth}>
+          <FontAwesomeIcon icon={faCalendarDay} />
+        </button>
+        <button className='butom-day-finance' onClick={goToNextMonth}>
+          <FontAwesomeIcon icon={faCalendarPlus} />
+        </button>
         <Link to={`/admin/${id}`}>
           <button className='butom-day-finance' >
             <FontAwesomeIcon icon={faHome} />
           </button>
         </Link>
+
       </div>
       {loading ? (
         <p>Cargando usuarios...</p>
@@ -266,25 +296,25 @@ const ReservationHistory = () => {
                   </thead>
                   <tbody>
                     {searchResults.filter(user => user.Plan === 'Mensual').map(user => {
-                      const userFinance = financeData.find(finance => finance.userId === user._id) || {};
-                      if (userFinance.reservationPaymentStatus === 'No') {
+
+                      if (user.reservationPaymentStatus === 'No') {
                         return null;
                       }
                       return (
                         <tr key={user._id}>
                           <td>{user.FirstName + ' ' + user.LastName}</td>
-                          <td>{userFinance.startDate || ' '}</td>
-                          <td>{userFinance.endDate || ' '}</td>
+                          <td>{user.startDate || ' '}</td>
+                          <td>{user.endDate || ' '}</td>
                           <td>{user.Active || ' '}</td>
-                          <td style={{ color: userFinance.reservationPaymentStatus === 'No' ? '#a62525' : 'green' }}>
-                            {userFinance.pendingBalance > 0 ? `$ ${userFinance.pendingBalance}` : '$ 0'}
+                          <td style={{ color: user.reservationPaymentStatus === 'No' ? '#a62525' : 'green' }}>
+                            {user.pendingBalance > 0 ? `$ ${user.pendingBalance}` : '$ 0'}
                           </td>
-                          <td>{userFinance.reservationPaymentStatus === 'Si' ? '✔' : '✖' || ' '}</td>
+                          <td>{user.reservationPaymentStatus === 'Si' ? '✔' : '✖' || ' '}</td>
                           <td>
                             <input
                               type="text"
                               className='news'
-                              value={userFinance.news || ''}
+                              value={user.news || ''}
                               onChange={(event) => handleFinanceChange(user._id, 'news', event.target.value)}
                             />
                           </td>
@@ -312,26 +342,25 @@ const ReservationHistory = () => {
                   </thead>
                   <tbody>
                     {searchResults.filter(user => user.Plan === 'Diario').map(user => {
-                      const userFinance = financeData.find(finance => finance.userId === user._id) || {};
-                      if (userFinance.reservationPaymentStatus === 'No') {
+                      if (user.reservationPaymentStatus === 'No') {
                         return null;
                       }
                       return (
                         <tr key={user._id}>
                           <td>{user.FirstName + ' ' + user.LastName}</td>
-                          <td>{userFinance.startDate || 'N/A'}</td>
+                          <td>{user.startDate || 'N/A'}</td>
                           <td>{user.reservationCount || 0}</td>
                           <td>{user.Active || ' '}
                           </td>
-                          <td style={{ color: userFinance.reservationPaymentStatus === 'No' ? '#a62525' : 'green' }}>
-                            {userFinance.pendingBalance > 0 ? `$ ${userFinance.pendingBalance}` : '$ 0'}
+                          <td style={{ color: user.reservationPaymentStatus === 'No' ? '#a62525' : 'green' }}>
+                            {user.pendingBalance > 0 ? `$ ${user.pendingBalance}` : '$ 0'}
                           </td>
-                          <td>{userFinance.reservationPaymentStatus === 'Si' ? '✔' : '✖' || ' '}</td>
+                          <td>{user.reservationPaymentStatus === 'Si' ? '✔' : '✖' || ' '}</td>
                           <td>
                             <input
                               type="text"
                               className='news'
-                              value={userFinance.news || ''}
+                              value={user.news || ''}
                               onChange={(event) => handleFinanceChange(user._id, 'news', event.target.value)}
                             />
                           </td>

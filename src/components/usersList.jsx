@@ -150,29 +150,39 @@ const UserList = () => {
   const handleStatusChange = async (userId, Active) => {
     try {
       const updatedUserData = { Active };
-      const response = await fetch(`${environment.apiURL}/api/users/${userId}`, {
+      const userResponse = await fetch(`${environment.apiURL}/api/users/${userId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(updatedUserData),
       });
-      if (response.ok) {
-        const userResponse = await fetch(`${environment.apiURL}/api/users/${id}`);
-        if (userResponse.ok) {
-          const userData = await userResponse.json();
-          setUser(userData);
-        }
-        fetchData();
-      } else {
-        console.error('Error al actualizar el estado del usuario');
-        Swal.fire('Error al actualizar el estado', 'Ha ocurrido un error al actualizar el estado del usuario.', 'error');
-      }
+  
+      if (!userResponse.ok) throw new Error('Error al actualizar el usuario');
+      const financeResponse = await fetch(`${environment.apiURL}/api/finances/${userId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(updatedUserData),
+      });
+  
+      if (!financeResponse.ok) throw new Error('Error al actualizar las finanzas');
+      const userUpdateResponse = await fetch(`${environment.apiURL}/api/users/${id}`);
+      if (!userUpdateResponse.ok) throw new Error('Error al recuperar la información actualizada del usuario');
+  
+      const userData = await userUpdateResponse.json();
+      setUser(userData);
+   
+      fetchData();
+  
+      Swal.fire('Actualización Exitosa', 'El estado del usuario ha sido actualizado.', 'success');
     } catch (error) {
       console.error('Error al actualizar el estado del usuario:', error);
       Swal.fire('Error al actualizar el estado', 'Ha ocurrido un error al actualizar el estado del usuario.', 'error');
     }
   };
+  
 
   const handlePlanChange = async (userId, newPlan) => {
     try {
@@ -182,6 +192,11 @@ const UserList = () => {
         headers: {
           'Content-Type': 'application/json',
         },
+        body: JSON.stringify(updatedUserData),
+      });
+      await fetch(`${environment.apiURL}/api/finances/${userId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(updatedUserData),
       });
 
@@ -344,27 +359,6 @@ const UserList = () => {
                   name="IdentificationNumber"
                   value={editingUser.IdentificationNumber}
                   onChange={handleInputChange}
-                />
-              </label>
-            </div>
-            <div className="form-group-userList">
-              <label>
-                Fecha Inicial:
-                <input
-                  type="date"
-                  name="startDate"
-                  value={editingUser.startDate}
-                  onChange={handleInputChange}
-                />
-              </label>
-              <label>
-                Fecha Final:
-                <input
-                  type="date"
-                  name="endDate"
-                  value={editingUser.endDate}
-                  onChange={handleInputChange}
-                  
                 />
               </label>
             </div>

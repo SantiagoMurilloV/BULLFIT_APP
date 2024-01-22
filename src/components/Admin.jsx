@@ -76,6 +76,8 @@ const Admin = ({ currentUser }) => {
       });
   }, [id]);
 
+
+
   const handleLogout = () => {
     Swal.fire({
       title: '¿Estás seguro?',
@@ -176,7 +178,6 @@ const Admin = ({ currentUser }) => {
             </div>
           </button>
         </div>
-
         <div className="button-column-admin">
           <button className="button-icon" onClick={handleLogout} >
           <div className="button-link">

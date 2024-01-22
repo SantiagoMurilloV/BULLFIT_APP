@@ -11,7 +11,7 @@ body {
   align-items: center;
   padding: 10px;
   background-color: #f2f2f28a;
-  width: 630px;
+  width: 800px;
   font-weight: bolder;
   height: 40px;
 }
@@ -30,6 +30,18 @@ body {
   cursor: pointer;
   height: 36px;
   width: 61px;
+  font-size: 19px;
+}
+.butom-delete {
+  border-radius: 2px;
+  padding: 5px 10px;
+  background-color: #000000;
+  border-color: white;
+  color: white;
+  border: none;
+  cursor: pointer;
+  height: 51px;
+  width: 124px;
   font-size: 19px;
 }
 
