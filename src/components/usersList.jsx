@@ -6,7 +6,7 @@ import Modal from 'react-modal';
 import '../components/styles/UserList.css';
 import { environment } from '../environments';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEdit, faTrash , faHome} from '@fortawesome/free-solid-svg-icons';
+import { faEdit, faTrash , faHome, faDownload, faFileDownload, faAmbulance} from '@fortawesome/free-solid-svg-icons';
 
 
 Modal.setAppElement('#root');
@@ -21,10 +21,15 @@ const UserList = () => {
   const [editingUser, setEditingUser] = useState(null);
   const [selectedPlan, setSelectedPlan] = useState('');
   const [selectedStatus, setSelectedStatus] = useState('');
+  const [termsLink, setTermsLink] = useState(null);
+  const [ambulanceModalIsOpen, setAmbulanceModalIsOpen] = useState(false);
+const [selectedUserForAmbulance, setSelectedUserForAmbulance] = useState(null);
+
 
 
   useEffect(() => {
     fetchData();
+    fetchTermsLink();
   }, [id, searchTerm]);
 
   useEffect(() => {
@@ -69,6 +74,24 @@ const UserList = () => {
       Swal.fire('Error al cargar los datos', 'Ha ocurrido un error al cargar los datos.', 'error');
     }
   };
+  const fetchTermsLink = async () => {
+    try {
+      const response = await fetch(`${environment.apiURL}/api/termsAndConditions`);
+      if (response.ok) {
+        const termsData = await response.json();
+        const linksMap = {};
+        termsData.forEach(term => {
+          if (term.link && term.userId) {
+            linksMap[term.userId] = term.link;
+          }
+        });
+        setTermsLink(linksMap);
+      }
+    } catch (error) {
+      console.error('Error al cargar los términos y condiciones:', error);
+      setTermsLink({});
+    }
+  };
 
   const openModal = (user) => {
     setEditingUser(user);
@@ -79,17 +102,19 @@ const UserList = () => {
     setModalIsOpen(false);
     setEditingUser(null);
   };
+
+
+  const openAmbulanceModal = (user) => {
+    setSelectedUserForAmbulance(user);
+    setAmbulanceModalIsOpen(true);
+  };
+  const closeAmbulanceModal = () => {
+    setAmbulanceModalIsOpen(false);
+  };
   const handleInputChange = (e) => {
     const { name, value } = e.target;
   
     let newEditingUser = { ...editingUser, [name]: value };
-    if (name === 'startDate') {
-      const endDate = new Date(value);
-      endDate.setDate(endDate.getDate() + 30);
-      const formattedEndDate = endDate.toISOString().split('T')[0];
-
-      newEditingUser.endDate = formattedEndDate;
-    }
 
     setEditingUser(newEditingUser);
   };
@@ -124,27 +149,51 @@ const UserList = () => {
   };
   const handleSubmit = async (e) => {
     e.preventDefault();
+  
     try {
-      const response = await fetch(`${environment.apiURL}/api/users/${editingUser._id}`, {
+      // Actualiza la información del usuario
+      const userResponse = await fetch(`${environment.apiURL}/api/users/${editingUser._id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(editingUser),
       });
-
-      if (response.ok) {
-        Swal.fire('Actualizado', 'Usuario actualizado con éxito', 'success');
-        closeModal();
-        fetchData();
-      } else {
-        throw new Error('Error al actualizar el usuario');
+  
+      // Verifica si la actualización del usuario fue exitosa
+      if (!userResponse.ok) {
+        throw new Error('Error al actualizar la información del usuario.');
       }
+  
+      // Prepara el objeto para actualizar solo el nombre y el apellido en userFinance
+      const financeUpdateData = {
+        FirstName: editingUser.FirstName,
+        LastName: editingUser.LastName,
+      };
+  
+      // Actualiza la información financiera del usuario
+      const financeResponse = await fetch(`${environment.apiURL}/api/userFinance/${editingUser._id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(financeUpdateData),
+      });
+  
+      // Verifica si la actualización financiera fue exitosa
+      if (!financeResponse.ok) {
+        throw new Error('Error al actualizar la información financiera del usuario.');
+      }
+  
+      // Si ambas actualizaciones son exitosas
+      Swal.fire('Actualizado', 'Usuario actualizado con éxito', 'success');
+      closeModal();
+      fetchData();
     } catch (error) {
       console.error('Error:', error);
-      Swal.fire('Error', 'No se pudo actualizar el usuario.', 'error');
+      Swal.fire('Error', 'No se pudo actualizar la información.', 'error');
     }
   };
+  
+  
 
 
   const handleStatusChange = async (userId, Active) => {
@@ -159,15 +208,13 @@ const UserList = () => {
       });
   
       if (!userResponse.ok) throw new Error('Error al actualizar el usuario');
-      const financeResponse = await fetch(`${environment.apiURL}/api/finances/${userId}`, {
+      await fetch(`${environment.apiURL}/api/userFinance/${userId}`, {
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(updatedUserData),
       });
   
-      if (!financeResponse.ok) throw new Error('Error al actualizar las finanzas');
+
       const userUpdateResponse = await fetch(`${environment.apiURL}/api/users/${id}`);
       if (!userUpdateResponse.ok) throw new Error('Error al recuperar la información actualizada del usuario');
   
@@ -175,8 +222,7 @@ const UserList = () => {
       setUser(userData);
    
       fetchData();
-  
-      Swal.fire('Actualización Exitosa', 'El estado del usuario ha sido actualizado.', 'success');
+
     } catch (error) {
       console.error('Error al actualizar el estado del usuario:', error);
       Swal.fire('Error al actualizar el estado', 'Ha ocurrido un error al actualizar el estado del usuario.', 'error');
@@ -184,32 +230,7 @@ const UserList = () => {
   };
   
 
-  const handlePlanChange = async (userId, newPlan) => {
-    try {
-      const updatedUserData = { Plan: newPlan };
-      const response = await fetch(`${environment.apiURL}/api/users/${userId}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(updatedUserData),
-      });
-      await fetch(`${environment.apiURL}/api/finances/${userId}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(updatedUserData),
-      });
 
-      if (response.ok) {
-        fetchData();
-      } else {
-        throw new Error('Error al actualizar el plan del usuario');
-      }
-    } catch (error) {
-      console.error('Error al actualizar el plan del usuario:', error);
-      Swal.fire('Error al actualizar el plan', 'Ha ocurrido un error al actualizar el plan del usuario.', 'error');
-    }
-  };
 
 
   return (
@@ -268,28 +289,18 @@ const UserList = () => {
               <th>Nombre</th>
               <th>Celular</th>
               <th>Cédula</th>
-              <th>Plan</th>
               <th>Estado $</th>
               <th>Acciones</th>
+
             </tr>
           </thead>
           <tbody>
             {searchResults.map((user) => (
-              <tr key={user._id}>
+                <tr key={user._id}>
+
                 <td>{user.FirstName + ' ' + user.LastName}</td>
                 <td>{user.Phone}</td>
                 <td>{user.IdentificationNumber}</td>
-                <td>
-                  <Select
-                    value={{ value: user.Plan, label: user.Plan }}
-                    onChange={(selectedOption) => handlePlanChange(user._id, selectedOption.value)}
-                    options={[
-                      { value: ' ', label: ' ' },
-                      { value: 'Diario', label: 'Diario' },
-                      { value: 'Mensual', label: 'Mensual' },
-                    ]}
-                  />
-                </td>
                 <td>
                   <Select
                     value={{ value: user.Active, label: user.Active }}
@@ -303,14 +314,51 @@ const UserList = () => {
                 </td>
 
                 <td>
-                  <button onClick={() => openModal(user)}><FontAwesomeIcon icon={faEdit} /></button>
-                  <button onClick={() => handleDeleteUser(user._id)}><FontAwesomeIcon icon={faTrash} /></button>
+                {termsLink && termsLink[user._id] && (
+                    <a href={termsLink[user._id]} target="_blank" rel="noopener noreferrer">
+                      <button><FontAwesomeIcon icon={faFileDownload} /></button>
+                    </a>
+                  )}
+                  <button className='button-actions' onClick={() => openAmbulanceModal(user)}>
+                    <FontAwesomeIcon icon={faAmbulance} />
+                  </button>
+                  <button className='button-actions'   onClick={() => openModal(user)}><FontAwesomeIcon icon={faEdit} /></button>
+                  <button className='button-actions' onClick={() => handleDeleteUser(user._id)}><FontAwesomeIcon icon={faTrash} /></button>
                 </td>
+ 
               </tr>
             ))}
           </tbody>
         </table>
       )}
+          <Modal
+      isOpen={ambulanceModalIsOpen}
+      onRequestClose={closeAmbulanceModal}
+      contentLabel="Editar Usuario"
+      className="Modal-userList"
+>
+        <h2>Contacto de Emergencia</h2>
+        {editingUser && (
+          <form onSubmit={handleSubmit}>
+            <div className="form-group-userList">
+              <label>
+                <p><strong>Nombre :</strong>{user.nameEmergency ? user.nameEmergency : '' }</p>
+              </label>
+              <label>
+              <p><strong>Apellido :</strong>{user.LastNameEmergency ? user.LastNameEmergency : '' }</p>
+              </label>
+            </div>
+
+            <div className="form-group-userList">
+              <label>
+              <p><strong>Celular :</strong>{user.PhoneEmergency ? user.PhoneEmergency : '' }</p>
+              </label>
+              <button onClick={closeAmbulanceModal}>Cerrar</button>
+            </div>
+          </form>
+        )}
+        
+    </Modal>
 
       <Modal
         isOpen={modalIsOpen}

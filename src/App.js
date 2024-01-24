@@ -13,6 +13,7 @@ import Finances from './components/Finances';
 import Store from './components/Store';
 import ReservationHistory from './components/ReservationHistory';
 import QuotaLimits from './components/QuotaLimits'
+import Summary from './components/Summary';
 
 function App() {
   const [currentUser, setCurrentUser] = useState(null);
@@ -33,6 +34,7 @@ function App() {
         <Route path="/store/:id" element = {<Store />}/>
         <Route path="/reservationHistory/:id" element = {<ReservationHistory/>}/>
         <Route path="/quotaLimits/:id" element = {<QuotaLimits/>}/>
+        <Route path="/summary/:id" element = {<Summary/>}/>
       </Routes>
     </Router>
   );

@@ -80,11 +80,7 @@ const Store = () => {
   };
 
 
-  const changeMonth = (increment) => {
-    setCurrentMonth(prevMonth => {
-      return new Date(prevMonth.getFullYear(), prevMonth.getMonth() + increment, 1);
-    });
-  };
+
   useEffect(() => {
     const newEditableValues = {};
     users.forEach(user => {

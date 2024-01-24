@@ -2,9 +2,9 @@
   color: rgb(0, 0, 0);
   font-weight: bold
 }
-.date-navigation{
+.date-navigation-edit {
   background-color: #ffffff66;
-  width: 750px;
+  width: 245px;
 }
 
 h1 {
@@ -328,3 +328,21 @@ td.first-column{
   font-weight: bolder;
 }
 
+@media screen and (max-width: 768px) {
+  .edit-table {
+    overflow-x: auto;
+    max-width: 400px;
+  }
+  .edit-table table {
+    border-collapse: collapse;
+    width: 130%;
+    margin: 20px auto;
+    background-color: #ffffff00;
+    font-size: 12px;
+}
+.date-navigation-edit {
+  background-color: #ffffff66;
+  width: 191px;
+}
+
+}

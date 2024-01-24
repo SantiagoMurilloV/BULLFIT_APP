@@ -4,7 +4,7 @@ import { Link, useParams } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faClock } from '@fortawesome/free-solid-svg-icons';
+import { faArrowAltCircleLeft, faArrowLeft, faArrowRight, faCalendar, faCheck, faClock, faHome, faHomeAlt } from '@fortawesome/free-solid-svg-icons';
 import Select from 'react-select';
 import 'moment/locale/es';
 import '../components/styles/Reservations.css';
@@ -192,28 +192,25 @@ const Reservations = () => {
     const now = moment().tz('America/Bogota');
     const reservationDateTime = moment.tz(`${dayOfWeek} ${timeKey}`, 'America/Bogota');
     
-    const currentReservationsCount = reservationsData[dateHourKey] || 0;
-    const availableSlots = slotInfo[`${dayOfWeek}-${timeKey}`] || 0;
-    
+    if (reservationDateTime.diff(now, 'hours') < 2) {
+      Swal.fire('Error en la reserva', 'Solo puedes reservar hasta dos horas antes del evento.', 'error');
+      return;
+    }
+
     const currentTime = moment();
     const isCurrentTimeRestricted = currentTime.hour() >= 21 || currentTime.hour() < 5 || 
                                   (currentTime.hour() === 5 && currentTime.minute() < 30);
-    
     if (isCurrentTimeRestricted) {
       Swal.fire('Reserva No Permitida', 'No se puede realizar reservas entre las 9 PM y las 5:30 AM.', 'error');
       return;
     }
+    const currentReservationsCount = reservationsData[dateHourKey] || 0;
+    const availableSlots = slotInfo[`${dayOfWeek}-${timeKey}`] || 0;
     
     if (currentReservationsCount >= availableSlots) {
       Swal.fire('Cupo lleno', 'No hay más cupos disponibles para esta hora.', 'warning');
       return;
   }
-  
-
-    if (reservationDateTime.diff(now, 'hours') < 2) {
-      Swal.fire('Error en la reserva', 'Solo puedes reservar hasta dos horas antes del evento.', 'error');
-      return;
-    }
 
 
     const reservationsCountForDay = getReservationsCountForDay(dateKey);
@@ -442,6 +439,7 @@ const Reservations = () => {
     return morningHours.map((hour, hourIndex) => {
       const hourInt = parseInt(hour, 10);
 
+
       if (hourInt >= 11 && hourInt <= 15) {
         return (
           <tr key={hour} >
@@ -458,7 +456,9 @@ const Reservations = () => {
           <tr key={hour} className={hour === '10' ? 'morning-end-row-reservation' : ''}>
             <td className="hour-cell">{formatHour(hourInt)}</td>
             {daysOfWeek.map((_, dayIndex) => {
+
               const dateKey = moment(selectedDate).add(dayIndex, 'days').format('YYYY-MM-DD');
+              
               const reservationForCell = userReservations.find(
                 (reservation) =>
                   reservation.day === dateKey &&
@@ -493,8 +493,9 @@ const Reservations = () => {
                                   onClick={() => handleReserveClick(dayIndex, hourInt)}
                                   disabled={isHourReserved(dayIndex, hourInt)}
                                   className={isHourReserved(dayIndex, hourInt) ? 'reserved-button' : ''}
+
                                 >
-                                  Reservar
+                                  <FontAwesomeIcon icon={faCheck} />
                                 </button>
                                 
                               )}
@@ -513,21 +514,24 @@ const Reservations = () => {
     });
   };
 
+  
   return (
     <div className="reservations-container">
       <h2>Horario de Reservas de {moment(selectedDate).format('MMMM')}</h2>
       <div className="table-container">
         <div className="date-navigation-reservation">
           <Link to={`/customers/${id}`}>
-            <button>Inicio</button>
+            <button><FontAwesomeIcon icon={faHomeAlt} /></button>
           </Link>
           {user && user.Plan === 'Mensual' && (
-            <button onClick={handleOpenMonthlyReservationForm}>Reserva Mensual</button>
+            <button onClick={handleOpenMonthlyReservationForm}>
+              <FontAwesomeIcon icon={faCalendar} />
+              </button>
           )}
-          <button onClick={() => handleDateChange(-7)}>Semana Anterior</button>
-          <button onClick={() => handleDateChange(7)}>Semana Siguiente</button>
+          <button onClick={() => handleDateChange(-7)}><FontAwesomeIcon icon={faArrowLeft} /></button>
+          <button onClick={() => handleDateChange(7)}><FontAwesomeIcon icon={faArrowRight} /> </button>
         </div>
-        <table>
+        <table >
           <thead>
             {renderTableHeaders()}
           </thead>

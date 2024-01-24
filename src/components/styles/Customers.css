@@ -153,10 +153,10 @@ body {
 
 .info-box-customers {
   background-color: #d5d5d51f;
-  padding: 15px;
+  padding: 10px;
   border: 1px solid #ccc0;
   border-radius: 5px;
-  margin-bottom: 90px;
+  margin-bottom: 53px;
   width: 295px;
 }
 
@@ -400,9 +400,9 @@ body {
 
 
 .checkbox-container .checkbox-custom:after {
-  left: 9px;
-  top: 5px;
-  width: 5px;
+  left: 7px;
+  top: 2px;
+  width: 4px;
   height: 10px;
   border: solid white;
   border-width: 0 3px 3px 0;
@@ -414,4 +414,81 @@ button:disabled {
   color: #666666; 
   cursor: not-allowed; 
   border: 1px solid #cccccc; 
+}
+
+
+
+@media screen and (max-width: 768px) {
+  .Modal-termAnsCondition {
+    width: 78%;
+    max-height: 70%;
+  }
+  .checkbox-container {
+    font-size: 15px; 
+  }
+  .checkbox-custom {
+    height: 20px;
+    width: 20px;
+  }
+  .checkbox-custom:after {
+   left: 7px;
+   top: 2px;
+   width: 3px; 
+   height: 6px; 
+  }
+  .button-renew {
+    margin-top: 27px;
+    padding: 5px 10px;
+    background-color: #000000;
+    border-color: white;
+    color: white;
+    border: none;
+    cursor: pointer;
+    width:185px;
+}
+  
+}
+
+
+
+@media screen and (max-width: 375px) {
+  .Modal-termAnsCondition {
+    width: 82%;
+    padding: 8px;
+  }
+
+}
+
+@media only screen and (max-width: 599px) {
+  .swal2-modal {
+      width: 90% !important; 
+      font-size: 12px; 
+  }
+  .swal2-confirm, .swal2-cancel {
+    font-size: 12px;
+    padding: 8px 20px; 
+}
+}
+
+@media only screen and (min-width: 600px) and (max-width: 899px) {
+  .swal2-modal {
+      width: 50% !important; /* Ajusta el ancho del modal */
+      font-size: 14px; /* Ajusta el tamaño de la fuente */
+  }
+  .swal2-confirm, .swal2-cancel {
+    font-size: 14px; /* Ajusta el tamaño de la fuente de los botones */
+    padding: 10px 24px; /* Ajusta el padding de los botones */
+}
+}
+
+/* Para pantallas grandes (más de 900px) */
+@media only screen and (min-width: 900px) {
+  .swal2-modal {
+      width: 30% !important; /* Ajusta el ancho del modal */
+      font-size: 16px; /* Ajusta el tamaño de la fuente */
+  }
+  .swal2-confirm, .swal2-cancel {
+    font-size: 16px; /* Ajusta el tamaño de la fuente de los botones */
+    padding: 12px 30px; /* Ajusta el padding de los botones */
+}
 }

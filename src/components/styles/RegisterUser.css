@@ -127,7 +127,14 @@
   padding: 10px 20px;
   cursor: pointer;
   transition: background-color 0.3s;
+  width: auto;
+  height: 40px;
 }
+.swal2-cancel {
+  height: 40px;
+  width: 150px;
+}
+
 
 .swal2-confirm:hover {
   background-color: #0056b3;

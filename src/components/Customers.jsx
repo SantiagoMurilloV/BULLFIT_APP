@@ -51,12 +51,11 @@ const Customers = ({ currentUser }) => {
             setTermsModalIsOpen(true);
           }
         } else {
-          // Si la respuesta no es 'ok', asumimos que el usuario no tiene términos aceptados
           setTermsModalIsOpen(true);
         }
       } catch (error) {
         console.error('Error al verificar términos y condiciones:', error);
-        // Si hay un error, también mostramos el modal
+
         setTermsModalIsOpen(true);
       }
     };
@@ -202,7 +201,7 @@ const Customers = ({ currentUser }) => {
       showCancelButton: true,
       confirmButtonColor: '#3085d6',
       cancelButtonColor: '#d33',
-      confirmButtonText: 'Sí, cerrar sesión',
+      confirmButtonText: 'Sí',
       cancelButtonText: 'Cancelar',
     }).then((result) => {
       if (result.isConfirmed) {
@@ -416,7 +415,7 @@ const handleTermsAcceptance = async (event) => {
             <Link to={`/profile/${id}`} className="button-link">
               <FontAwesomeIcon className="button-icon-image" icon={faUserAlt} />
             </Link>
-            <span className="profile-text">{user ? user.FirstName + user.LastName : 'N/A'}</span>
+            <span className="profile-text">{user ? user.FirstName + '  ' + user.LastName : 'N/A'}</span>
           </button>
         </div>
 
@@ -490,6 +489,5 @@ const handleTermsAcceptance = async (event) => {
 };
 
 export default Customers;
-
 
 

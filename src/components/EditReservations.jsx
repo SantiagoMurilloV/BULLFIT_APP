@@ -3,7 +3,7 @@ import { Link, useParams } from 'react-router-dom';
 import moment from 'moment-timezone';
 import '../components/styles/Diary.css';
 import '../../src/components/styles/EditReservations.css';
-import { faTrash, faEdit, faBan } from '@fortawesome/free-solid-svg-icons';
+import { faTrash, faEdit, faBan, faHomeAlt, faCalendarPlus, faCalendarDay, faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Swal from 'sweetalert2';
 import DatePicker from 'react-datepicker';
@@ -313,20 +313,21 @@ const EditReservations = () => {
         <div className="diary-title">
           <h1>Editar Reservas</h1>
         </div>
-        <div className="date-navigation">
+        <div className="date-navigation-edit ">
           <button className="nav-button" onClick={handlePreviousWeek}>
-            Semana Anterior
+          <FontAwesomeIcon icon={faArrowLeft} /> 
           </button>
-          <span className="current-week">{`Semana del ${moment(currentDate).format('DD/MM/YYYY')}`}</span>
+          <button className="nav-button" onClick={handleCurrentWeek}><FontAwesomeIcon icon={faCalendarDay} /></button>
           <button className="nav-button" onClick={handleNextWeek}>
-            Próxima Semana
+          <FontAwesomeIcon icon={faArrowRight} /> 
           </button>
-          <button className="nav-button" onClick={handleCurrentWeek}>Semana Actual</button>
-          <button className="nav-button" onClick={handleNextMonth}>Siguiente Mes</button>
+          <button className="nav-button" onClick={handleNextMonth}>
+          <FontAwesomeIcon icon={faCalendarPlus} />
+          </button>
 
           <Link to={`/customers/${id}`} >
             <button className="nav-button" >
-              Inicio
+            <FontAwesomeIcon icon={faHomeAlt} />
             </button>
           </Link>
         </div>
