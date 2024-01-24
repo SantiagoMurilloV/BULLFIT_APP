@@ -1,90 +1,35 @@
+
 import React, { useState, useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import Modal from 'react-modal';
-import '../components/styles/Finance.css';
-import { environment } from '../environments';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import Select from 'react-select';
+import "react-datepicker/dist/react-datepicker.css";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faHome, faStore, faCalendarAlt, faClock, faBook, faDollarSign, faCalendarPlus, faCalendarDay, faCalendarMinus } from '@fortawesome/free-solid-svg-icons';
 
+import '../components/styles/Finance.css';
+import { environment } from '../environments';
 
 Modal.setAppElement('#root');
 
 const ReservationHistory = () => {
   const [users, setUsers] = useState([]);
-  const [financeData, setFinanceData] = useState([]);
+  const [count, setCount] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [user, setUser] = useState(null);
   const { id } = useParams();
   const [searchTerm, setSearchTerm] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const [selectedPlan, setSelectedPlan] = useState('');
-  const [selectedStatus, setSelectedStatus] = useState('');
-  const [selectedReservationPaymentStatus, setSelectedReservationPaymentStatus] = useState('');
-  const [reservationsLoaded, setReservationsLoaded] = useState(false);
-  const [editableValues, setEditableValues] = useState({});
   const [activeTable, setActiveTable] = useState('both');
   const [currentMonth, setCurrentMonth] = useState(new Date());
-
-
-  const showMonthlyTable = () => {
-    setActiveTable('monthly');
-  };
-
-  const showDailyTable = () => {
-    setActiveTable('daily');
-  };
-
 
   useEffect(() => {
     fetchData();
   }, [id, searchTerm, currentMonth]);
 
-  useEffect(() => {
-    const filterUsers = () => {
-      const month = currentMonth.getMonth();
-      const year = currentMonth.getFullYear();
-
-      return users.filter(user => {
-
-        const startDate = new Date(user.startDate);
-
-        const matchesReservationPaymentStatus = selectedReservationPaymentStatus
-          ? user.reservationPaymentStatus === selectedReservationPaymentStatus.value
-          : true;
-
-        const matchesName = user.FirstName.toLowerCase().includes(searchTerm.toLowerCase()) || user.LastName.toLowerCase().includes(searchTerm.toLowerCase());
-        const matchesPlan = selectedPlan ? user.Plan === selectedPlan.value : true;
-        const matchesStatus = selectedStatus ? user.Active === selectedStatus.value : true;
-        const matchesMonth = startDate.getMonth() === month && startDate.getFullYear() === year;
-
-        return matchesName && matchesPlan && matchesStatus && matchesReservationPaymentStatus && matchesMonth;
-      });
-    };
-
-    setSearchResults(filterUsers());
-  }, [users, financeData, searchTerm, selectedPlan, selectedStatus, selectedReservationPaymentStatus, currentMonth]);
 
 
-
-  const fetchData = async () => {
-    const month = currentMonth.getMonth() + 1;
-    const year = currentMonth.getFullYear();
-    try {
-      const response = await fetch(`${environment.apiURL}/api/finances?month=${month}&year=${year}`);
-      if (!response.ok) {
-        throw new Error('Error en la solicitud');
-      }
-      const data = await response.json();
-      await fetchFinanceData();
-      setUsers(data);
-      setLoading(false);
-      fetchReservations(data);
-
-    } catch (error) {
-
-    }
-  };
 
   const goToPreviousMonth = () => {
     setCurrentMonth(prevMonth => new Date(prevMonth.getFullYear(), prevMonth.getMonth() - 1, 1));
@@ -99,128 +44,73 @@ const ReservationHistory = () => {
   const getFormattedMonth = () => {
     return currentMonth.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });
   };
-  const fetchFinanceData = async () => {
-    const month = currentMonth.getMonth() + 1;
+
+
+  const fetchData = async () => {
+    const month = currentMonth.getMonth();
     const year = currentMonth.getFullYear();
     try {
       const response = await fetch(`${environment.apiURL}/api/finances?month=${month}&year=${year}`);
-      if (!response.ok) throw new Error('Error al obtener datos financieros');
-      const financesData = await response.json();
-      setFinanceData(financesData);
+      const countersResponse = await fetch(`${environment.apiURL}/api/counter`);
+
+      if (!response.ok || !countersResponse.ok) throw new Error('Error al obtener datos');
+
+      const data = await response.json();
+      const countersData = await countersResponse.json();
+
+      const updatedUsers = await Promise.all(data.map(async (user) => {
+        const userStartDate = new Date(user.startDate);
+        const startDateMonth = userStartDate.getMonth();
+        const startDateYear = userStartDate.getFullYear();
+
+        return { ...user, startDateMonth, startDateYear };
+      }));
+
+      setUsers(updatedUsers);
+      setCount(countersData);
+      setLoading(false);
 
     } catch (error) {
-      console.error('Error al obtener datos financieros:', error);
+      console.error('Error:', error);
     }
   };
-
-  const changeMonth = (increment) => {
-    setCurrentMonth(prevMonth => {
-      return new Date(prevMonth.getFullYear(), prevMonth.getMonth() + increment, 1);
-    });
-  };
-  useEffect(() => {
-    const newEditableValues = {};
-    users.forEach(user => {
-      const userFinance = financeData.find(f => f.userId === user._id) || {};
-      newEditableValues[user._id] = {
-        ...newEditableValues[user._id],
-        reservationPaymentStatus: userFinance.reservationPaymentStatus || user.reservationPaymentStatus,
-      };
-    });
-    setEditableValues(newEditableValues);
-  }, [users, financeData]);
 
   useEffect(() => {
-    if (users.length > 0 && !reservationsLoaded) {
-      fetchReservations();
+    const filterUsers = () => {
+      const currentMonthIndex = currentMonth.getUTCMonth();
+      const currentYear = currentMonth.getUTCFullYear();
+      return users.filter(user => {
+        const userStartDate = new Date(user.startDate + 'T00:00:00Z');
+        const userMonthIndex = userStartDate.getUTCMonth();
+        const userYear = userStartDate.getUTCFullYear();
 
-    }
-  }, [users, reservationsLoaded]);
-
-  const fetchReservations = async (users) => {
-    if (!users || users.length === 0) {
-      return;
-    }
-    try {
-      const res = await fetch(`${environment.apiURL}/api/reservations`);
-      const reservations = await res.json();
-      countReservationsByUser(users, reservations);
-    } catch (error) {
-
-    }
-  };
-
-  const countReservationsByUser = async (users, reservations) => {
-
-    const reservationCount = reservations.reduce((acc, reservation) => {
-      if (reservation && reservation.userId && typeof reservation.userId === 'string') {
-        acc[reservation.userId] = (acc[reservation.userId] || 0) + 1;
-      } else {
-        console.log("Reserva sin userId válido:", reservation);
-      }
-      return acc;
-    }, {});
-
-    const updatedUsers = users.map(user => {
-      const reservationCost = user.Plan === 'Mensual' ? 125000 : reservationCount[user._id] * 10000;
-      return {
-        ...user,
-        reservationCount: reservationCount[user._id] || 0,
-        totalAmount: reservationCost,
-        pendingBalance: reservationCost,
-        reservationPaymentStatus: user.reservationPaymentStatus || 'No',
-
-      };
+        const matchesDate = userMonthIndex === currentMonthIndex && userYear === currentYear;
 
 
-    });
-
-    setUsers(updatedUsers);
-
-    updatedUsers.forEach(async (userToUpdate) => {
-      try {
-        const financeUpdateData = {
-          reservationCount: userToUpdate.reservationCount,
-          totalAmount: userToUpdate.totalAmount,
-          pendingBalance: userToUpdate.pendingBalance,
-          totalConsumption: userToUpdate.totalConsumption,
-        };
-
-        const updateResponse = await fetch(`${environment.apiURL}/api/finances/${userToUpdate._id}`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(financeUpdateData),
-        });
-        fetchFinanceData()
-        if (!updateResponse.ok) {
-          throw new Error(`No se pudo actualizar los datos financieros del usuario con ID ${userToUpdate._id}`);
-        }
-
-      } catch (error) {
-        console.error(`Error al actualizar los datos financieros `, error);
-      }
-    });
-  };
+        const matchesName = user.FirstName.toLowerCase().includes(searchTerm.toLowerCase()) || user.LastName.toLowerCase().includes(searchTerm.toLowerCase());
+        const matchesPlan = selectedPlan ? user.Plan === selectedPlan.value : true;
 
 
+        return matchesName && matchesPlan && matchesDate;
+      });
+    };
 
-  const handleFinanceChange = async (userId, financeField, newValue) => {
+    setSearchResults(filterUsers());
+  }, [users, searchTerm, selectedPlan, currentMonth]);
+
+  const handleFinanceChange = async (finacesId, financeField, newValue) => {
     try {
       let updatedFinanceData = { [financeField]: newValue };
-
-
-      const updateResponse = await fetch(`${environment.apiURL}/api/finances/${userId}`, {
+      const updateResponse = await fetch(`${environment.apiURL}/api/finance/${finacesId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(updatedFinanceData),
       });
 
-
       if (!updateResponse.ok) {
         throw new Error('No se pudo actualizar los datos financieros del usuario');
       }
-      await fetchFinanceData();
-      await fetchData();
+      fetchData();
     } catch (error) {
       Swal.fire('Error', 'Ha ocurrido un error al actualizar los datos financieros.', 'error');
     }
@@ -230,7 +120,7 @@ const ReservationHistory = () => {
 
   return (
     <div>
-      <h2>Historial de Pagos - {getFormattedMonth()}</h2>
+      <h2 style={{ color: '#fffd00' }}>Historial de Pagos - {getFormattedMonth()}</h2>
       <div className="filters-container">
         <input
           className='input-search'
@@ -239,9 +129,28 @@ const ReservationHistory = () => {
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
-        <button onClick={showMonthlyTable} className='butom-day-finance-hist'> <FontAwesomeIcon icon={faCalendarAlt} /> Mensual
+        <Select
+          className="filter-select"
+          classNamePrefix="filter-select"
+          value={selectedPlan}
+          onChange={(selected) => setSelectedPlan(selected)}
+          options={[
+            { value: 'Diario', label: 'Diario' },
+            { value: 'Mensual', label: 'Mensual' },
+          ]}
+          placeholder="Plan"
+          isClearable
+        />
+
+        <button className='butom-day-finance' onClick={goToPreviousMonth}>
+          <FontAwesomeIcon icon={faCalendarMinus} />
         </button>
-        <button onClick={showDailyTable} className='butom-day-finance-hist'><FontAwesomeIcon icon={faClock} /> Diario </button>
+        <button className='butom-day-finance' onClick={goToCurrentMonth}>
+          <FontAwesomeIcon icon={faCalendarDay} />
+        </button>
+        <button className='butom-day-finance' onClick={goToNextMonth}>
+          <FontAwesomeIcon icon={faCalendarPlus} />
+        </button>
         <Link to={`/finances/${id}`}>
           <button className='butom-day-finance' >
             <FontAwesomeIcon icon={faDollarSign} />
@@ -257,16 +166,6 @@ const ReservationHistory = () => {
             <FontAwesomeIcon icon={faBook} />
           </button>
         </Link>
-
-        <button className='butom-day-finance' onClick={goToPreviousMonth}>
-          <FontAwesomeIcon icon={faCalendarMinus} />
-        </button>
-        <button className='butom-day-finance' onClick={goToCurrentMonth}>
-          <FontAwesomeIcon icon={faCalendarDay} />
-        </button>
-        <button className='butom-day-finance' onClick={goToNextMonth}>
-          <FontAwesomeIcon icon={faCalendarPlus} />
-        </button>
         <Link to={`/admin/${id}`}>
           <button className='butom-day-finance' >
             <FontAwesomeIcon icon={faHome} />
@@ -291,6 +190,7 @@ const ReservationHistory = () => {
                       <th>Usuario Activo</th>
                       <th>Valor Pagado</th>
                       <th>Confirmación Pago</th>
+                      <th>Fecha y hora del pago</th>
                       <th>Novedades</th>
                     </tr>
                   </thead>
@@ -303,13 +203,14 @@ const ReservationHistory = () => {
                       return (
                         <tr key={user._id}>
                           <td>{user.FirstName + ' ' + user.LastName}</td>
-                          <td>{user.startDate || ' '}</td>
-                          <td>{user.endDate || ' '}</td>
+                          <td>{user.startDate || 'N/A'}</td>
+                          <td>{user.endDate || 'N/A'}</td>
                           <td>{user.Active || ' '}</td>
                           <td style={{ color: user.reservationPaymentStatus === 'No' ? '#a62525' : 'green' }}>
                             {user.pendingBalance > 0 ? `$ ${user.pendingBalance}` : '$ 0'}
                           </td>
                           <td>{user.reservationPaymentStatus === 'Si' ? '✔' : '✖' || ' '}</td>
+                          <td>{user.paymentDate || ''} {user.paymentTime || ''}  </td>
                           <td>
                             <input
                               type="text"
@@ -337,6 +238,7 @@ const ReservationHistory = () => {
                       <th>Usuario Activo</th>
                       <th>Valor Pagado</th>
                       <th>Confirmación Pago</th>
+                      <th>Fecha y hora del pago</th>
                       <th>Novedades</th>
                     </tr>
                   </thead>
@@ -356,7 +258,9 @@ const ReservationHistory = () => {
                             {user.pendingBalance > 0 ? `$ ${user.pendingBalance}` : '$ 0'}
                           </td>
                           <td>{user.reservationPaymentStatus === 'Si' ? '✔' : '✖' || ' '}</td>
+                          <td>{user.paymentDate || ''} {user.paymentTime || ''} </td>
                           <td>
+
                             <input
                               type="text"
                               className='news'

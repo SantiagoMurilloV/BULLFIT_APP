@@ -126,7 +126,18 @@
   border: 1px solid #ddd;
   border-radius: 5px;
 }
-
+.button-actions button  {
+  margin: 5px;
+  padding: 0px 0px;
+  background-color: #000000;
+  border-color: white;
+  color: white;
+  border: none;
+  cursor: pointer;
+  width: 118px;
+  height: 24px;
+  font-size: 10px;
+}
 
 
 @media screen and (max-width: 768px) {
@@ -160,7 +171,19 @@
       font-size: 10px;
   }
 
-  button {
+  .Modal-userList {
+    background: #000000c7;
+    padding: 20px;
+    border-radius: 10px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 60%;
+    box-shadow: 0 5px 15px #0c0c0c;
+  }
+
+  .button-actions button  {
       margin: 5px;
       padding: 0px 0px;
       background-color: #000000;
@@ -168,7 +191,7 @@
       color: white;
       border: none;
       cursor: pointer;
-      width: 26px;
+      width: 118px;
       height: 24px;
       font-size: 10px;
   }
