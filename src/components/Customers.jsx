@@ -491,4 +491,3 @@ const handleTermsAcceptance = async (event) => {
 export default Customers;
 
 
-

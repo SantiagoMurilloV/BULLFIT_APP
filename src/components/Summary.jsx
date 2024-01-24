@@ -209,7 +209,7 @@ const Summary = () => {
       <h2 style={{ color: 'white', fontSize: '30px' }} className="summary-title">
         Dashboard Financiero
       </h2>
-      <Link to={`/reservationHistory/${id}`}>
+      <Link to={`/finances/${id}`}>
         <button className="butom-day-finance-hist">
           <FontAwesomeIcon icon={faDollarSign} />
         </button>
@@ -425,5 +425,4 @@ const Summary = () => {
 };
 
 export default Summary;
-
 
