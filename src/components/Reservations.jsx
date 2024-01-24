@@ -192,28 +192,25 @@ const Reservations = () => {
     const now = moment().tz('America/Bogota');
     const reservationDateTime = moment.tz(`${dayOfWeek} ${timeKey}`, 'America/Bogota');
     
-    const currentReservationsCount = reservationsData[dateHourKey] || 0;
-    const availableSlots = slotInfo[`${dayOfWeek}-${timeKey}`] || 0;
-    
+    if (reservationDateTime.diff(now, 'hours') < 2) {
+      Swal.fire('Error en la reserva', 'Solo puedes reservar hasta dos horas antes del evento.', 'error');
+      return;
+    }
+
     const currentTime = moment();
     const isCurrentTimeRestricted = currentTime.hour() >= 21 || currentTime.hour() < 5 || 
                                   (currentTime.hour() === 5 && currentTime.minute() < 30);
-    
     if (isCurrentTimeRestricted) {
       Swal.fire('Reserva No Permitida', 'No se puede realizar reservas entre las 9 PM y las 5:30 AM.', 'error');
       return;
     }
+    const currentReservationsCount = reservationsData[dateHourKey] || 0;
+    const availableSlots = slotInfo[`${dayOfWeek}-${timeKey}`] || 0;
     
     if (currentReservationsCount >= availableSlots) {
       Swal.fire('Cupo lleno', 'No hay más cupos disponibles para esta hora.', 'warning');
       return;
   }
-  
-
-    if (reservationDateTime.diff(now, 'hours') < 2) {
-      Swal.fire('Error en la reserva', 'Solo puedes reservar hasta dos horas antes del evento.', 'error');
-      return;
-    }
 
 
     const reservationsCountForDay = getReservationsCountForDay(dateKey);

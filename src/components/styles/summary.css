@@ -1,0 +1,73 @@
+
+.summary-title {
+  font-size: 24px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.butom-day-finance-hist {
+  background-color: #0d0d0d;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 10px 20px;
+  margin-bottom: 10px;
+  font-size: 16px;
+  cursor: pointer;
+  width: 129px;
+}
+
+.butom-day-finance-hist:hover {
+  background-color: #025cbc;
+}
+
+h3 {
+  font-size: 18px;
+  margin-top: 20px;
+  text-align: center;
+}
+
+.summary-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+
+.two-column-table {
+  width: 100%;
+  max-width: 300px;
+  margin: 10px;
+  border-collapse: collapse;
+}
+
+.two-column-table td {
+  padding: 3px;
+  border: 1px solid #141414;
+  width: 48px;
+}
+
+.two-column-table td:first-child {
+  font-weight: bold;
+  width: 47%;
+}
+
+.two-column-table strong {
+  color: #003ae8; 
+}
+
+
+.card-header {
+  background-color: #161616;
+  color: white;
+  font-size: 20px;
+  font-weight: bold;
+  padding: 10px;
+  text-align: center;
+}
+
+.card-title {
+  margin: 0;
+}
+
+

@@ -2,14 +2,62 @@
   max-height: 400px;
   overflow-y: auto;
   border: 3px solid #d6d6d640;
+  background-color: white;
+}
+
+.user-table-finance-diary{
+  max-height: 400px;
+  overflow-y: auto;
+  border: 3px solid #d6d6d640;
+  background-color: rgb(255, 255, 255);
+  width: 100%;
+  margin: initial;
+}
+.finance-title{
+  color: #ff3300;
+  background: #ffffff1c;
+
+}
+.date{
+  margin: 5px;
+  width: 86px;
+  font-weight: bolder;
+  font-size: 14px;
+  background-color: #C1C1C1;
+  border: 1px solid #ccc;
+  height: 1vh;
+  border-radius: 1px;
 }
 
 .user-table-finance table{
   width: 100%;
   border-collapse: collapse;
+
 }
 
 .user-table-finance thead th{
+  position: sticky;
+  top: 0;
+  z-index: 10;
+} 
+
+
+.user-table-finance td {
+  text-align: left;
+  border-bottom: 3px solid #00000097;
+  font-weight: bolder;
+  font-size: 12px;
+  text-align: center;
+  width: 100px;
+}
+
+.user-table-finance-diary table{
+  width: 100%;
+  border-collapse: collapse;
+
+}
+
+.user-table-finance-diary thead th{
   position: sticky;
   top: 0;
 
@@ -17,7 +65,7 @@
 } 
 
 
-.user-table-finance td {
+.user-table-finance-diary td {
   text-align: left;
   border-bottom: 3px solid #00000097;
   font-weight: bolder;
@@ -62,11 +110,21 @@
   text-decoration: none;
   margin-right: 15px; 
 }
+.button-diary-finance{
+  background-color: #000000;
+  color: white;
+  padding: 10px 20px;
+  box-shadow: 5px 3px 3px 0px rgb(255 255 255 / 79%);
+  border-radius: 4px;
+  cursor: pointer;
+  text-decoration: none;
+  margin-right: 15px; 
+}
 .user-table-finance th {
-  background-color: #0c0c0c;
+  background-color: #000000;
   color: white;
   font-weight: bold;
-  border-bottom: 3px solid #706e6e97;
+  border-bottom: 3px solid #ffffff;
   padding: 8px;
   text-align: center;
 }
@@ -81,7 +139,7 @@ input.num{
   border-radius: 0;
   height: 0vh;
   width: 20px;
-  background-color: rgba(255, 255, 255, 0.253);
+  background-color: rgb(153 153 153);
   font-size: 12px;
 }
 

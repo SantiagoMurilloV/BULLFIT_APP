@@ -444,7 +444,7 @@ button:disabled {
     color: white;
     border: none;
     cursor: pointer;
-    width: 127px;
+    width:185px;
 }
   
 }
@@ -457,4 +457,38 @@ button:disabled {
     padding: 8px;
   }
 
+}
+
+@media only screen and (max-width: 599px) {
+  .swal2-modal {
+      width: 90% !important; 
+      font-size: 12px; 
+  }
+  .swal2-confirm, .swal2-cancel {
+    font-size: 12px;
+    padding: 8px 20px; 
+}
+}
+
+@media only screen and (min-width: 600px) and (max-width: 899px) {
+  .swal2-modal {
+      width: 50% !important; /* Ajusta el ancho del modal */
+      font-size: 14px; /* Ajusta el tamaño de la fuente */
+  }
+  .swal2-confirm, .swal2-cancel {
+    font-size: 14px; /* Ajusta el tamaño de la fuente de los botones */
+    padding: 10px 24px; /* Ajusta el padding de los botones */
+}
+}
+
+/* Para pantallas grandes (más de 900px) */
+@media only screen and (min-width: 900px) {
+  .swal2-modal {
+      width: 30% !important; /* Ajusta el ancho del modal */
+      font-size: 16px; /* Ajusta el tamaño de la fuente */
+  }
+  .swal2-confirm, .swal2-cancel {
+    font-size: 16px; /* Ajusta el tamaño de la fuente de los botones */
+    padding: 12px 30px; /* Ajusta el padding de los botones */
+}
 }

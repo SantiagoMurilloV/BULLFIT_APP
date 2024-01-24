@@ -3,18 +3,20 @@ import { Link, useParams } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import Select from 'react-select';
 import Modal from 'react-modal';
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faHome, faStore, faCalendarAlt, faClock, faBook, faHistory, faChartColumn } from '@fortawesome/free-solid-svg-icons';
 import '../components/styles/Finance.css';
 import { environment } from '../environments';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faHome, faStore, faCalendarAlt, faClock, faBook, faHistory } from '@fortawesome/free-solid-svg-icons';
-
+import { format } from 'date-fns';
 
 Modal.setAppElement('#root');
+
 const Finance = () => {
   const [users, setUsers] = useState([]);
-  const [financeData, setFinanceData] = useState([]);
+  const [count, setCount] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [userInfomation, setUserInfo] = useState(null);
   const { id } = useParams();
   const [searchTerm, setSearchTerm] = useState('');
   const [searchResults, setSearchResults] = useState([]);
@@ -22,48 +24,94 @@ const Finance = () => {
   const [selectedStatus, setSelectedStatus] = useState('');
   const [selectedReservationPaymentStatus, setSelectedReservationPaymentStatus] = useState('');
   const [showPositivePayments, setShowPositivePayments] = useState(false);
-  const [reservationsLoaded, setReservationsLoaded] = useState(false);
   const [editableValues, setEditableValues] = useState({});
   const [activeTable, setActiveTable] = useState('both');
-  const [storeConsumptions, setStoreConsumptions] = useState([]);
   const [currentMonth, setCurrentMonth] = useState(new Date());
 
-
-  const getUserOptions = () => {
-    return users.map(user => ({
-      value: user._id,
-      label: `${user.FirstName} ${user.LastName}`
-    }));
-  };
-  const showMonthlyTable = () => {
-    setActiveTable('monthly');
-  };
-
-  const showDailyTable = () => {
-    setActiveTable('daily');
-  };
-
-  const showBothTables = () => {
-    setActiveTable('both');
-  };
   useEffect(() => {
     fetchData();
   }, [id, searchTerm, currentMonth]);
 
-
   const togglePaymentStatusFilter = () => {
     setShowPositivePayments(!showPositivePayments);
   };
+  const calculatePendingReservationAmount = (user, reservationCountForMonth) => {
+    return user.Plan === 'Mensual' ? 125000 : reservationCountForMonth * 10000;
+  };
+
+  const updateUserFinanceData = async (userId, newFinanceData) => {
+    try {
+      const response = await fetch(`${environment.apiURL}/api/userFinance/${userId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newFinanceData),
+      });
+
+      if (!response.ok) {
+        throw new Error('Error al actualizar los datos financieros del usuario');
+      }
+    } catch (error) {
+      console.error('Error al realizar la solicitud PUT:', error);
+      Swal.fire('Error', 'Ha ocurrido un error al actualizar los datos financieros.', 'error');
+    }
+  };
+
+  const updateFinanceData = async (userId, newFinanceData) => {
+    try {
+      const response = await fetch(`${environment.apiURL}/api/finance/${userId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newFinanceData),
+      });
+
+      if (!response.ok) {
+        throw new Error('Error al actualizar los datos financieros del usuario');
+      }
+    } catch (error) {
+      console.error('Error al realizar la solicitud PUT:', error);
+      Swal.fire('Error', 'Ha ocurrido un error al actualizar los datos financieros.', 'error');
+    }
+  };
+
+  const fetchData = async () => {
+    const month = currentMonth.getMonth() + 1;
+    const year = currentMonth.getFullYear();
+    try {
+      const response = await fetch(`${environment.apiURL}/api/finances?month=${month}&year=${year}`);
+      const countersResponse = await fetch(`${environment.apiURL}/api/counter`);
+
+      if (!response.ok || !countersResponse.ok) throw new Error('Error al obtener datos');
+
+      const data = await response.json();
+      const countersData = await countersResponse.json();
+
+      const updatedUsers = await Promise.all(data.map(async (user) => {
+        const currentMonthString = month.toString().padStart(2, '0');
+        const userCounter = countersData.find(counter => counter.userId === user.userId);
+        const reservationCountForMonth = userCounter ? userCounter.counts[currentMonthString] || 0 : 0;
+        const pendingBalance = calculatePendingReservationAmount(user, reservationCountForMonth);
+        await updateFinanceData(user._id, { reservationCount: reservationCountForMonth });
+        await updateFinanceData(user._id, { pendingBalance: pendingBalance });
+        return { ...user, pendingBalance: pendingBalance, reservationCount: reservationCountForMonth };
+      }));
+
+      setUsers(updatedUsers);
+      setCount(countersData);
+      setLoading(false);
+
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  };
+
+
+
   useEffect(() => {
     const filterUsers = () => {
       return users.filter(user => {
-
-        const userFinance = financeData.find(finance => finance.userId === user._id) || {};
-
         const matchesReservationPaymentStatus = selectedReservationPaymentStatus
-          ? userFinance.reservationPaymentStatus === selectedReservationPaymentStatus.value
+          ? user.reservationPaymentStatus === selectedReservationPaymentStatus.value
           : true;
-
 
         const matchesName = user.FirstName.toLowerCase().includes(searchTerm.toLowerCase()) || user.LastName.toLowerCase().includes(searchTerm.toLowerCase());
         const matchesPlan = selectedPlan ? user.Plan === selectedPlan.value : true;
@@ -74,160 +122,12 @@ const Finance = () => {
     };
 
     setSearchResults(filterUsers());
-  }, [users, financeData, searchTerm, selectedPlan, selectedStatus, selectedReservationPaymentStatus]);
+  }, [users, searchTerm, selectedPlan, selectedStatus, selectedReservationPaymentStatus]);
 
-
-  const fetchData = async () => {
-    const month = currentMonth.getMonth() + 1;
-    const year = currentMonth.getFullYear();
-    try {
-      const response = await fetch(`${environment.apiURL}/api/finances?month=${month}&year=${year}`);
-      if (!response.ok) {
-        throw new Error('Error en la solicitud');
-      }
-      const data = await response.json();
-      await fetchFinanceData();
-      setUsers(data);
-      setLoading(false);
-      userInfo()
-      fetchReservations(data);
-
-    } catch (error) {
-
-    }
-  };
-
-
-  const userInfo = async () => {
-
-    try {
-      const response = await fetch(`${environment.apiURL}/api/users`);
-      if (!response.ok) {
-        throw new Error('Error en la solicitud');
-      }
-      const data = await response.json();
-      setUserInfo(data)
-    } catch (error) {
-
-    }
-  };
-
-  const fetchFinanceData = async () => {
-    const month = currentMonth.getMonth() + 1;
-    const year = currentMonth.getFullYear();
-    try {
-      const response = await fetch(`${environment.apiURL}/api/finances?month=${month}&year=${year}`);
-      if (!response.ok) throw new Error('Error al obtener datos financieros');
-      const financesData = await response.json();
-      setFinanceData(financesData);
-
-    } catch (error) {
-      console.error('Error al obtener datos financieros:', error);
-    }
-  };
-
-  const changeMonth = (increment) => {
-    setCurrentMonth(prevMonth => {
-      return new Date(prevMonth.getFullYear(), prevMonth.getMonth() + increment, 1);
-    });
-  };
-  useEffect(() => {
-    const newEditableValues = {};
-    users.forEach(user => {
-      const userFinance = financeData.find(f => f.userId === user._id) || {};
-      newEditableValues[user._id] = {
-        ...newEditableValues[user._id],
-        reservationPaymentStatus: userFinance.reservationPaymentStatus || user.reservationPaymentStatus,
-      };
-    });
-    setEditableValues(newEditableValues);
-  }, [users, financeData]);
-
-  useEffect(() => {
-    if (users.length > 0 && !reservationsLoaded) {
-      fetchReservations();
-
-    }
-  }, [users, reservationsLoaded]);
-
-  const fetchReservations = async (users) => {
-    if (!users || users.length === 0) {
-      return;
-    }
-    try {
-      const res = await fetch(`${environment.apiURL}/api/reservations`);
-      const reservations = await res.json();
-      countReservationsByUser(users, reservations);
-    } catch (error) {
-
-    }
-  };
-
-  const countReservationsByUser = async (users, reservations) => {
-
-    const reservationCount = reservations.reduce((acc, reservation) => {
-      if (reservation && reservation.userId && typeof reservation.userId === 'string') {
-        acc[reservation.userId] = (acc[reservation.userId] || 0) + 1;
-      } else {
-        console.log("Reserva sin userId válido:", reservation);
-      }
-      return acc;
-    }, {});
-
-    const updatedUsers = users.map(user => {
-      const reservationCost = user.Plan === 'Mensual' ? 125000 : reservationCount[user._id] * 10000;
-      return {
-        ...user,
-        reservationCount: reservationCount[user._id] || 0,
-        totalAmount: reservationCost,
-        pendingBalance: reservationCost,
-        reservationPaymentStatus: user.reservationPaymentStatus || 'No',
-
-      };
-
-
-    });
-
-    setUsers(updatedUsers);
-
-    updatedUsers.forEach(async (userToUpdate) => {
-      try {
-        const financeUpdateData = {
-          reservationCount: userToUpdate.reservationCount,
-          totalAmount: userToUpdate.totalAmount,
-          pendingBalance: userToUpdate.pendingBalance,
-          totalConsumption: userToUpdate.totalConsumption,
-        };
-
-        const updateResponse = await fetch(`${environment.apiURL}/api/finances/${userToUpdate._id}`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(financeUpdateData),
-        });
-        await fetchFinanceData()
-        if (!updateResponse.ok) {
-          throw new Error(`No se pudo actualizar los datos financieros del usuario con ID ${userToUpdate._id}`);
-        }
-
-      } catch (error) {
-        console.error(`Error al actualizar los datos financieros `, error);
-      }
-    });
-  };
-
-
-
-  const handleFinanceChange = async (userId, financeField, newValue) => {
+  const handleFinanceChange = async (finacesId, financeField, newValue) => {
     try {
       let updatedFinanceData = { [financeField]: newValue };
-
-
-      const updateResponse = await fetch(`${environment.apiURL}/api/finances/${userId}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(updatedFinanceData),
-      });
-      await fetch(`${environment.apiURL}/api/finances/${userId}`, {
+      const updateResponse = await fetch(`${environment.apiURL}/api/finance/${finacesId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(updatedFinanceData),
@@ -236,8 +136,7 @@ const Finance = () => {
       if (!updateResponse.ok) {
         throw new Error('No se pudo actualizar los datos financieros del usuario');
       }
-      await fetchFinanceData();
-      await fetchData();
+      fetchData();
     } catch (error) {
       Swal.fire('Error', 'Ha ocurrido un error al actualizar los datos financieros.', 'error');
     }
@@ -247,6 +146,31 @@ const Finance = () => {
   const handleStatusChange = async (userId, Active) => {
     try {
       const updatedUserData = { Active };
+      const userResponse = await fetch(`${environment.apiURL}/api/users/${userId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(updatedUserData),
+      });
+
+      if (!userResponse.ok) throw new Error('Error al actualizar el usuario');
+      await fetch(`${environment.apiURL}/api/userFinance/${userId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updatedUserData),
+      });
+
+      fetchData();
+
+    } catch (error) {
+      console.error('Error al actualizar el estado del usuario:', error);
+      Swal.fire('Error al actualizar el estado', 'Ha ocurrido un error al actualizar el estado del usuario.', 'error');
+    }
+  };
+  const handlePlanChange = async (userId, newPlan) => {
+    try {
+      const updatedUserData = { Plan: newPlan };
       const response = await fetch(`${environment.apiURL}/api/users/${userId}`, {
         method: 'PUT',
         headers: {
@@ -256,10 +180,43 @@ const Finance = () => {
       });
 
       if (!response.ok) {
-        console.error('Error al actualizar el estado del usuario');
+        throw new Error('Error al actualizar el plan del usuario');
       }
-      await fetchData();
+      await fetch(`${environment.apiURL}/api/userFinance/${userId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updatedUserData),
+      });
 
+      const user = users.find(u => u.userId === userId);
+      const currentMonthString = (currentMonth.getMonth() + 1).toString().padStart(2, '0');
+      const userCounter = count.find(counter => counter.userId === userId);
+      const reservationCountForMonth = userCounter ? userCounter.counts[currentMonthString] || 0 : 0;
+      const pendingBalance = calculatePendingReservationAmount({ ...user, Plan: newPlan }, reservationCountForMonth);
+      await updateFinanceData(user._id, { reservationCount: reservationCountForMonth });
+      await updateFinanceData(user._id, { pendingBalance });
+
+      fetchData();
+    } catch (error) {
+      console.error('Error al actualizar el plan del usuario:', error);
+      Swal.fire('Error al actualizar el plan', 'Ha ocurrido un error al actualizar el plan del usuario.', 'error');
+    }
+  };
+
+  const handlePaidReservationsChange = async (userId, numberPaidReservations) => {
+    try {
+      const updatedUserData = { numberPaidReservations: numberPaidReservations };
+      const payDiaryResponse = await fetch(`${environment.apiURL}/api/finance/${userId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(updatedUserData),
+      });
+
+      if (!payDiaryResponse.ok) throw new Error('Error al actualizar el usuario');
+
+      fetchData();
 
     } catch (error) {
       console.error('Error al actualizar el estado del usuario:', error);
@@ -270,7 +227,7 @@ const Finance = () => {
 
   return (
     <div>
-      <h2>Finanzas $</h2>
+      <h2 className='finance-title'>Finanzas $</h2>
       <div className="filters-container">
         <input
           className='input-search'
@@ -315,9 +272,11 @@ const Finance = () => {
             <FontAwesomeIcon icon={faHistory} /> Historial
           </button>
         </Link>
-        <button onClick={showMonthlyTable} className='butom-day-finance-hist'> <FontAwesomeIcon icon={faCalendarAlt} /> Mensual
-        </button>
-        <button onClick={showDailyTable} className='butom-day-finance-hist'><FontAwesomeIcon icon={faClock} /> Diario </button>
+        <Link to={`/summary/${id}`}>
+          <button className='butom-day-finance-hist' >
+            <FontAwesomeIcon icon={faChartColumn} /> Resumen
+          </button>
+        </Link>
         <Link to={`/store/${id}`}>
           <button className='butom-day-finance' >
             <FontAwesomeIcon icon={faStore} />
@@ -347,6 +306,7 @@ const Finance = () => {
                 <table className="user-table-finance">
                   <thead>
                     <tr>
+                      <th>Plan</th>
                       <th>Nombre</th>
                       <th>Inicio Mes</th>
                       <th>Fin Mes</th>
@@ -358,7 +318,8 @@ const Finance = () => {
                   </thead>
                   <tbody>
                     {searchResults.filter(user => user.Plan === 'Mensual').map(user => {
-                      const userInfo = userInfomation && userInfomation.find(dataUser => dataUser._id === user.userId) || {};
+
+
                       if (showPositivePayments && user.reservationPaymentStatus !== 'Si') {
                         return null;
                       } else if (!showPositivePayments && user.reservationPaymentStatus !== 'No') {
@@ -366,18 +327,48 @@ const Finance = () => {
                       }
                       return (
                         <tr key={user._id}>
-                          <td>{user.FirstName + ' ' + user.LastName}</td>
-                          <td>{user.startDate || ' '}</td>
-                          <td>{user.endDate || ' '}</td>
                           <td>
-                            <select
-                              value={userInfo && userInfo.Active}
-                              onChange={(e) => handleStatusChange(userInfo._id, e.target.value)}
-                            >
-                              <option value=""> </option>
-                              <option value="Sí">Sí</option>
-                              <option value="No">No</option>
-                            </select>
+                            <Select
+                              value={{ value: user.Plan, label: user.Plan }}
+                              onChange={(selectedOption) => handlePlanChange(user.userId, selectedOption.value)}
+                              options={[
+                                { value: ' ', label: ' ' },
+                                { value: 'Diario', label: 'Diario' },
+                                { value: 'Mensual', label: 'Mensual' },
+                              ]}
+                            />
+                          </td>
+                          <td>{user.FirstName + ' ' + user.LastName}</td>
+                          <td>
+                            <DatePicker
+                              className='date'
+                              selected={new Date(user.startDate)}
+                              onChange={(date) => {
+                                const formattedDate = format(date, 'yyyy-MM-dd')
+                                handleFinanceChange(user._id, 'startDate', formattedDate);
+                              }}
+                            />
+                          </td>
+                          <td>
+                            <DatePicker
+                              className='date'
+                              selected={new Date(user.endDate)}
+                              onChange={(date) => {
+                                const formattedDate = format(date, 'yyyy-MM-dd')
+                                handleFinanceChange(user._id, 'endDate', formattedDate);
+                              }}
+                            />
+                          </td>
+                          <td>
+                            <Select
+                              value={{ value: user.Active, label: user.Active }}
+                              onChange={(selectedOption) => handleStatusChange(user.userId, selectedOption.value)}
+                              options={[
+                                { value: ' ', label: ' ' },
+                                { value: 'Sí', label: 'Sí' },
+                                { value: 'No', label: 'No' },
+                              ]}
+                            />
                           </td>
                           <td style={{ color: user.reservationPaymentStatus === 'No' ? '#a62525' : 'green' }}>
                             {user.pendingBalance > 0 ? `$ ${user.pendingBalance}` : '$ 0'}
@@ -397,7 +388,7 @@ const Finance = () => {
                               type="text"
                               className='news'
                               value={user.news || ''}
-                              onChange={(event) => handleFinanceChange(user.userId, 'news', event.target.value)}
+                              onChange={(event) => handleFinanceChange(user._id, 'news', event.target.value)}
                             />
                           </td>
                         </tr>
@@ -408,23 +399,27 @@ const Finance = () => {
               </div>
             )}
             {(activeTable === 'daily' || activeTable === 'both') && (
+
               <div>
+
                 <h3 style={{ color: 'white', fontSize: '40px' }}>Plan Diario</h3>
-                <table className="user-table-finance">
+
+                <table className="user-table-finance-diary">
                   <thead>
                     <tr>
+                      <th>Plan</th>
                       <th>Nombre</th>
                       <th>Fecha inicio</th>
                       <th># Reservas</th>
                       <th>Usuario Activo</th>
                       <th>$Pendiente Reservas</th>
+                      <th>Reservas Pagadas</th>
                       <th>pago Reservas$</th>
                       <th>Novedades</th>
                     </tr>
                   </thead>
                   <tbody>
                     {searchResults.filter(user => user.Plan === 'Diario').map(user => {
-                      const userInfo = userInfomation && userInfomation.find(dataUser => dataUser._id === user.userId) || {};
 
                       if (showPositivePayments && user.reservationPaymentStatus !== 'Si') {
                         return null;
@@ -433,21 +428,49 @@ const Finance = () => {
                       }
                       return (
                         <tr key={user._id}>
-                          <td>{user.FirstName + ' ' + user.LastName}</td>
-                          <td>{user.startDate || 'N/A'}</td>
-                          <td>{user.reservationCount || 0}</td>
                           <td>
-                            <select
-                              value={userInfo && userInfo.Active}
-                              onChange={(e) => handleStatusChange(userInfo._id, e.target.value)}
-                            >
-                              <option value=""> </option>
-                              <option value="Sí">Sí</option>
-                              <option value="No">No</option>
-                            </select>
+                            <Select
+                              value={{ value: user.Plan, label: user.Plan }}
+                              onChange={(selectedOption) => handlePlanChange(user.userId, selectedOption.value)}
+                              options={[
+                                { value: ' ', label: ' ' },
+                                { value: 'Diario', label: 'Diario' },
+                                { value: 'Mensual', label: 'Mensual' },
+                              ]}
+                            />
+                          </td>
+                          <td>{user.FirstName + ' ' + user.LastName}</td>
+                          <td>
+                            <DatePicker
+                              className='date'
+                              selected={new Date(user.startDate)}
+                              onChange={(date) => {
+                                const formattedDate = format(date, 'yyyy-MM-dd')
+                                handleFinanceChange(user._id, 'startDate', formattedDate);
+                              }}
+                            />
+                          </td>
+                          <td>{user.reservationCount}</td>
+                          <td>
+                            <Select
+                              value={{ value: user.Active, label: user.Active }}
+                              onChange={(selectedOption) => handleStatusChange(user.userId, selectedOption.value)}
+                              options={[
+                                { value: ' ', label: ' ' },
+                                { value: 'Sí', label: 'Sí' },
+                                { value: 'No', label: 'No' },
+                              ]}
+                            />
                           </td>
                           <td style={{ color: user.reservationPaymentStatus === 'No' ? '#a62525' : 'green' }}>
                             {user.pendingBalance > 0 ? `$ ${user.pendingBalance}` : '$ 0'}
+                          </td>
+                          <td>
+                            <input
+                              value={user.numberPaidReservations || " "}
+                              onChange={(e) => handlePaidReservationsChange(user._id, e.target.value)}
+                              className="num"
+                            />
                           </td>
                           <td>
                             <select
